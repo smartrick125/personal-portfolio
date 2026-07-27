@@ -3886,6 +3886,55 @@ body {
   color: #d8e2ff;
 }
 
+/* Readability corrections for the dark hero and light focus strip. */
+.hero,
+.topbar,
+.wordmark,
+.nav-center,
+.hero-copy,
+.primary-cta {
+  color: #f7f9ff;
+}
+
+.hero-copy p {
+  color: #f7f9ff;
+  text-shadow: 0 2px 24px rgba(3, 7, 24, 0.42);
+}
+
+.hero-copy small {
+  color: rgba(235, 240, 255, 0.76);
+}
+
+.wordmark {
+  color: #ffffff;
+}
+
+.primary-cta {
+  color: #ffffff;
+}
+
+.focus-strip,
+.focus-track,
+.focus-item span {
+  color: #121d38;
+}
+
+.focus-label,
+.focus-item b {
+  color: #34415f;
+  opacity: 1;
+}
+
+.focus-item i {
+  color: #3f35b8;
+  opacity: 0.9;
+}
+
+/* Keep eyebrow labels clear of rounded module edges. */
+.section-heading {
+  padding-inline: 0.9em;
+}
+
 @media (max-width: 960px) {
   .highlights-heading {
     grid-template-columns: 1fr;
