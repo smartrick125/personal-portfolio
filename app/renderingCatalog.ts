@@ -17,6 +17,18 @@ export type CodeStudy = {
     alt: LocalizedText;
     source: LocalizedText;
   };
+  comparison?: {
+    before: {
+      src: string;
+      alt: LocalizedText;
+      label: LocalizedText;
+    };
+    after: {
+      src: string;
+      alt: LocalizedText;
+      label: LocalizedText;
+    };
+  };
   tags: string[];
   flow: LocalizedText[];
   snippet: string;
@@ -46,6 +58,18 @@ export const codeStudies: CodeStudy[] = [
       src: "/rendering-code/gaussian-blur.jpg",
       alt: { en: "Gaussian blur result and Volume settings in Unity", zh: "Unity 中的高斯模糊效果与 Volume 参数" },
       source: { en: "Local practice capture", zh: "本地实践截图" },
+    },
+    comparison: {
+      before: {
+        src: "/rendering-code/gaussian-original.jpg",
+        alt: { en: "Original Unity scene before Gaussian blur", zh: "高斯模糊处理前的 Unity 场景" },
+        label: { en: "Original", zh: "原图" },
+      },
+      after: {
+        src: "/rendering-code/gaussian-effect.jpg",
+        alt: { en: "Unity scene after the Gaussian blur effect", zh: "高斯模糊处理后的 Unity 场景" },
+        label: { en: "Gaussian Blur", zh: "高斯模糊" },
+      },
     },
     tags: ["ShaderLab", "HLSL", "RenderGraph", "RendererFeature", "Volume"],
     flow: [
@@ -157,6 +181,18 @@ color += albedo * mainLight.color * diffuse * shadow;`,
       src: "/rendering-code/edge-detection.jpg",
       alt: { en: "Edge detection post-processing result in Unity", zh: "Unity 边缘检测后处理效果" },
       source: { en: "Local practice capture", zh: "本地实践截图" },
+    },
+    comparison: {
+      before: {
+        src: "/rendering-code/edge-original.jpg",
+        alt: { en: "Original Unity scene before edge-only compositing", zh: "边缘检测合成前的 Unity 场景" },
+        label: { en: "Original", zh: "原图" },
+      },
+      after: {
+        src: "/rendering-code/edge-effect.jpg",
+        alt: { en: "Unity scene with the edge detection result", zh: "应用边缘检测后的 Unity 场景" },
+        label: { en: "Edge Detection", zh: "边缘检测" },
+      },
     },
     tags: ["Post Process", "HLSL", "RendererFeature", "RenderPass", "Volume"],
     flow: [

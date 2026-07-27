@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { projectCatalog } from "./projectCatalog";
 import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
 
@@ -320,6 +320,150 @@ function CodeViewer({ src, name }: { src: string; name: string }) {
   );
 }
 
+type Star = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  alpha: number;
+  phase: number;
+  hue: number;
+};
+
+function StarfieldCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const pointer = { x: -1000, y: -1000, active: false };
+    let stars: Star[] = [];
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let animationFrame = 0;
+
+    const seedStars = () => {
+      const count = Math.max(90, Math.min(260, Math.round((width * height) / 6200)));
+      stars = Array.from({ length: count }, (_, index) => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        radius: index % 17 === 0 ? 1.8 + Math.random() * 1.2 : 0.45 + Math.random() * 1.15,
+        alpha: 0.3 + Math.random() * 0.7,
+        phase: Math.random() * Math.PI * 2,
+        hue: Math.random() > 0.74 ? 275 : 198 + Math.random() * 24,
+      }));
+    };
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.max(1, Math.round(width * dpr));
+      canvas.height = Math.max(1, Math.round(height * dpr));
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seedStars();
+    };
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 260);
+      glow.addColorStop(0, pointer.active ? "rgba(105, 214, 255, 0.12)" : "rgba(105, 214, 255, 0)");
+      glow.addColorStop(0.45, pointer.active ? "rgba(112, 90, 255, 0.055)" : "rgba(112, 90, 255, 0)");
+      glow.addColorStop(1, "rgba(10, 12, 34, 0)");
+      context.fillStyle = glow;
+      context.fillRect(0, 0, width, height);
+
+      for (const star of stars) {
+        if (!reduceMotion) {
+          star.x += star.vx;
+          star.y += star.vy;
+
+          if (pointer.active) {
+            const dx = star.x - pointer.x;
+            const dy = star.y - pointer.y;
+            const distance = Math.hypot(dx, dy);
+            if (distance > 1 && distance < 230) {
+              const force = (1 - distance / 230) * 0.7;
+              star.x += (dx / distance) * force;
+              star.y += (dy / distance) * force;
+              star.x += (-dy / distance) * force * 0.34;
+              star.y += (dx / distance) * force * 0.34;
+            }
+          }
+
+          if (star.x < -8) star.x = width + 8;
+          if (star.x > width + 8) star.x = -8;
+          if (star.y < -8) star.y = height + 8;
+          if (star.y > height + 8) star.y = -8;
+        }
+
+        const twinkle = 0.62 + Math.sin(frame * 0.018 + star.phase) * 0.38;
+        const distance = pointer.active ? Math.hypot(star.x - pointer.x, star.y - pointer.y) : 999;
+        const proximity = Math.max(0, 1 - distance / 210);
+        const radius = star.radius + proximity * 1.3;
+        const alpha = Math.min(1, star.alpha * twinkle + proximity * 0.45);
+
+        if (proximity > 0.33) {
+          context.beginPath();
+          context.moveTo(star.x, star.y);
+          context.lineTo(pointer.x, pointer.y);
+          context.strokeStyle = `hsla(${star.hue}, 92%, 76%, ${proximity * 0.13})`;
+          context.lineWidth = 0.45;
+          context.stroke();
+        }
+
+        context.beginPath();
+        context.arc(star.x, star.y, radius, 0, Math.PI * 2);
+        context.fillStyle = `hsla(${star.hue}, 96%, 82%, ${alpha})`;
+        context.shadowColor = `hsla(${star.hue}, 100%, 72%, ${0.72 + proximity * 0.28})`;
+        context.shadowBlur = radius > 1.5 ? 12 + proximity * 18 : 4 + proximity * 10;
+        context.fill();
+      }
+
+      context.shadowBlur = 0;
+      if (!reduceMotion) {
+        frame += 1;
+        animationFrame = window.requestAnimationFrame(draw);
+      }
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
+      pointer.active = pointer.x >= 0 && pointer.y >= 0 && pointer.x <= rect.width && pointer.y <= rect.height;
+    };
+    const onPointerLeave = () => {
+      pointer.active = false;
+    };
+
+    resize();
+    draw();
+    window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("pointerleave", onPointerLeave);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerleave", onPointerLeave);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="starfield-canvas" aria-hidden="true" />;
+}
+
 export default function Home() {
   const text = copy.en;
 
@@ -359,11 +503,33 @@ export default function Home() {
           <span>SMARTRICK</span>
         </a>
         <div className="nav-center">
-          {text.nav.map((item, index) => (
-            <a key={item} href={["#profile", "#work", "#approach", "#contact"][index]}>
-              {item}
-            </a>
-          ))}
+          <a href="#profile">Profile</a>
+          <a href="#work">Work</a>
+          <details className="archive-menu">
+            <summary>Archive <span aria-hidden="true">⌄</span></summary>
+            <div className="archive-mega">
+              <div className="archive-mega-intro">
+                <small>2026 — ONGOING</small>
+                <strong>A growing technical-art archive.</strong>
+                <p>One expandable home for the work, notes, and experiments I will keep building over the next year.</p>
+                <a href="#learning-archive">See the current archive</a>
+              </div>
+              <div className="archive-mega-column">
+                <small>ACTIVE TRACKS</small>
+                <a href="#visual-vfx"><span>01</span><strong>Shader Graph / VFX</strong><b>4 cases</b></a>
+                <a href="#rendering-code"><span>02</span><strong>Rendering Code Lab</strong><b>4 studies</b></a>
+                <a href="#learning-archive"><span>03</span><strong>Learning Archive</strong><b>3 tracks</b></a>
+              </div>
+              <div className="archive-mega-column archive-mega-future">
+                <small>NEXT TO GROW</small>
+                <div><span>04</span><strong>Tools & Pipeline</strong><b>Planned</b></div>
+                <div><span>05</span><strong>AI × TA Experiments</strong><b>Planned</b></div>
+                <div><span>06</span><strong>Breakdown Notes</strong><b>Planned</b></div>
+              </div>
+            </div>
+          </details>
+          <a href="#approach">Approach</a>
+          <a href="#contact">Contact</a>
         </div>
       </nav>
 
@@ -372,15 +538,9 @@ export default function Home() {
           <div className="sky-aurora sky-aurora-one" />
           <div className="sky-aurora sky-aurora-two" />
           <div className="star-field" />
-          <div className="render-stage">
-            <div className="render-ring ring-one" />
-            <div className="render-ring ring-two" />
-            <div className="shader-core">
-              <div className="shader-glow" />
-              <div className="shader-grid" />
-            </div>
-            <span className="render-label">WEBGL SCENE / PHASE 03</span>
-          </div>
+          <StarfieldCanvas />
+          <div className="stellar-cloud stellar-cloud-one" />
+          <div className="stellar-cloud stellar-cloud-two" />
           <div className="horizon-grid" />
         </div>
 
@@ -673,13 +833,30 @@ export default function Home() {
                     <p>{study.description.en}</p>
                   </header>
 
-                  <figure className="code-media" data-reveal>
-                    <img src={study.media.src} alt={study.media.alt.en} loading="lazy" />
-                    <figcaption>
-                      <strong>{study.media.source.en}</strong>
-                      <p>{study.mediaNote.en}</p>
-                    </figcaption>
-                  </figure>
+                  {study.comparison ? (
+                    <figure className="code-comparison" data-reveal>
+                      <div className="comparison-frame">
+                        <img src={study.comparison.before.src} alt={study.comparison.before.alt.en} loading="lazy" />
+                        <span>{study.comparison.before.label.en}</span>
+                      </div>
+                      <div className="comparison-frame">
+                        <img src={study.comparison.after.src} alt={study.comparison.after.alt.en} loading="lazy" />
+                        <span>{study.comparison.after.label.en}</span>
+                      </div>
+                      <figcaption>
+                        <strong>{study.media.source.en}</strong>
+                        <p>{study.mediaNote.en}</p>
+                      </figcaption>
+                    </figure>
+                  ) : (
+                    <figure className="code-media" data-reveal>
+                      <img src={study.media.src} alt={study.media.alt.en} loading="lazy" />
+                      <figcaption>
+                        <strong>{study.media.source.en}</strong>
+                        <p>{study.mediaNote.en}</p>
+                      </figcaption>
+                    </figure>
+                  )}
 
                   <div className="code-study-details">
                     <section className="code-flow" data-reveal>
@@ -729,7 +906,7 @@ export default function Home() {
               ))}
             </div>
 
-            <section className="learning-archive" data-reveal>
+            <section className="learning-archive" id="learning-archive" data-reveal>
               <header>
                 <p>{text.archiveEyebrow}</p>
                 <h3>{text.archiveTitle}</h3>
@@ -805,7 +982,7 @@ export default function Home() {
             <span className="social-placeholder">
               <span>
                 <strong>Douyin / China TikTok</strong>
-                <small>Personal life account · link coming soon</small>
+                <small>Personal life account · @ww2024260424</small>
               </span>
               <b>↗</b>
             </span>
