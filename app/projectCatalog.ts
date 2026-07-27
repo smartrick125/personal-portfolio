@@ -19,10 +19,13 @@ type ProjectCatalogItem = {
   technicalSummary: TechnicalSummary;
 };
 
-const media = (folder: string, category: string, name: string, file: string): MediaItem => ({
-  name,
-  src: `/projects/catalog/${folder}/${category}/${file}`,
-});
+const media = (folder: string, category: string, name: string, file: string): MediaItem => {
+  const webFile = file.endsWith(".png") ? file.replace(/\.png$/, ".webp") : file;
+  return {
+    name,
+    src: `/projects/catalog/${folder}/${category}/${webFile}`,
+  };
+};
 
 export const projectCatalog: ProjectCatalogItem[] = [
   {
