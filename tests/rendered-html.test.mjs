@@ -38,6 +38,10 @@ test("server-renders the portfolio and its new archive structure", async () => {
   assert.match(html, /gaussian-effect\.jpg/);
   assert.match(html, /edge-original\.jpg/);
   assert.match(html, /edge-effect\.jpg/);
+  assert.match(html, /DIRECT CONTACT/);
+  assert.match(html, /TECHNICAL PROFILE/);
+  assert.match(html, /PERSONAL LIFE ACCOUNT/);
+  assert.doesNotMatch(html, /Source folder|No separate Script folder|Tianjin/);
 });
 
 test("keeps all comparison media available in the deployment bundle", async () => {

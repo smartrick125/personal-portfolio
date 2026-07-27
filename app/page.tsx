@@ -13,13 +13,12 @@ const copy = {
       "Exploring how AI, art, and code can shape expressive real-time experiences.",
     introNote: "Currently building a foundation in Unity, shaders, C#, and real-time rendering.",
     viewWork: "Explore selected work",
-    location: "Tianjin, China",
     focusLabel: "Current focus",
     focus: ["Unity", "Shaders", "C# Tooling", "AI × TA"],
     profileEyebrow: "01 / Profile",
     profileTitle: "Building the bridge between visual ideas and real-time systems.",
     profileBody:
-      "I’m Smartrick, an emerging Technical Artist based in Tianjin. I’m building practical knowledge across shader development, Unity tools, and real-time rendering—while exploring where AI can make creative pipelines faster and more expressive.",
+      "I’m Smartrick, an emerging Technical Artist building practical knowledge across shader development, Unity tools, and real-time rendering—while exploring where AI can make creative pipelines faster and more expressive.",
     statusTitle: "Opportunity status",
     statusBody: "Available for internships, campus recruitment, and full-time opportunities.",
     learn: "Learning",
@@ -39,7 +38,6 @@ const copy = {
     codeLearningNote: "Learning archive · implementations and adaptations",
     mediaPlaceholder: "IMAGE / VIDEO PLACEHOLDER",
     flowLabel: "Implementation flow",
-    sourceLabel: "Source files",
     snippetLabel: "Core logic",
     viewRepo: "View full GitHub repository",
     archiveEyebrow: "Full learning archive",
@@ -48,15 +46,12 @@ const copy = {
       "The repository also records the wider learning path from lighting fundamentals to URP custom rendering. Expand a track to browse every chapter.",
     openChapter: "Open chapter",
     placeholder: "Unity practice · Complete",
-    folderLabel: "Source folder",
     videoLabel: "Result footage",
     galleryLabel: "Visual details",
     logicLabel: "Implementation logic",
     nodesLabel: "Node modules",
     scriptLabel: "C# source",
     summaryLabel: "Technical summary",
-    originalFile: "Open original file",
-    noScript: "No separate Script folder in this project.",
     scrollHint: "Scroll through case study",
     projects: [
       {
@@ -140,7 +135,7 @@ const copy = {
     contactEyebrow: "04 / Contact",
     contactTitle: "Let’s build the next frame.",
     contactBody:
-      "Based in Tianjin and open to opportunities in Technical Art and real-time graphics.",
+      "Open to opportunities in Technical Art and real-time graphics.",
     github: "github.com/smartrick125",
     resume: "Résumé · coming soon",
     contact: "ke4773613@gmail.com",
@@ -154,13 +149,12 @@ const copy = {
     intro: "探索 AI、艺术与代码如何共同塑造更有表现力的实时体验。",
     introNote: "目前正在积累 Unity、Shader、C# 与实时渲染的实践经验。",
     viewWork: "查看实践项目",
-    location: "中国 · 天津",
     focusLabel: "当前方向",
     focus: ["Unity", "Shader", "C# 工具", "AI × TA"],
     profileEyebrow: "01 / 个人简介",
     profileTitle: "连接视觉想法与实时系统。",
     profileBody:
-      "我是 Smartrick，一名位于天津、正在成长中的技术美术学习者。我正在积累 Shader 开发、Unity 工具和实时渲染的实践经验，同时探索 AI 如何让创作流程更高效、更具表现力。",
+      "我是 Smartrick，一名正在成长中的技术美术学习者。我正在积累 Shader 开发、Unity 工具和实时渲染的实践经验，同时探索 AI 如何让创作流程更高效、更具表现力。",
     statusTitle: "求职状态",
     statusBody: "接受实习、校招和社招机会。",
     learn: "学习中",
@@ -189,7 +183,6 @@ const copy = {
       "仓库还记录了从基础光照到 URP 自定义渲染的完整学习路径。展开分类即可浏览每个章节。",
     openChapter: "打开章节",
     placeholder: "Unity 实践 · 已完成",
-    folderLabel: "源文件夹",
     videoLabel: "效果录屏",
     galleryLabel: "效果细节",
     logicLabel: "实现逻辑",
@@ -280,7 +273,7 @@ const copy = {
     ],
     contactEyebrow: "04 / 联系",
     contactTitle: "一起构建下一帧。",
-    contactBody: "目前位于天津，期待技术美术与实时图形相关机会。",
+    contactBody: "期待技术美术与实时图形相关机会。",
     github: "github.com/smartrick125",
     resume: "个人简历 · 即将补充",
     contact: "ke4773613@gmail.com",
@@ -486,7 +479,10 @@ export default function Home() {
       { threshold: 0.12 },
     );
 
-    document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((element) => observer.observe(element));
+    document.querySelectorAll<HTMLElement>("[data-reveal], [data-section-reveal]").forEach((element, index) => {
+      element.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 70}ms`);
+      observer.observe(element);
+    });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
 
     return () => {
@@ -556,7 +552,7 @@ export default function Home() {
             <div className="hero-role-row">
               <span>{text.role}</span>
               <span className="role-line" />
-              <span>{text.location}</span>
+              <span>REAL-TIME GRAPHICS</span>
             </div>
           </div>
 
@@ -604,7 +600,7 @@ export default function Home() {
             />
             <figcaption>
               <span>SMARTRICK / 2026</span>
-              <small>{text.location}</small>
+              <small>TECHNICAL ART</small>
             </figcaption>
           </figure>
           <div className="profile-copy" data-reveal>
@@ -615,7 +611,6 @@ export default function Home() {
                 <small>{text.statusTitle}</small>
                 <p>{text.statusBody}</p>
               </div>
-              <span>{text.location}</span>
             </div>
           </div>
         </div>
@@ -672,7 +667,8 @@ export default function Home() {
             {text.projects.map((project, index) => {
               const assets = projectCatalog[index];
               return (
-                <article className="case-study" id={assets.id} key={project.title}>
+                <article className="case-study" id={assets.id} key={project.title} data-section-reveal>
+                  <div className="section-divider" aria-hidden="true" />
                   <header className="case-header" data-reveal>
                     <div className="case-number">0{index + 1}</div>
                     <div>
@@ -688,52 +684,50 @@ export default function Home() {
                   </header>
 
                   <div className="folder-banner" data-reveal>
-                    <small>{text.folderLabel}</small>
                     <code>{assets.folderName}</code>
-                    <span>{assets.videos.length + assets.gallery.length + assets.nodes.length + (assets.script ? 1 : 0) + 1} FILES</span>
                   </div>
 
-                  <section className="case-block case-video" aria-labelledby={`${assets.id}-video`} data-reveal>
-                    <div className="case-label">
-                      <span id={`${assets.id}-video`}><b>Video_Preview</b> / {text.videoLabel}</span>
-                      <small>{assets.videos.length.toString().padStart(2, "0")} FILES · {text.scrollHint}</small>
-                    </div>
-                    <div className="media-scroll video-scroll">
-                      {assets.videos.map((video, videoIndex) => (
-                        <figure className="case-video-frame" key={video.src}>
-                          <video controls loop muted playsInline preload="metadata" poster={assets.gallery[0]?.src}>
-                            <source src={video.src} type="video/mp4" />
-                          </video>
-                          <figcaption>{video.name}</figcaption>
-                          <span className="media-corner">VIDEO / {String(videoIndex + 1).padStart(2, "0")}</span>
-                        </figure>
-                      ))}
-                    </div>
-                  </section>
+                  {assets.videos.length > 0 && (
+                    <section className="case-block case-video" aria-labelledby={`${assets.id}-video`} data-reveal>
+                      <div className="case-label">
+                        <span id={`${assets.id}-video`}>{text.videoLabel}</span>
+                      </div>
+                      <div className="media-scroll video-scroll">
+                        {assets.videos.map((video) => (
+                          <figure className="case-video-frame" key={video.src}>
+                            <video controls loop muted playsInline preload="metadata" poster={assets.gallery[0]?.src}>
+                              <source src={video.src} type="video/mp4" />
+                            </video>
+                            <figcaption>{video.name}</figcaption>
+                          </figure>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
-                  <section className="case-block" aria-labelledby={`${assets.id}-gallery`} data-reveal>
-                    <div className="case-label">
-                      <span id={`${assets.id}-gallery`}><b>Gallery</b> / {text.galleryLabel}</span>
-                      <small>{assets.gallery.length.toString().padStart(2, "0")} FILES</small>
-                    </div>
-                    <div className="media-scroll gallery-scroll">
-                      {assets.gallery.map((item, mediaIndex) => (
-                        <figure key={item.src}>
-                          <img
-                            src={item.src}
-                            alt={`${project.title} result frame ${mediaIndex + 1}`}
-                            loading="lazy"
-                          />
-                          <figcaption>{item.name}</figcaption>
-                        </figure>
-                      ))}
-                    </div>
-                  </section>
+                  {assets.gallery.length > 0 && (
+                    <section className="case-block" aria-labelledby={`${assets.id}-gallery`} data-reveal>
+                      <div className="case-label">
+                        <span id={`${assets.id}-gallery`}>{text.galleryLabel}</span>
+                      </div>
+                      <div className="media-scroll gallery-scroll">
+                        {assets.gallery.map((item, mediaIndex) => (
+                          <figure key={item.src}>
+                            <img
+                              src={item.src}
+                              alt={`${project.title} result frame ${mediaIndex + 1}`}
+                              loading="lazy"
+                            />
+                            <figcaption>{item.name}</figcaption>
+                          </figure>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
                   <section className="case-block" aria-labelledby={`${assets.id}-logic`} data-reveal>
                     <div className="case-label">
                       <span id={`${assets.id}-logic`}>{text.logicLabel}</span>
-                      <small>BREAKDOWN</small>
                     </div>
                     <ol className="logic-grid">
                       {project.logic.map((item, logicIndex) => (
@@ -745,55 +739,47 @@ export default function Home() {
                     </ol>
                   </section>
 
-                  <section className="case-block case-nodes" aria-labelledby={`${assets.id}-nodes`} data-reveal>
-                    <div className="case-label">
-                      <span id={`${assets.id}-nodes`}><b>Shader_Logic</b> / {text.nodesLabel}</span>
-                      <small>{assets.nodes.length.toString().padStart(2, "0")} FILES</small>
-                    </div>
-                    <div className="media-scroll node-scroll">
-                      {assets.nodes.map((item, nodeIndex) => (
-                        <figure key={item.src}>
-                          <div className="node-image">
-                            <img
-                              src={item.src}
-                              alt={`${project.title} ${item.name}`}
-                              loading="lazy"
-                            />
-                          </div>
-                          <figcaption>
-                            <span>{String(nodeIndex + 1).padStart(2, "0")}</span>
-                            <div>
-                              <strong>{item.name}</strong>
-                              <p>Shader Graph / {assets.folderName}</p>
+                  {assets.nodes.length > 0 && (
+                    <section className="case-block case-nodes" aria-labelledby={`${assets.id}-nodes`} data-reveal>
+                      <div className="case-label">
+                        <span id={`${assets.id}-nodes`}>{text.nodesLabel}</span>
+                      </div>
+                      <div className="media-scroll node-scroll">
+                        {assets.nodes.map((item, nodeIndex) => (
+                          <figure key={item.src}>
+                            <div className="node-image">
+                              <img
+                                src={item.src}
+                                alt={`${project.title} ${item.name}`}
+                                loading="lazy"
+                              />
                             </div>
-                          </figcaption>
-                        </figure>
-                      ))}
-                    </div>
-                  </section>
+                            <figcaption>
+                              <span>{String(nodeIndex + 1).padStart(2, "0")}</span>
+                              <div>
+                                <strong>{item.name}</strong>
+                              </div>
+                            </figcaption>
+                          </figure>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
-                  <section className="case-block" aria-labelledby={`${assets.id}-script`} data-reveal>
-                    <div className="case-label">
-                      <span id={`${assets.id}-script`}><b>Script</b> / {text.scriptLabel}</span>
-                      <small>{assets.script ? "01 FILE" : "00 FILES"}</small>
-                    </div>
-                    {assets.script ? (
+                  {assets.script && (
+                    <section className="case-block" aria-labelledby={`${assets.id}-script`} data-reveal>
+                      <div className="case-label">
+                        <span id={`${assets.id}-script`}>{text.scriptLabel}</span>
+                      </div>
                       <CodeViewer src={assets.script.src} name={assets.script.name} />
-                    ) : (
-                      <div className="empty-folder">{text.noScript}</div>
-                    )}
-                  </section>
+                    </section>
+                  )}
 
                   <section className="case-block" aria-labelledby={`${assets.id}-summary`} data-reveal>
                     <div className="case-label">
-                      <span id={`${assets.id}-summary`}><b>Technical_Summary</b> / {text.summaryLabel}</span>
-                      <small>01 FILE</small>
+                      <span id={`${assets.id}-summary`}>{text.summaryLabel}</span>
                     </div>
                     <div className="technical-summary">
-                      <div className="summary-file">
-                        <span>{assets.technicalSummary.name}</span>
-                        <a href={assets.technicalSummary.src}>{text.originalFile} ↗</a>
-                      </div>
                       <div className="summary-copy">
                         {assets.technicalSummary.paragraphs.map((paragraph) => (
                           <p key={paragraph}>{paragraph}</p>
@@ -806,7 +792,8 @@ export default function Home() {
             })}
           </div>
 
-          <section className="rendering-lab" id="rendering-code">
+          <section className="rendering-lab" id="rendering-code" data-section-reveal>
+            <div className="section-divider" aria-hidden="true" />
             <header className="rendering-lab-header" data-reveal>
               <div>
                 <p>TRACK 02 / {text.codeEyebrow}</p>
@@ -823,7 +810,8 @@ export default function Home() {
 
             <div className="code-study-list">
               {codeStudies.map((study, index) => (
-                <article className="code-study" id={study.id} key={study.id}>
+                <article className="code-study" id={study.id} key={study.id} data-section-reveal>
+                  <div className="section-divider" aria-hidden="true" />
                   <header className="code-study-header" data-reveal>
                     <span>0{index + 1}</span>
                     <div>
@@ -844,7 +832,6 @@ export default function Home() {
                         <span>{study.comparison.after.label.en}</span>
                       </div>
                       <figcaption>
-                        <strong>{study.media.source.en}</strong>
                         <p>{study.mediaNote.en}</p>
                       </figcaption>
                     </figure>
@@ -852,7 +839,6 @@ export default function Home() {
                     <figure className="code-media" data-reveal>
                       <img src={study.media.src} alt={study.media.alt.en} loading="lazy" />
                       <figcaption>
-                        <strong>{study.media.source.en}</strong>
                         <p>{study.mediaNote.en}</p>
                       </figcaption>
                     </figure>
@@ -862,7 +848,6 @@ export default function Home() {
                     <section className="code-flow" data-reveal>
                       <div className="code-block-label">
                         <span>{text.flowLabel}</span>
-                        <small>PIPELINE</small>
                       </div>
                       <ol>
                         {study.flow.map((step, stepIndex) => (
@@ -877,15 +862,13 @@ export default function Home() {
                     <section className="code-snippet" data-reveal>
                       <div className="code-block-label">
                         <span>{text.snippetLabel}</span>
-                        <small>CODE EXCERPT</small>
                       </div>
                       <pre><code>{study.snippet}</code></pre>
                     </section>
 
                     <section className="code-sources" data-reveal>
                       <div className="code-block-label">
-                        <span>{text.sourceLabel}</span>
-                        <small>{String(study.files.length).padStart(2, "0")} FILES</small>
+                        <span>View code</span>
                       </div>
                       <div className="source-links">
                         {study.files.map((file) => (
@@ -906,7 +889,8 @@ export default function Home() {
               ))}
             </div>
 
-            <section className="learning-archive" id="learning-archive" data-reveal>
+            <section className="learning-archive" id="learning-archive" data-reveal data-section-reveal>
+              <div className="section-divider" aria-hidden="true" />
               <header>
                 <p>{text.archiveEyebrow}</p>
                 <h3>{text.archiveTitle}</h3>
@@ -975,20 +959,30 @@ export default function Home() {
             <h2>{text.contactTitle}</h2>
           </div>
           <div className="contact-links" data-reveal>
-            <a href="https://github.com/smartrick125" target="_blank" rel="noreferrer">
-              {text.github}<b>↗</b>
-            </a>
-            <span>{text.resume}<b>↗</b></span>
-            <span className="social-placeholder">
-              <span>
-                <strong>Douyin / China TikTok</strong>
-                <small>Personal life account · @ww2024260424</small>
-              </span>
-              <b>↗</b>
-            </span>
             <a href="mailto:ke4773613@gmail.com">
-              {text.contact}<b>↗</b>
+              <small>DIRECT CONTACT</small>
+              <strong>Email</strong>
+              <span>ke4773613@gmail.com</span>
+              <b>↗</b>
             </a>
+            <a href="https://github.com/smartrick125" target="_blank" rel="noreferrer">
+              <small>TECHNICAL PROFILE</small>
+              <strong>GitHub</strong>
+              <span>@smartrick125</span>
+              <b>↗</b>
+            </a>
+            <span className="social-placeholder">
+              <small>PERSONAL LIFE ACCOUNT</small>
+              <strong>Douyin</strong>
+              <span>@ww2024260424</span>
+              <b>—</b>
+            </span>
+            <span>
+              <small>CAREER DOCUMENT</small>
+              <strong>Résumé</strong>
+              <span>Coming soon</span>
+              <b>—</b>
+            </span>
           </div>
         </div>
       </section>
