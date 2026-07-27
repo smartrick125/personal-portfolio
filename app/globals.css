@@ -807,12 +807,53 @@ button {
   transform: translateY(-7px);
 }
 
+.project-card.featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(310px, 0.55fr);
+}
+
+.project-card.featured .project-visual {
+  min-height: 520px;
+  aspect-ratio: auto;
+  border-right: 1px solid var(--line);
+  border-bottom: 0;
+}
+
+.project-card.featured .project-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .project-visual {
   aspect-ratio: 16 / 10;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
   background: #111633;
+}
+
+.project-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(3, 6, 18, 0.02) 42%, rgba(3, 6, 18, 0.7));
+}
+
+.project-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #080b18;
+}
+
+.featured .project-media {
+  object-position: center;
 }
 
 .visual-1 {
@@ -840,8 +881,9 @@ button {
 
 .visual-grid {
   position: absolute;
+  z-index: 1;
   inset: 0;
-  opacity: 0.28;
+  opacity: 0.12;
   background-image:
     linear-gradient(rgba(255,255,255,.22) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,.22) 1px, transparent 1px);
@@ -904,6 +946,7 @@ button {
 
 .project-number {
   position: absolute;
+  z-index: 2;
   top: 20px;
   left: 22px;
   font: 600 10px/1 var(--font-geist-mono), monospace;
@@ -912,6 +955,7 @@ button {
 
 .project-visual > small {
   position: absolute;
+  z-index: 2;
   right: 22px;
   bottom: 18px;
   color: rgba(255,255,255,.58);
@@ -1090,7 +1134,8 @@ button {
   border-top: 1px solid var(--line);
 }
 
-.contact-links > span {
+.contact-links > span,
+.contact-links > a {
   min-height: 72px;
   display: flex;
   align-items: center;
@@ -1098,6 +1143,16 @@ button {
   border-bottom: 1px solid var(--line);
   color: rgba(238, 242, 255, 0.66);
   font-size: 14px;
+}
+
+.contact-links > a {
+  transition: color 180ms ease, padding 180ms ease;
+}
+
+.contact-links > a:hover,
+.contact-links > a:focus-visible {
+  padding-inline: 12px;
+  color: var(--cyan);
 }
 
 .contact-links b {
@@ -1195,6 +1250,16 @@ button {
 
   .project-grid {
     gap: 18px;
+  }
+
+  .project-card.featured {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card.featured .project-visual {
+    min-height: 420px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
   }
 
   .pillar-grid {
@@ -1355,6 +1420,10 @@ button {
 
   .project-grid {
     grid-template-columns: 1fr;
+  }
+
+  .project-card.featured .project-visual {
+    min-height: 290px;
   }
 
   .work-intro h2,

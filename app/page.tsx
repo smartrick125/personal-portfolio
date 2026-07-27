@@ -29,32 +29,36 @@ const copy = {
     workTitle: "Small projects. Clear thinking.",
     workBody:
       "Four case-study templates are ready. Real footage, technical breakdowns, and repositories will be added as each project is prepared.",
-    placeholder: "Case study in preparation",
-    soon: "Details coming soon",
+    placeholder: "Unity practice · Complete",
+    soon: "Full case study · next phase",
     projects: [
       {
-        title: "Shader & Material Study",
-        subtitle: "Surface language and lighting experiments",
-        description: "A home for material studies, stylized shading, and small rendering experiments.",
-        tags: ["ShaderLab", "HLSL", "URP"],
+        title: "Full Skill Effect",
+        subtitle: "Charge · Beam · Hit · Explosion",
+        description:
+          "A complete sci-fi skill sequence driven by C#, coordinating charge-up, beam fade-in, impact pulse, explosion radius, dissolve, and emission timing.",
+        tags: ["Unity 6", "Shader Graph", "C# Sequence"],
       },
       {
-        title: "Procedural Sky Study",
-        subtitle: "Atmosphere, depth, and motion",
-        description: "A visual study of procedural skies, gradients, clouds, and real-time atmosphere.",
-        tags: ["Real-time", "Atmosphere", "VFX"],
+        title: "Interactive Energy Shield",
+        subtitle: "Fresnel shell and click-driven ripples",
+        description:
+          "An energy shield combining Fresnel edges, layered patterns, core veins, noise distortion, and two alternating impact slots controlled by raycast input.",
+        tags: ["Shader Graph", "C#", "Raycast"],
       },
       {
-        title: "C# Art Tool",
-        subtitle: "Turning repeated steps into tools",
-        description: "A future case study for editor tooling and small pipeline improvements in Unity.",
-        tags: ["C#", "Unity Editor", "Workflow"],
+        title: "Energy Beam",
+        subtitle: "Flow, distortion, clipping, and glow",
+        description:
+          "A real-time beam effect built from animated UV flow, distortion, core and glow layers, start/end clipping, and hit-point highlighting.",
+        tags: ["Shader Graph", "UV Flow", "VFX"],
       },
       {
-        title: "AI × TA Workflow",
-        subtitle: "Experiments in assisted creation",
-        description: "Exploring responsible ways AI can support iteration, prototyping, and technical art.",
-        tags: ["AI", "Pipeline", "Prototype"],
+        title: "Stylized Dissolve Fire",
+        subtitle: "Procedural edge emission",
+        description:
+          "A stylized fire and dissolve study using UV-based masks, animated breakup, layered base color, and emissive edge treatment.",
+        tags: ["Dissolve", "Emission", "Material"],
       },
     ],
     approachEyebrow: "03 / Approach",
@@ -70,9 +74,9 @@ const copy = {
     contactTitle: "Let’s build the next frame.",
     contactBody:
       "Based in Tianjin and open to opportunities in Technical Art and real-time graphics.",
-    github: "GitHub profile · URL pending",
+    github: "github.com/smartrick125",
     resume: "Résumé · coming soon",
-    contact: "Contact details · coming soon",
+    contact: "ke4773613@gmail.com",
     footer: "Designed as a portfolio in progress",
     stage: "Phase 01 — Homepage",
   },
@@ -99,32 +103,36 @@ const copy = {
     workTitle: "项目可以小，思考要清楚。",
     workBody:
       "已经为四个案例准备好展示模板。后续会逐步加入真实录屏、技术拆解与代码仓库。",
-    placeholder: "案例整理中",
-    soon: "详情即将补充",
+    placeholder: "Unity 实践 · 已完成",
+    soon: "完整案例 · 下一阶段",
     projects: [
       {
-        title: "Shader 与材质练习",
-        subtitle: "表面表现与光照实验",
-        description: "用于沉淀材质研究、风格化着色与小型渲染实验。",
-        tags: ["ShaderLab", "HLSL", "URP"],
+        title: "完整技能特效",
+        subtitle: "蓄力 · 光束 · 命中 · 爆炸",
+        description:
+          "通过 C# 统一编排科幻技能序列，控制蓄力、光束渐入、命中脉冲、爆炸半径、溶解与自发光时间。",
+        tags: ["Unity 6", "Shader Graph", "C# 时序"],
       },
       {
-        title: "程序化天空练习",
-        subtitle: "氛围、纵深与运动",
-        description: "围绕程序化天空、渐变、云层和实时氛围进行视觉练习。",
-        tags: ["实时渲染", "大气", "VFX"],
+        title: "交互式能量护盾",
+        subtitle: "Fresnel 外壳与点击涟漪",
+        description:
+          "结合 Fresnel、分层图案、核心脉络与噪声扭曲，并通过射线点击交替驱动两组护盾冲击涟漪。",
+        tags: ["Shader Graph", "C#", "Raycast"],
       },
       {
-        title: "C# 美术工具",
-        subtitle: "把重复步骤变成工具",
-        description: "未来用于展示 Unity 编辑器工具与小型流程优化实践。",
-        tags: ["C#", "Unity Editor", "工作流"],
+        title: "能量光束",
+        subtitle: "流动、扭曲、裁切与辉光",
+        description:
+          "使用 UV 流动、噪声扭曲、核心辉光、起止位置裁切和命中点高亮构建实时光束效果。",
+        tags: ["Shader Graph", "UV 流动", "VFX"],
       },
       {
-        title: "AI × TA 工作流",
-        subtitle: "辅助创作流程实验",
-        description: "探索 AI 如何合理支持迭代、原型制作与技术美术工作。",
-        tags: ["AI", "流程", "原型"],
+        title: "风格化溶解火焰",
+        subtitle: "程序化边缘自发光",
+        description:
+          "基于 UV 遮罩、动态破碎、分层基础色与边缘自发光制作风格化火焰溶解效果。",
+        tags: ["溶解", "自发光", "材质"],
       },
     ],
     approachEyebrow: "03 / 方法",
@@ -139,13 +147,24 @@ const copy = {
     contactEyebrow: "04 / 联系",
     contactTitle: "一起构建下一帧。",
     contactBody: "目前位于天津，期待技术美术与实时图形相关机会。",
-    github: "GitHub 主页 · 链接待补充",
+    github: "github.com/smartrick125",
     resume: "个人简历 · 即将补充",
-    contact: "联系方式 · 即将补充",
+    contact: "ke4773613@gmail.com",
     footer: "一个持续成长中的作品集",
     stage: "阶段 01 — 首页",
   },
 } as const;
+
+const projectMedia = [
+  {
+    type: "video",
+    src: "/projects/full-skill-effect.mp4",
+    poster: "/projects/full-skill-effect.png",
+  },
+  { type: "image", src: "/projects/energy-shield.png" },
+  { type: "image", src: "/projects/energy-beam.png" },
+  { type: "image", src: "/projects/dissolve-fire.png" },
+] as const;
 
 const statusLabels = {
   en: ["Learning", "Practising", "Exploring"],
@@ -321,15 +340,32 @@ export default function Home() {
             <p>{text.workBody}</p>
           </div>
           <div className="project-grid">
-            {text.projects.map((project, index) => (
-              <article className="project-card" key={project.title} data-reveal>
+            {text.projects.map((project, index) => {
+              const media = projectMedia[index];
+              return (
+              <article className={`project-card ${index === 0 ? "featured" : ""}`} key={project.title} data-reveal>
                 <div className={`project-visual visual-${index + 1}`}>
+                  {media.type === "video" ? (
+                    <video
+                      className="project-media"
+                      controls
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                      poster={media.poster}
+                    >
+                      <source src={media.src} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <img
+                      className="project-media"
+                      src={media.src}
+                      alt={`${project.title} Unity preview`}
+                      loading="lazy"
+                    />
+                  )}
                   <div className="visual-grid" />
-                  <div className="visual-object">
-                    <i />
-                    <i />
-                    <i />
-                  </div>
                   <span className="project-number">0{index + 1}</span>
                   <small>{text.placeholder}</small>
                 </div>
@@ -346,7 +382,8 @@ export default function Home() {
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -384,9 +421,13 @@ export default function Home() {
             <h2>{text.contactTitle}</h2>
           </div>
           <div className="contact-links" data-reveal>
-            <span>{text.github}<b>↗</b></span>
+            <a href="https://github.com/smartrick125" target="_blank" rel="noreferrer">
+              {text.github}<b>↗</b>
+            </a>
             <span>{text.resume}<b>↗</b></span>
-            <span>{text.contact}<b>↗</b></span>
+            <a href="mailto:ke4773613@gmail.com">
+              {text.contact}<b>↗</b>
+            </a>
           </div>
         </div>
       </section>
