@@ -26,11 +26,15 @@ const copy = {
     practice: "Practising",
     explore: "Exploring",
     workEyebrow: "02 / Selected practice",
-    workTitle: "Small projects. Clear thinking.",
+    workTitle: "Four projects. One continuous walkthrough.",
     workBody:
-      "Four case-study templates are ready. Real footage, technical breakdowns, and repositories will be added as each project is prepared.",
+      "Scroll through each project as a compact case study: final footage, still frames, implementation logic, and the Shader Graph modules behind the result.",
     placeholder: "Unity practice · Complete",
-    soon: "Full case study · next phase",
+    videoLabel: "01 / Result footage",
+    galleryLabel: "02 / Visual details",
+    logicLabel: "03 / Implementation logic",
+    nodesLabel: "04 / Node modules",
+    scrollHint: "Scroll through case study",
     projects: [
       {
         title: "Full Skill Effect",
@@ -38,6 +42,16 @@ const copy = {
         description:
           "A complete sci-fi skill sequence driven by C#, coordinating charge-up, beam fade-in, impact pulse, explosion radius, dissolve, and emission timing.",
         tags: ["Unity 6", "Shader Graph", "C# Sequence"],
+        logic: [
+          "Split the skill into charge, beam, hit, and explosion materials so every stage can be tuned independently.",
+          "Use a C# timeline to trigger each phase and write radius, dissolve, emission, and opacity values into the materials.",
+          "Keep the visual hand-off continuous: the charge releases into the beam, the hit pulse marks contact, and the explosion resolves the sequence.",
+        ],
+        nodes: [
+          ["Charge shader", "Builds the pre-fire energy with an animated emissive mask."],
+          ["Hit shader", "Creates a short contact pulse at the target point."],
+          ["Explosion shader", "Combines expanding radius, dissolve, and emission for the final beat."],
+        ],
       },
       {
         title: "Interactive Energy Shield",
@@ -45,6 +59,16 @@ const copy = {
         description:
           "An energy shield combining Fresnel edges, layered patterns, core veins, noise distortion, and two alternating impact slots controlled by raycast input.",
         tags: ["Shader Graph", "C#", "Raycast"],
+        logic: [
+          "Construct the shield surface from a Fresnel shell, panel pattern, core veins, and controlled distortion.",
+          "Raycast from the pointer into the shield and pass the local hit position plus start time to the material.",
+          "Alternate between two impact slots so a second ripple can begin before the previous one has fully faded.",
+        ],
+        nodes: [
+          ["Graph overview", "The complete shield graph and its layered material flow."],
+          ["Fresnel shell", "Separates the bright outer rim from the softer inner core."],
+          ["Ripple distortion", "Breaks up the circular impact wave with animated noise."],
+        ],
       },
       {
         title: "Energy Beam",
@@ -52,6 +76,16 @@ const copy = {
         description:
           "A real-time beam effect built from animated UV flow, distortion, core and glow layers, start/end clipping, and hit-point highlighting.",
         tags: ["Shader Graph", "UV Flow", "VFX"],
+        logic: [
+          "Scroll and distort the beam UVs to create directional energy instead of a static texture.",
+          "Separate the concentrated core from the wider glow so brightness and softness can be authored independently.",
+          "Clip the beam at both ends, then add start and hit highlights to visually anchor it in the scene.",
+        ],
+        nodes: [
+          ["Graph overview", "Shows the complete data flow from animated UVs to final alpha and emission."],
+          ["Flow and distortion", "Combines panning UVs and noise to generate directional motion."],
+          ["Clipping and falloff", "Controls beam length and softens its vertical silhouette."],
+        ],
       },
       {
         title: "Stylized Dissolve Fire",
@@ -59,6 +93,16 @@ const copy = {
         description:
           "A stylized fire and dissolve study using UV-based masks, animated breakup, layered base color, and emissive edge treatment.",
         tags: ["Dissolve", "Emission", "Material"],
+        logic: [
+          "Build a stable UV-space mask, then introduce animated breakup so the dissolve edge feels organic.",
+          "Use the dissolve threshold to separate visible surface, transition band, and removed pixels.",
+          "Layer base color with a narrow emissive edge so the material reads as burning rather than simply disappearing.",
+        ],
+        nodes: [
+          ["Graph overview", "The complete dissolve graph from UV preparation to surface output."],
+          ["UV module", "Prepares the coordinates used by the animated breakup masks."],
+          ["Emission edge", "Extracts the transition band and turns it into the bright fire rim."],
+        ],
       },
     ],
     approachEyebrow: "03 / Approach",
@@ -78,7 +122,7 @@ const copy = {
     resume: "Résumé · coming soon",
     contact: "ke4773613@gmail.com",
     footer: "Designed as a portfolio in progress",
-    stage: "Phase 01 — Homepage",
+    stage: "Phase 02 — Case studies",
   },
   zh: {
     nav: ["简介", "作品", "方法", "联系"],
@@ -100,11 +144,15 @@ const copy = {
     practice: "实践中",
     explore: "探索中",
     workEyebrow: "02 / 实践项目",
-    workTitle: "项目可以小，思考要清楚。",
+    workTitle: "四个项目，一次连续的案例浏览。",
     workBody:
-      "已经为四个案例准备好展示模板。后续会逐步加入真实录屏、技术拆解与代码仓库。",
+      "每个项目都按案例结构连续展开：先看最终录屏，再看效果截图、实现逻辑和 Shader Graph 节点模块。",
     placeholder: "Unity 实践 · 已完成",
-    soon: "完整案例 · 下一阶段",
+    videoLabel: "01 / 效果录屏",
+    galleryLabel: "02 / 效果细节",
+    logicLabel: "03 / 实现逻辑",
+    nodesLabel: "04 / 节点模块",
+    scrollHint: "继续滚动查看案例",
     projects: [
       {
         title: "完整技能特效",
@@ -112,6 +160,16 @@ const copy = {
         description:
           "通过 C# 统一编排科幻技能序列，控制蓄力、光束渐入、命中脉冲、爆炸半径、溶解与自发光时间。",
         tags: ["Unity 6", "Shader Graph", "C# 时序"],
+        logic: [
+          "把技能拆分为蓄力、光束、命中和爆炸四套材质，让每个阶段都能独立调节。",
+          "使用 C# 时间序列触发各阶段，并持续写入半径、溶解、自发光和透明度参数。",
+          "保证视觉衔接连续：蓄力释放为光束，命中脉冲标记接触点，最后由爆炸完成收束。",
+        ],
+        nodes: [
+          ["蓄力 Shader", "通过动态自发光遮罩构建发射前的能量积累。"],
+          ["命中 Shader", "在目标点生成短促清晰的接触脉冲。"],
+          ["爆炸 Shader", "组合扩张半径、溶解与自发光，形成技能的最终节拍。"],
+        ],
       },
       {
         title: "交互式能量护盾",
@@ -119,6 +177,16 @@ const copy = {
         description:
           "结合 Fresnel、分层图案、核心脉络与噪声扭曲，并通过射线点击交替驱动两组护盾冲击涟漪。",
         tags: ["Shader Graph", "C#", "Raycast"],
+        logic: [
+          "使用 Fresnel 外壳、面板图案、核心脉络和噪声扭曲共同构建护盾表面。",
+          "从指针位置向护盾发射射线，把局部命中坐标与开始时间传入材质。",
+          "交替使用两组冲击槽，让第二次涟漪可以在上一轮完全消失前继续触发。",
+        ],
+        nodes: [
+          ["完整节点图", "展示护盾各层材质模块的整体数据流。"],
+          ["Fresnel 外壳", "分离明亮外轮廓和更柔和的内部核心。"],
+          ["涟漪扭曲", "使用动态噪声打散规则圆形冲击波。"],
+        ],
       },
       {
         title: "能量光束",
@@ -126,6 +194,16 @@ const copy = {
         description:
           "使用 UV 流动、噪声扭曲、核心辉光、起止位置裁切和命中点高亮构建实时光束效果。",
         tags: ["Shader Graph", "UV 流动", "VFX"],
+        logic: [
+          "让光束 UV 定向滚动并叠加扭曲，避免能量纹理看起来静止。",
+          "把高亮核心与外层辉光分开计算，使亮度和柔和范围可以独立控制。",
+          "在两端裁切光束，并添加起点与命中点高亮，让它在场景中具有明确连接关系。",
+        ],
+        nodes: [
+          ["完整节点图", "展示从动态 UV 到最终透明度与自发光的完整数据流。"],
+          ["流动与扭曲", "组合平移 UV 与噪声，形成具有方向性的能量运动。"],
+          ["裁切与衰减", "控制光束长度，并柔化垂直方向的轮廓。"],
+        ],
       },
       {
         title: "风格化溶解火焰",
@@ -133,6 +211,16 @@ const copy = {
         description:
           "基于 UV 遮罩、动态破碎、分层基础色与边缘自发光制作风格化火焰溶解效果。",
         tags: ["溶解", "自发光", "材质"],
+        logic: [
+          "先建立稳定的 UV 空间遮罩，再加入动态破碎，让溶解边缘更自然。",
+          "使用溶解阈值划分保留表面、过渡边缘和被裁切区域。",
+          "将基础色与窄范围自发光边缘叠加，使材质更像燃烧，而不是简单消失。",
+        ],
+        nodes: [
+          ["完整节点图", "展示从 UV 准备到材质表面输出的完整溶解流程。"],
+          ["UV 模块", "准备动态破碎遮罩所使用的坐标。"],
+          ["自发光边缘", "提取溶解过渡带并形成明亮的火焰边缘。"],
+        ],
       },
     ],
     approachEyebrow: "03 / 方法",
@@ -151,19 +239,68 @@ const copy = {
     resume: "个人简历 · 即将补充",
     contact: "ke4773613@gmail.com",
     footer: "一个持续成长中的作品集",
-    stage: "阶段 01 — 首页",
+    stage: "阶段 02 — 项目案例",
   },
 } as const;
 
-const projectMedia = [
+const projectAssets = [
   {
-    type: "video",
-    src: "/projects/full-skill-effect.mp4",
+    id: "full-skill-effect",
+    video: "/projects/full-skill-effect.mp4",
     poster: "/projects/full-skill-effect.png",
+    gallery: [
+      "/projects/full-skill-effect.png",
+      "/projects/details/full-skill/detailed.png",
+    ],
+    nodes: [
+      "/projects/details/full-skill/charge-node.png",
+      "/projects/details/full-skill/hit-node.png",
+      "/projects/details/full-skill/explosion-node.png",
+    ],
   },
-  { type: "image", src: "/projects/energy-shield.png" },
-  { type: "image", src: "/projects/energy-beam.png" },
-  { type: "image", src: "/projects/dissolve-fire.png" },
+  {
+    id: "energy-shield",
+    video: "/projects/details/energy-shield/preview.mp4",
+    poster: "/projects/energy-shield.png",
+    gallery: [
+      "/projects/details/energy-shield/full-view.png",
+      "/projects/details/energy-shield/close-up.png",
+    ],
+    nodes: [
+      "/projects/details/energy-shield/graph-layout.png",
+      "/projects/details/energy-shield/fresnel-node.png",
+      "/projects/details/energy-shield/ripple-node.png",
+    ],
+  },
+  {
+    id: "energy-beam",
+    video: "/projects/details/energy-beam/preview.mp4",
+    poster: "/projects/energy-beam.png",
+    gallery: [
+      "/projects/details/energy-beam/close-up.png",
+      "/projects/details/energy-beam/detailed.png",
+    ],
+    nodes: [
+      "/projects/details/energy-beam/graph-layout.png",
+      "/projects/details/energy-beam/flow-node.png",
+      "/projects/details/energy-beam/clipping-node.png",
+    ],
+  },
+  {
+    id: "dissolve-fire",
+    video: "/projects/details/dissolve-fire/preview.mp4",
+    poster: "/projects/dissolve-fire.png",
+    gallery: [
+      "/projects/details/dissolve-fire/full-view.png",
+      "/projects/details/dissolve-fire/dissolve-50.png",
+      "/projects/details/dissolve-fire/dissolve-80.png",
+    ],
+    nodes: [
+      "/projects/details/dissolve-fire/graph-layout.png",
+      "/projects/details/dissolve-fire/uv-node.png",
+      "/projects/details/dissolve-fire/emission-node.png",
+    ],
+  },
 ] as const;
 
 const statusLabels = {
@@ -339,49 +476,107 @@ export default function Home() {
             <h2>{text.workTitle}</h2>
             <p>{text.workBody}</p>
           </div>
-          <div className="project-grid">
+          <nav className="project-index" aria-label={locale === "zh" ? "项目快速导航" : "Project quick navigation"}>
+            {text.projects.map((project, index) => (
+              <a href={`#${projectAssets[index].id}`} key={project.title}>
+                <span>0{index + 1}</span>
+                <strong>{project.title}</strong>
+              </a>
+            ))}
+          </nav>
+          <div className="case-study-list">
             {text.projects.map((project, index) => {
-              const media = projectMedia[index];
+              const assets = projectAssets[index];
               return (
-              <article className={`project-card ${index === 0 ? "featured" : ""}`} key={project.title} data-reveal>
-                <div className={`project-visual visual-${index + 1}`}>
-                  {media.type === "video" ? (
-                    <video
-                      className="project-media"
-                      controls
-                      loop
-                      muted
-                      playsInline
-                      preload="metadata"
-                      poster={media.poster}
-                    >
-                      <source src={media.src} type="video/mp4" />
-                    </video>
-                  ) : (
-                    <img
-                      className="project-media"
-                      src={media.src}
-                      alt={`${project.title} Unity preview`}
-                      loading="lazy"
-                    />
-                  )}
-                  <div className="visual-grid" />
-                  <span className="project-number">0{index + 1}</span>
-                  <small>{text.placeholder}</small>
-                </div>
-                <div className="project-info">
-                  <p>{project.subtitle}</p>
-                  <h3>{project.title}</h3>
-                  <p className="project-description">{project.description}</p>
-                  <div className="project-tags">
-                    {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
-                  </div>
-                  <div className="project-soon">
-                    <span>{text.soon}</span>
-                    <b aria-hidden="true">↗</b>
-                  </div>
-                </div>
-              </article>
+                <article className="case-study" id={assets.id} key={project.title}>
+                  <header className="case-header" data-reveal>
+                    <div className="case-number">0{index + 1}</div>
+                    <div>
+                      <p>{project.subtitle}</p>
+                      <h3>{project.title}</h3>
+                    </div>
+                    <div className="case-summary">
+                      <p>{project.description}</p>
+                      <div className="project-tags">
+                        {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                      </div>
+                    </div>
+                  </header>
+
+                  <section className="case-block case-video" aria-labelledby={`${assets.id}-video`} data-reveal>
+                    <div className="case-label">
+                      <span id={`${assets.id}-video`}>{text.videoLabel}</span>
+                      <small>{text.scrollHint}</small>
+                    </div>
+                    <div className="case-video-frame">
+                      <video controls loop muted playsInline preload="metadata" poster={assets.poster}>
+                        <source src={assets.video} type="video/mp4" />
+                      </video>
+                      <span className="media-corner">UNITY / REALTIME</span>
+                    </div>
+                  </section>
+
+                  <section className="case-block" aria-labelledby={`${assets.id}-gallery`} data-reveal>
+                    <div className="case-label">
+                      <span id={`${assets.id}-gallery`}>{text.galleryLabel}</span>
+                      <small>{assets.gallery.length.toString().padStart(2, "0")} FRAMES</small>
+                    </div>
+                    <div className="media-scroll gallery-scroll">
+                      {assets.gallery.map((src, mediaIndex) => (
+                        <figure key={src}>
+                          <img
+                            src={src}
+                            alt={`${project.title} ${locale === "zh" ? "效果截图" : "result frame"} ${mediaIndex + 1}`}
+                            loading="lazy"
+                          />
+                          <figcaption>FRAME / {String(mediaIndex + 1).padStart(2, "0")}</figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="case-block" aria-labelledby={`${assets.id}-logic`} data-reveal>
+                    <div className="case-label">
+                      <span id={`${assets.id}-logic`}>{text.logicLabel}</span>
+                      <small>BREAKDOWN</small>
+                    </div>
+                    <ol className="logic-grid">
+                      {project.logic.map((item, logicIndex) => (
+                        <li key={item}>
+                          <span>{String(logicIndex + 1).padStart(2, "0")}</span>
+                          <p>{item}</p>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+
+                  <section className="case-block case-nodes" aria-labelledby={`${assets.id}-nodes`} data-reveal>
+                    <div className="case-label">
+                      <span id={`${assets.id}-nodes`}>{text.nodesLabel}</span>
+                      <small>SHADER GRAPH</small>
+                    </div>
+                    <div className="media-scroll node-scroll">
+                      {assets.nodes.map((src, nodeIndex) => (
+                        <figure key={src}>
+                          <div className="node-image">
+                            <img
+                              src={src}
+                              alt={`${project.title} ${project.nodes[nodeIndex][0]}`}
+                              loading="lazy"
+                            />
+                          </div>
+                          <figcaption>
+                            <span>{String(nodeIndex + 1).padStart(2, "0")}</span>
+                            <div>
+                              <strong>{project.nodes[nodeIndex][0]}</strong>
+                              <p>{project.nodes[nodeIndex][1]}</p>
+                            </div>
+                          </figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  </section>
+                </article>
               );
             })}
           </div>
