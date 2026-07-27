@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { projectCatalog } from "./projectCatalog";
 
 type Locale = "en" | "zh";
 
@@ -28,12 +29,17 @@ const copy = {
     workEyebrow: "02 / Selected practice",
     workTitle: "Four projects. One continuous walkthrough.",
     workBody:
-      "Scroll through each project as a compact case study: final footage, still frames, implementation logic, and the Shader Graph modules behind the result.",
+      "A complete archive of the four Unity practice folders. Every video, gallery image, Shader Graph capture, available script, and technical summary is grouped by its original folder.",
     placeholder: "Unity practice · Complete",
-    videoLabel: "01 / Result footage",
-    galleryLabel: "02 / Visual details",
-    logicLabel: "03 / Implementation logic",
-    nodesLabel: "04 / Node modules",
+    folderLabel: "Source folder",
+    videoLabel: "Result footage",
+    galleryLabel: "Visual details",
+    logicLabel: "Implementation logic",
+    nodesLabel: "Node modules",
+    scriptLabel: "C# source",
+    summaryLabel: "Technical summary",
+    originalFile: "Open original file",
+    noScript: "No separate Script folder in this project.",
     scrollHint: "Scroll through case study",
     projects: [
       {
@@ -146,12 +152,17 @@ const copy = {
     workEyebrow: "02 / 实践项目",
     workTitle: "四个项目，一次连续的案例浏览。",
     workBody:
-      "每个项目都按案例结构连续展开：先看最终录屏，再看效果截图、实现逻辑和 Shader Graph 节点模块。",
+      "完整展示四个 Unity 实践文件夹：所有视频、Gallery 截图、Shader Graph 节点图，以及已有的 Script 与 Technical_Summary 内容都按原文件夹分类呈现。",
     placeholder: "Unity 实践 · 已完成",
-    videoLabel: "01 / 效果录屏",
-    galleryLabel: "02 / 效果细节",
-    logicLabel: "03 / 实现逻辑",
-    nodesLabel: "04 / 节点模块",
+    folderLabel: "源文件夹",
+    videoLabel: "效果录屏",
+    galleryLabel: "效果细节",
+    logicLabel: "实现逻辑",
+    nodesLabel: "节点模块",
+    scriptLabel: "C# 源码",
+    summaryLabel: "技术总结",
+    originalFile: "打开原始文件",
+    noScript: "该项目没有单独的 Script 文件夹。",
     scrollHint: "继续滚动查看案例",
     projects: [
       {
@@ -243,70 +254,36 @@ const copy = {
   },
 } as const;
 
-const projectAssets = [
-  {
-    id: "full-skill-effect",
-    video: "/projects/full-skill-effect.mp4",
-    poster: "/projects/full-skill-effect.png",
-    gallery: [
-      "/projects/full-skill-effect.png",
-      "/projects/details/full-skill/detailed.png",
-    ],
-    nodes: [
-      "/projects/details/full-skill/charge-node.png",
-      "/projects/details/full-skill/hit-node.png",
-      "/projects/details/full-skill/explosion-node.png",
-    ],
-  },
-  {
-    id: "energy-shield",
-    video: "/projects/details/energy-shield/preview.mp4",
-    poster: "/projects/energy-shield.png",
-    gallery: [
-      "/projects/details/energy-shield/full-view.png",
-      "/projects/details/energy-shield/close-up.png",
-    ],
-    nodes: [
-      "/projects/details/energy-shield/graph-layout.png",
-      "/projects/details/energy-shield/fresnel-node.png",
-      "/projects/details/energy-shield/ripple-node.png",
-    ],
-  },
-  {
-    id: "energy-beam",
-    video: "/projects/details/energy-beam/preview.mp4",
-    poster: "/projects/energy-beam.png",
-    gallery: [
-      "/projects/details/energy-beam/close-up.png",
-      "/projects/details/energy-beam/detailed.png",
-    ],
-    nodes: [
-      "/projects/details/energy-beam/graph-layout.png",
-      "/projects/details/energy-beam/flow-node.png",
-      "/projects/details/energy-beam/clipping-node.png",
-    ],
-  },
-  {
-    id: "dissolve-fire",
-    video: "/projects/details/dissolve-fire/preview.mp4",
-    poster: "/projects/dissolve-fire.png",
-    gallery: [
-      "/projects/details/dissolve-fire/full-view.png",
-      "/projects/details/dissolve-fire/dissolve-50.png",
-      "/projects/details/dissolve-fire/dissolve-80.png",
-    ],
-    nodes: [
-      "/projects/details/dissolve-fire/graph-layout.png",
-      "/projects/details/dissolve-fire/uv-node.png",
-      "/projects/details/dissolve-fire/emission-node.png",
-    ],
-  },
-] as const;
-
 const statusLabels = {
   en: ["Learning", "Practising", "Exploring"],
   zh: ["学习中", "实践中", "探索中"],
 } as const;
+
+function CodeViewer({ src, name }: { src: string; name: string }) {
+  const [code, setCode] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    fetch(src)
+      .then((response) => response.text())
+      .then((content) => {
+        if (active) setCode(content);
+      });
+    return () => {
+      active = false;
+    };
+  }, [src]);
+
+  return (
+    <details className="source-panel">
+      <summary>
+        <span>{name}</span>
+        <b aria-hidden="true">＋</b>
+      </summary>
+      <pre><code>{code}</code></pre>
+    </details>
+  );
+}
 
 export default function Home() {
   const [locale, setLocale] = useState<Locale>("en");
@@ -478,15 +455,15 @@ export default function Home() {
           </div>
           <nav className="project-index" aria-label={locale === "zh" ? "项目快速导航" : "Project quick navigation"}>
             {text.projects.map((project, index) => (
-              <a href={`#${projectAssets[index].id}`} key={project.title}>
+              <a href={`#${projectCatalog[index].id}`} key={project.title}>
                 <span>0{index + 1}</span>
-                <strong>{project.title}</strong>
+                <strong>{projectCatalog[index].folderName}</strong>
               </a>
             ))}
           </nav>
           <div className="case-study-list">
             {text.projects.map((project, index) => {
-              const assets = projectAssets[index];
+              const assets = projectCatalog[index];
               return (
                 <article className="case-study" id={assets.id} key={project.title}>
                   <header className="case-header" data-reveal>
@@ -503,33 +480,44 @@ export default function Home() {
                     </div>
                   </header>
 
+                  <div className="folder-banner" data-reveal>
+                    <small>{text.folderLabel}</small>
+                    <code>{assets.folderName}</code>
+                    <span>{assets.videos.length + assets.gallery.length + assets.nodes.length + (assets.script ? 1 : 0) + 1} FILES</span>
+                  </div>
+
                   <section className="case-block case-video" aria-labelledby={`${assets.id}-video`} data-reveal>
                     <div className="case-label">
-                      <span id={`${assets.id}-video`}>{text.videoLabel}</span>
-                      <small>{text.scrollHint}</small>
+                      <span id={`${assets.id}-video`}><b>Video_Preview</b> / {text.videoLabel}</span>
+                      <small>{assets.videos.length.toString().padStart(2, "0")} FILES · {text.scrollHint}</small>
                     </div>
-                    <div className="case-video-frame">
-                      <video controls loop muted playsInline preload="metadata" poster={assets.poster}>
-                        <source src={assets.video} type="video/mp4" />
-                      </video>
-                      <span className="media-corner">UNITY / REALTIME</span>
+                    <div className="media-scroll video-scroll">
+                      {assets.videos.map((video, videoIndex) => (
+                        <figure className="case-video-frame" key={video.src}>
+                          <video controls loop muted playsInline preload="metadata" poster={assets.gallery[0]?.src}>
+                            <source src={video.src} type="video/mp4" />
+                          </video>
+                          <figcaption>{video.name}</figcaption>
+                          <span className="media-corner">VIDEO / {String(videoIndex + 1).padStart(2, "0")}</span>
+                        </figure>
+                      ))}
                     </div>
                   </section>
 
                   <section className="case-block" aria-labelledby={`${assets.id}-gallery`} data-reveal>
                     <div className="case-label">
-                      <span id={`${assets.id}-gallery`}>{text.galleryLabel}</span>
-                      <small>{assets.gallery.length.toString().padStart(2, "0")} FRAMES</small>
+                      <span id={`${assets.id}-gallery`}><b>Gallery</b> / {text.galleryLabel}</span>
+                      <small>{assets.gallery.length.toString().padStart(2, "0")} FILES</small>
                     </div>
                     <div className="media-scroll gallery-scroll">
-                      {assets.gallery.map((src, mediaIndex) => (
-                        <figure key={src}>
+                      {assets.gallery.map((item, mediaIndex) => (
+                        <figure key={item.src}>
                           <img
-                            src={src}
+                            src={item.src}
                             alt={`${project.title} ${locale === "zh" ? "效果截图" : "result frame"} ${mediaIndex + 1}`}
                             loading="lazy"
                           />
-                          <figcaption>FRAME / {String(mediaIndex + 1).padStart(2, "0")}</figcaption>
+                          <figcaption>{item.name}</figcaption>
                         </figure>
                       ))}
                     </div>
@@ -552,28 +540,58 @@ export default function Home() {
 
                   <section className="case-block case-nodes" aria-labelledby={`${assets.id}-nodes`} data-reveal>
                     <div className="case-label">
-                      <span id={`${assets.id}-nodes`}>{text.nodesLabel}</span>
-                      <small>SHADER GRAPH</small>
+                      <span id={`${assets.id}-nodes`}><b>Shader_Logic</b> / {text.nodesLabel}</span>
+                      <small>{assets.nodes.length.toString().padStart(2, "0")} FILES</small>
                     </div>
                     <div className="media-scroll node-scroll">
-                      {assets.nodes.map((src, nodeIndex) => (
-                        <figure key={src}>
+                      {assets.nodes.map((item, nodeIndex) => (
+                        <figure key={item.src}>
                           <div className="node-image">
                             <img
-                              src={src}
-                              alt={`${project.title} ${project.nodes[nodeIndex][0]}`}
+                              src={item.src}
+                              alt={`${project.title} ${item.name}`}
                               loading="lazy"
                             />
                           </div>
                           <figcaption>
                             <span>{String(nodeIndex + 1).padStart(2, "0")}</span>
                             <div>
-                              <strong>{project.nodes[nodeIndex][0]}</strong>
-                              <p>{project.nodes[nodeIndex][1]}</p>
+                              <strong>{item.name}</strong>
+                              <p>Shader Graph / {assets.folderName}</p>
                             </div>
                           </figcaption>
                         </figure>
                       ))}
+                    </div>
+                  </section>
+
+                  <section className="case-block" aria-labelledby={`${assets.id}-script`} data-reveal>
+                    <div className="case-label">
+                      <span id={`${assets.id}-script`}><b>Script</b> / {text.scriptLabel}</span>
+                      <small>{assets.script ? "01 FILE" : "00 FILES"}</small>
+                    </div>
+                    {assets.script ? (
+                      <CodeViewer src={assets.script.src} name={assets.script.name} />
+                    ) : (
+                      <div className="empty-folder">{text.noScript}</div>
+                    )}
+                  </section>
+
+                  <section className="case-block" aria-labelledby={`${assets.id}-summary`} data-reveal>
+                    <div className="case-label">
+                      <span id={`${assets.id}-summary`}><b>Technical_Summary</b> / {text.summaryLabel}</span>
+                      <small>01 FILE</small>
+                    </div>
+                    <div className="technical-summary">
+                      <div className="summary-file">
+                        <span>{assets.technicalSummary.name}</span>
+                        <a href={assets.technicalSummary.src}>{text.originalFile} ↗</a>
+                      </div>
+                      <div className="summary-copy">
+                        {assets.technicalSummary.paragraphs.map((paragraph) => (
+                          <p key={paragraph}>{paragraph}</p>
+                        ))}
+                      </div>
                     </div>
                   </section>
                 </article>

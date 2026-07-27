@@ -1,0 +1,103 @@
+using UnityEngine;//使用引擎中的内容
+using UnityEngine.InputSystem;//使用新的输入法
+
+public class Impact_Control : MonoBehaviour//继承自unity的monobehaviour才能挂载在物体上
+{
+    [SerializeField] private Camera targetCamera;//serializedfield+private只有可见权 而public外部可以改
+    //逻辑是点击屏幕获取坐标通过camera转为3D射线打到场景中的护盾上
+    [SerializeField] private Renderer shieldRenderer;
+    //指向护盾的rneder要拿到护盾材质 接着冲击点位置 冲击时间
+    private Material runtimeMaterial;//定义一个变量用于保存材质
+    private int nextSlot = 0;//记录下一次点击写入哪个槽位
+
+    //static变量大家共有的变量不同物体只要挂同一个脚本就是共有
+    //readonly只在初始化时赋值一次
+    //propertyToID转换为更快的ID
+    private static readonly int ImpactPosition0Id = Shader.PropertyToID("_ImpactPosition0");
+    private static readonly int ImpactStartTime0Id = Shader.PropertyToID("_ImpactStartTime0");
+    private static readonly int ImpactPosition1Id = Shader.PropertyToID("_ImpactPosition1");
+    private static readonly int ImpactStartTime1Id = Shader.PropertyToID("_ImpactStartTime1");
+
+    private void Awake()//刚被加载执行的初始化函数
+    {
+        if (targetCamera == null)
+        {
+            targetCamera = Camera.main;
+        }
+
+        if (shieldRenderer == null)
+        {
+            Debug.LogError("Shield renderer is not assigned.");
+            //禁用脚本组件防止Update运行
+            enabled = false;
+            return;
+        }
+
+        // 运行时实例化材质（运行游戏时产生），避免改到共享材质
+        runtimeMaterial = shieldRenderer.material;
+    }
+
+    private void Update()//每帧进行调用
+    {
+        if (Mouse.current == null)//检查鼠标是否存在
+        {
+            return;
+        }
+
+        //.wasPressedthisfaame左键是不是这一帧按下 按下瞬间ture 一帧之后变回false
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            //trytriggerimpact检测到点击就调用一个函数并传入鼠标位置
+            //（...）得到一个2D坐标 之后相机转为射线
+            TryTriggerImpact(Mouse.current.position.ReadValue());//调用加传参
+        }
+    }
+
+    private void TryTriggerImpact(Vector2 screenPosition)
+    {
+        //检查相机防止出错
+        if (targetCamera == null)
+        {
+            Debug.LogError("Target camera is missing.");
+            return;
+        }
+
+        //通过相机从屏幕坐标发射射线
+        Ray ray = targetCamera.ScreenPointToRay(screenPosition);
+
+        //使用physics.Raycast检测射线是否打中东西
+        if (!Physics.Raycast(ray, out RaycastHit hit))
+        {
+            return;
+        }
+
+        //检测是不是点到了护盾本体
+        if (hit.collider.gameObject != shieldRenderer.gameObject)
+        {
+            return;
+        }
+
+        //如果当前轮到槽位0，就把这次点击写进去。
+        if (nextSlot == 0)
+        {
+            runtimeMaterial.SetVector(ImpactPosition0Id, hit.point);
+            runtimeMaterial.SetFloat(ImpactStartTime0Id, Time.time);
+            nextSlot = 1;
+        }
+        else
+        {
+            runtimeMaterial.SetVector(ImpactPosition1Id, hit.point);
+            runtimeMaterial.SetFloat(ImpactStartTime1Id, Time.time);
+            nextSlot = 0;
+        }
+    }
+    //场景退出 物体被删 play模式结束
+    private void OnDestroy()//资源管理 当这个脚本所在对象被销毁时，Unity 会自动调用。
+    {
+        // 避免运行时实例材质泄漏
+        if (runtimeMaterial != null)
+        {
+            Destroy(runtimeMaterial);
+        }
+    }
+}

@@ -1145,6 +1145,32 @@ button {
   line-height: 1.8;
 }
 
+.folder-banner {
+  margin: 0 0 46px 88px;
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: center;
+  border: 1px solid rgba(145, 190, 255, 0.28);
+  background:
+    linear-gradient(90deg, rgba(83, 104, 255, 0.19), transparent 52%),
+    rgba(8, 12, 29, 0.9);
+}
+
+.folder-banner small,
+.folder-banner span {
+  color: rgba(235, 239, 255, 0.48);
+  font: 700 8px/1 var(--font-geist-mono), monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.folder-banner code {
+  color: var(--sky);
+  font: 650 13px/1 var(--font-geist-mono), monospace;
+}
+
 .case-block {
   margin: 0 0 76px 88px;
 }
@@ -1159,6 +1185,11 @@ button {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.case-label b {
+  color: var(--sky);
+  font-weight: 750;
 }
 
 .case-label small {
@@ -1178,12 +1209,31 @@ button {
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
 }
 
+.video-scroll {
+  grid-auto-columns: min(88vw, 1080px);
+  gap: 18px;
+  padding-bottom: 18px;
+}
+
 .case-video-frame video {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: contain;
   background: #050711;
+}
+
+.case-video-frame figcaption {
+  position: absolute;
+  z-index: 2;
+  left: 18px;
+  bottom: 18px;
+  padding: 8px 10px;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(5, 7, 17, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 8px;
+  letter-spacing: 0.08em;
 }
 
 .media-corner {
@@ -1328,6 +1378,91 @@ button {
   margin: 8px 0 0;
   color: rgba(235, 239, 255, 0.5);
   font: 11px/1.6 var(--font-geist-sans), sans-serif;
+}
+
+.source-panel,
+.technical-summary,
+.empty-folder {
+  border: 1px solid var(--line);
+  background: rgba(9, 14, 33, 0.92);
+}
+
+.source-panel summary {
+  padding: 20px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #e9efff;
+  cursor: pointer;
+  font: 650 11px/1.4 var(--font-geist-mono), monospace;
+  letter-spacing: 0.04em;
+  list-style: none;
+}
+
+.source-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.source-panel summary b {
+  color: var(--sky);
+  font-size: 18px;
+  transition: transform 180ms ease;
+}
+
+.source-panel[open] summary b {
+  transform: rotate(45deg);
+}
+
+.source-panel pre {
+  max-height: 620px;
+  overflow: auto;
+  margin: 0;
+  padding: 24px;
+  color: #c9d7ff;
+  background: #050817;
+  border-top: 1px solid var(--line);
+  font: 11px/1.75 var(--font-geist-mono), monospace;
+  tab-size: 4;
+  white-space: pre;
+}
+
+.empty-folder {
+  padding: 30px;
+  color: rgba(235, 239, 255, 0.5);
+  font-size: 12px;
+}
+
+.summary-file {
+  padding: 20px 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  color: #e9efff;
+  font: 650 11px/1.4 var(--font-geist-mono), monospace;
+}
+
+.summary-file a {
+  color: var(--sky);
+  white-space: nowrap;
+}
+
+.summary-copy {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.summary-copy p {
+  margin: 0;
+  padding: 26px;
+  color: #bdc6df;
+  background:
+    radial-gradient(circle at 100% 0, rgba(92, 101, 255, 0.12), transparent 38%),
+    #0a0f24;
+  font-size: 13px;
+  line-height: 1.78;
 }
 
 .approach {
@@ -1589,6 +1724,10 @@ button {
     grid-column: 2;
   }
 
+  .summary-copy {
+    grid-template-columns: 1fr;
+  }
+
   .logic-grid {
     grid-template-columns: 1fr;
   }
@@ -1827,6 +1966,21 @@ button {
     margin: 0 0 58px 40px;
   }
 
+  .folder-banner {
+    margin: 0 0 38px 40px;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+
+  .folder-banner small {
+    grid-column: 1 / -1;
+  }
+
+  .folder-banner code {
+    overflow-wrap: anywhere;
+    font-size: 11px;
+  }
+
   .case-label {
     align-items: flex-start;
     gap: 14px;
@@ -1838,6 +1992,10 @@ button {
 
   .case-video-frame {
     aspect-ratio: 16 / 10;
+  }
+
+  .video-scroll {
+    grid-auto-columns: 86vw;
   }
 
   .media-corner {
@@ -1861,6 +2019,17 @@ button {
     grid-template-columns: 26px 1fr;
     gap: 10px;
     padding: 16px;
+  }
+
+  .summary-file {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .source-panel pre {
+    max-height: 480px;
+    padding: 18px;
+    font-size: 10px;
   }
 
   .approach-intro {

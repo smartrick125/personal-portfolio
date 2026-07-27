@@ -1,0 +1,229 @@
+using UnityEngine;
+
+public class SkillSequenceDemo : MonoBehaviour
+{
+    [Header("References")]
+    [SerializeField] private Renderer chargeRenderer;
+    [SerializeField] private Transform chargeTransform;
+    [SerializeField] private Renderer beamRenderer;
+    [SerializeField] private Renderer hitRenderer;
+    [SerializeField] private Transform hitTransform;
+    [SerializeField] private Renderer explosionRenderer;
+
+    [Header("Timing")]
+    [SerializeField] private float chargeDuration = 1.5f;
+    [SerializeField] private float beamFadeInDuration = 0.5f;
+    [SerializeField] private float beamLoopDuration = 1.0f;
+    [SerializeField] private float hitDuration = 1.0f;
+
+    [Header("Charge Values")]
+    [SerializeField] private float chargeStartIntensity = 1.0f;
+    [SerializeField] private float chargeEndIntensity = 8.0f;
+    [SerializeField] private Vector3 chargeStartScale = Vector3.one * 0.3f;
+    [SerializeField] private Vector3 chargeEndScale = Vector3.one * 1.0f;
+
+    [Header("Beam Values")]
+    [SerializeField] private float beamStartIntensity = 0.0f;
+    [SerializeField] private float beamEndIntensity = 1.0f;
+
+    private Material chargeMat;
+    private Material beamMat;
+    private Material hitMat;
+    private Material explosionMat;
+
+    private float timer = 0f;
+
+    private static readonly int ChargeIntensityId = Shader.PropertyToID("_Intensity_Emission");
+    private static readonly int BeamIntensityId = Shader.PropertyToID("_Intensity_Emission");
+    private static readonly int HitRadiusId = Shader.PropertyToID("_Hit_Radius");
+    private static readonly int HitIntensityId = Shader.PropertyToID("_Hit_Intensity");
+    private static readonly int ExplosionRadiusId = Shader.PropertyToID("_ExplosionRadius");
+    private static readonly int ExplosionDissolveId = Shader.PropertyToID("_Dissolve");
+    private static readonly int ExplosionIntensityId = Shader.PropertyToID("_ExplosionIntensity");
+
+    private void Awake()
+    {
+        if (chargeRenderer != null)
+        {
+            chargeMat = chargeRenderer.material;
+        }
+
+        if (beamRenderer != null)
+        {
+            beamMat = beamRenderer.material;
+        }
+        if (hitRenderer != null)
+        {
+            hitMat = hitRenderer.material;
+        }
+        if (explosionRenderer != null)
+        {
+            explosionMat = explosionRenderer.material;
+        }
+
+
+        if (chargeTransform != null)
+        {
+            chargeTransform.localScale = chargeStartScale;
+        }
+
+        if (chargeMat != null)
+        {
+            chargeMat.SetFloat(ChargeIntensityId, chargeStartIntensity);
+        }
+
+        if (beamMat != null)
+        {
+            beamMat.SetFloat(BeamIntensityId, beamStartIntensity);
+        }
+        if (hitMat != null)
+        {
+            hitMat.SetFloat(HitRadiusId, 0f);
+            hitMat.SetFloat(HitIntensityId, 0f);
+        }
+        if (explosionMat != null)
+        {
+            explosionMat.SetFloat(ExplosionRadiusId, 0f);
+            explosionMat.SetFloat(ExplosionDissolveId, 0f);
+            explosionMat.SetFloat(ExplosionIntensityId, 0f);
+        }
+    }
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
+
+        float beamStartTime = chargeDuration;
+        float beamFullTime = chargeDuration + beamFadeInDuration;
+        float hitStartTime = beamFullTime;
+        float sequenceEndTime = beamFullTime + beamLoopDuration;
+        float explosionStartTime = hitStartTime + 0.15f;
+        float explosionDuration = 0.8f;
+
+        if (timer <= chargeDuration)
+        {
+            float t = timer / chargeDuration;
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            if (chargeTransform != null)
+            {
+                chargeTransform.localScale = Vector3.Lerp(chargeStartScale, chargeEndScale, t);
+            }
+
+            if (chargeMat != null)
+            {
+                float intensity = Mathf.Lerp(chargeStartIntensity, chargeEndIntensity, t);
+                chargeMat.SetFloat(ChargeIntensityId, intensity);
+            }
+
+            if (beamMat != null)
+            {
+                beamMat.SetFloat(BeamIntensityId, beamStartIntensity);
+            }
+        }
+
+        else if (timer <= beamFullTime)
+        {
+            float t = (timer - beamStartTime) / beamFadeInDuration;
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            if (beamMat != null)
+            {
+                float beamIntensity = Mathf.Lerp(beamStartIntensity, beamEndIntensity, t);
+                beamMat.SetFloat(BeamIntensityId, beamIntensity);
+            }
+
+            if (chargeMat != null)
+            {
+                float chargeIntensity = Mathf.Lerp(chargeEndIntensity, chargeStartIntensity * 0.5f, t);
+                chargeMat.SetFloat(ChargeIntensityId, chargeIntensity);
+            }
+            if (hitMat != null)
+            {
+                hitMat.SetFloat(HitRadiusId, 0f);
+                hitMat.SetFloat(HitIntensityId, 0f);
+            }
+        }
+
+        else if (timer <= sequenceEndTime)
+        {
+            if (beamMat != null)
+            {
+                beamMat.SetFloat(BeamIntensityId, beamEndIntensity);
+            }
+
+            if (chargeMat != null)
+            {
+                chargeMat.SetFloat(ChargeIntensityId, chargeStartIntensity * 0.5f);
+            }
+            if (hitMat != null)
+            {
+                float hitTime = timer - hitStartTime;
+                float hitT = Mathf.Clamp01(hitTime / hitDuration);
+                hitT = Mathf.SmoothStep(0f, 1f, hitT);
+
+                float pulse = Mathf.Sin(Time.time * 5f) * 0.5f + 0.5f;
+
+                hitMat.SetFloat(HitRadiusId, Mathf.Lerp(-0.3f, 1.2f, hitT));
+                hitMat.SetFloat(HitIntensityId, 2.0f + pulse * 0.5f);
+            }
+            if (timer >= explosionStartTime && timer <= explosionStartTime + explosionDuration)
+            {
+                float explosionTime = timer - explosionStartTime;
+                float explosionT = Mathf.Clamp01(explosionTime / explosionDuration);
+                explosionT = Mathf.SmoothStep(0f, 1f, explosionT);
+
+                if (explosionMat != null)
+                {
+                    explosionMat.SetFloat(ExplosionRadiusId, Mathf.Lerp(0.1f, 2.0f, explosionT));
+                    explosionMat.SetFloat(ExplosionDissolveId, explosionT);
+                    explosionMat.SetFloat(ExplosionIntensityId, Mathf.Lerp(10.0f, 0.0f, explosionT));
+                }
+            }
+        }
+
+        else
+        {
+            timer = 0f;
+
+            if (chargeTransform != null)
+            {
+                chargeTransform.localScale = chargeStartScale;
+            }
+
+            if (chargeMat != null)
+            {
+                chargeMat.SetFloat(ChargeIntensityId, chargeStartIntensity);
+            }
+
+            if (beamMat != null)
+            {
+                beamMat.SetFloat(BeamIntensityId, beamStartIntensity);
+            }
+            if (hitMat != null)
+            {
+                hitMat.SetFloat(HitRadiusId, 0f);
+                hitMat.SetFloat(HitIntensityId, 0f);
+            }
+            if (explosionMat != null)
+            {
+                explosionMat.SetFloat(ExplosionRadiusId, 0f);
+                explosionMat.SetFloat(ExplosionDissolveId, 0f);
+                explosionMat.SetFloat(ExplosionIntensityId, 0f);
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (chargeMat != null)
+        {
+            Destroy(chargeMat);
+        }
+
+        if (beamMat != null)
+        {
+            Destroy(beamMat);
+        }
+    }
+}
