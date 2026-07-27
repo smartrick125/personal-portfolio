@@ -13,11 +13,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "你的名字｜个人主页与作品集",
-  description: "一座持续生长的个人空间，记录作品、想法与成长。",
+  metadataBase: new URL("https://personal-portfolio-21265.ke4773613.chatgpt.site"),
+  title: "Smartrick — Technical Artist",
+  description:
+    "Smartrick is an emerging Technical Artist exploring Unity, shaders, C# tooling, AI-assisted workflows, and real-time rendering.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Smartrick — Technical Artist",
+    description: "Art × Code × AI. A real-time graphics portfolio in progress.",
+    type: "website",
+    images: [
+      {
+        url: "/og.png",
+        width: 1680,
+        height: 945,
+        alt: "Smartrick Technical Artist portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Smartrick — Technical Artist",
+    description: "Art × Code × AI. A real-time graphics portfolio in progress.",
+    images: ["/og.png"],
   },
 };
 
