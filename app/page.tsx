@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { projectCatalog } from "./projectCatalog";
 import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
 
-type Locale = "en" | "zh";
-
 const copy = {
   en: {
     nav: ["Profile", "Work", "Approach", "Contact"],
@@ -323,12 +321,7 @@ function CodeViewer({ src, name }: { src: string; name: string }) {
 }
 
 export default function Home() {
-  const [locale, setLocale] = useState<Locale>("en");
-  const text = copy[locale];
-
-  useEffect(() => {
-    document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
-  }, [locale]);
+  const text = copy.en;
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -358,11 +351,9 @@ export default function Home() {
     };
   }, []);
 
-  const toggleLocale = () => setLocale((current) => (current === "en" ? "zh" : "en"));
-
   return (
     <main className="site">
-      <nav className="topbar" aria-label={locale === "en" ? "Primary navigation" : "主导航"}>
+      <nav className="topbar" aria-label="Primary navigation">
         <a className="wordmark" href="#top" aria-label="Smartrick homepage">
           <span className="wordmark-glyph">S</span>
           <span>SMARTRICK</span>
@@ -374,11 +365,6 @@ export default function Home() {
             </a>
           ))}
         </div>
-        <button className="language-toggle" type="button" onClick={toggleLocale} aria-label="Switch language">
-          <span className={locale === "en" ? "active" : ""}>EN</span>
-          <i />
-          <span className={locale === "zh" ? "active" : ""}>中</span>
-        </button>
       </nav>
 
       <section className="hero" id="top">
@@ -448,13 +434,13 @@ export default function Home() {
       <section className="profile section shell" id="profile">
         <div className="section-heading" data-reveal>
           <p>{text.profileEyebrow}</p>
-          <span>ABOUT / 关于</span>
+          <span>ABOUT</span>
         </div>
         <div className="profile-grid">
           <figure className="profile-portrait portrait-photo" data-reveal>
             <img
               src="/profile/smartrick-portrait.jpg"
-              alt={locale === "zh" ? "Smartrick 的个人照片" : "Portrait of Smartrick"}
+              alt="Portrait of Smartrick"
             />
             <figcaption>
               <span>SMARTRICK / 2026</span>
@@ -479,7 +465,7 @@ export default function Home() {
               <span>0{index + 1}</span>
               <strong>{item}</strong>
               <div className="skill-line"><i style={{ width: `${42 + index * 11}%` }} /></div>
-              <small>{statusLabels[locale][index % 3]}</small>
+              <small>{statusLabels.en[index % 3]}</small>
             </div>
           ))}
         </div>
@@ -489,13 +475,13 @@ export default function Home() {
         <div className="shell">
           <div className="section-heading section-heading-light" data-reveal>
             <p>{text.workEyebrow}</p>
-            <span>WORK / 作品</span>
+            <span>WORK</span>
           </div>
           <div className="work-intro" data-reveal>
             <h2>{text.workTitle}</h2>
             <p>{text.workBody}</p>
           </div>
-          <nav className="work-track-nav" aria-label={locale === "zh" ? "作品类型导航" : "Work type navigation"} data-reveal>
+          <nav className="work-track-nav" aria-label="Work type navigation" data-reveal>
             <a href="#visual-vfx">
               <span>01</span>
               <strong>{text.workTracks[0]}</strong>
@@ -514,7 +500,7 @@ export default function Home() {
               <span>{text.visualTrackBody}</span>
             </div>
           </div>
-          <nav className="project-index" aria-label={locale === "zh" ? "项目快速导航" : "Project quick navigation"}>
+          <nav className="project-index" aria-label="Project quick navigation">
             {text.projects.map((project, index) => (
               <a href={`#${projectCatalog[index].id}`} key={project.title}>
                 <span>0{index + 1}</span>
@@ -575,7 +561,7 @@ export default function Home() {
                         <figure key={item.src}>
                           <img
                             src={item.src}
-                            alt={`${project.title} ${locale === "zh" ? "效果截图" : "result frame"} ${mediaIndex + 1}`}
+                            alt={`${project.title} result frame ${mediaIndex + 1}`}
                             loading="lazy"
                           />
                           <figcaption>{item.name}</figcaption>
@@ -681,18 +667,17 @@ export default function Home() {
                   <header className="code-study-header" data-reveal>
                     <span>0{index + 1}</span>
                     <div>
-                      <p>{study.category[locale]}</p>
-                      <h3>{study.title[locale]}</h3>
+                      <p>{study.category.en}</p>
+                      <h3>{study.title.en}</h3>
                     </div>
-                    <p>{study.description[locale]}</p>
+                    <p>{study.description.en}</p>
                   </header>
 
                   <figure className="code-media" data-reveal>
-                    <img src={study.media.src} alt={study.media.alt[locale]} loading="lazy" />
-                    <span>RESULT IMAGE / 16:9</span>
+                    <img src={study.media.src} alt={study.media.alt.en} loading="lazy" />
                     <figcaption>
-                      <strong>{study.media.source[locale]}</strong>
-                      <p>{study.mediaNote[locale]}</p>
+                      <strong>{study.media.source.en}</strong>
+                      <p>{study.mediaNote.en}</p>
                     </figcaption>
                   </figure>
 
@@ -706,7 +691,7 @@ export default function Home() {
                         {study.flow.map((step, stepIndex) => (
                           <li key={step.en}>
                             <span>{String(stepIndex + 1).padStart(2, "0")}</span>
-                            <p>{step[locale]}</p>
+                            <p>{step.en}</p>
                           </li>
                         ))}
                       </ol>
@@ -756,8 +741,8 @@ export default function Home() {
                     <summary>
                       <span>0{index + 1}</span>
                       <div>
-                        <strong>{track.title[locale]}</strong>
-                        <small>{track.subtitle[locale]}</small>
+                        <strong>{track.title.en}</strong>
+                        <small>{track.subtitle.en}</small>
                       </div>
                       <b aria-hidden="true">+</b>
                     </summary>
@@ -766,7 +751,7 @@ export default function Home() {
                         <a href={chapter.url} target="_blank" rel="noreferrer" key={chapter.name}>
                           <div>
                             <strong>{chapter.name}</strong>
-                            <p>{chapter.topics[locale]}</p>
+                            <p>{chapter.topics.en}</p>
                           </div>
                           <span>{text.openChapter} ↗</span>
                         </a>
@@ -783,7 +768,7 @@ export default function Home() {
       <section className="approach section shell" id="approach">
         <div className="section-heading" data-reveal>
           <p>{text.approachEyebrow}</p>
-          <span>PROCESS / 方法</span>
+          <span>PROCESS</span>
         </div>
         <div className="approach-intro" data-reveal>
           <h2>{text.approachTitle}</h2>
@@ -806,7 +791,7 @@ export default function Home() {
         <div className="shell">
           <div className="section-heading section-heading-light" data-reveal>
             <p>{text.contactEyebrow}</p>
-            <span>CONTACT / 联系</span>
+            <span>CONTACT</span>
           </div>
           <div className="contact-content" data-reveal>
             <p>{text.contactBody}</p>
@@ -817,6 +802,13 @@ export default function Home() {
               {text.github}<b>↗</b>
             </a>
             <span>{text.resume}<b>↗</b></span>
+            <span className="social-placeholder">
+              <span>
+                <strong>Douyin / China TikTok</strong>
+                <small>Personal life account · link coming soon</small>
+              </span>
+              <b>↗</b>
+            </span>
             <a href="mailto:ke4773613@gmail.com">
               {text.contact}<b>↗</b>
             </a>

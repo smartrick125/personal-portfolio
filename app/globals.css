@@ -124,31 +124,6 @@ button {
   right: 0;
 }
 
-.language-toggle {
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 999px;
-  background: rgba(6, 10, 27, 0.4);
-  color: rgba(255, 255, 255, 0.48);
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-  font: 700 10px/1 var(--font-geist-mono), monospace;
-}
-
-.language-toggle i {
-  width: 1px;
-  height: 11px;
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.language-toggle .active {
-  color: var(--white);
-}
-
 .hero {
   min-height: 100svh;
   position: relative;
@@ -661,42 +636,29 @@ button {
 
 .portrait-photo {
   position: relative;
-  aspect-ratio: 4 / 5;
   margin: 0;
   overflow: hidden;
   border: 1px solid rgba(18, 30, 58, 0.2);
-  background: #b9c8f2;
-}
-
-.portrait-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, transparent 56%, rgba(7, 12, 28, 0.72)),
-    linear-gradient(135deg, rgba(119, 243, 255, 0.08), transparent 46%);
+  background: #091022;
 }
 
 .portrait-photo img {
   width: 100%;
-  height: 100%;
+  height: auto;
   display: block;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  image-orientation: from-image;
 }
 
 .portrait-photo figcaption {
-  position: absolute;
-  z-index: 1;
-  right: 20px;
-  bottom: 18px;
-  left: 20px;
+  position: relative;
+  padding: 16px 18px;
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 18px;
   color: #f2f6ff;
+  background: #091022;
   font: 700 9px/1.2 var(--font-geist-mono), monospace;
   letter-spacing: 0.1em;
 }
@@ -1655,6 +1617,28 @@ button {
   font-size: 20px;
 }
 
+.social-placeholder > span {
+  display: grid;
+  gap: 7px;
+}
+
+.social-placeholder strong {
+  color: rgba(238, 242, 255, 0.78);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.social-placeholder small {
+  color: rgba(238, 242, 255, 0.38);
+  font: 650 8px/1 var(--font-geist-mono), monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.social-placeholder b {
+  color: rgba(238, 242, 255, 0.28);
+}
+
 .footer {
   min-height: 100px;
   display: grid;
@@ -1937,20 +1921,6 @@ button {
   display: block;
   object-fit: contain;
   background: #050711;
-}
-
-.code-media > span {
-  position: absolute;
-  z-index: 1;
-  top: 20px;
-  left: 20px;
-  padding: 8px 10px;
-  color: rgba(242, 246, 255, 0.74);
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  background: rgba(5, 8, 20, 0.58);
-  backdrop-filter: blur(10px);
-  font: 700 8px/1 var(--font-geist-mono), monospace;
-  letter-spacing: 0.12em;
 }
 
 .code-media figcaption {
