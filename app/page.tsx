@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { projectCatalog } from "./projectCatalog";
+import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
 
 type Locale = "en" | "zh";
 
@@ -30,6 +31,24 @@ const copy = {
     workTitle: "Four projects. One continuous walkthrough.",
     workBody:
       "A complete archive of the four Unity practice folders. Every video, gallery image, Shader Graph capture, available script, and technical summary is grouped by its original folder.",
+    workTracks: ["Node-based VFX", "Rendering Code Lab"],
+    visualTrack: "Shader Graph / Visual VFX",
+    visualTrackBody: "Four complete visual case studies, organized by their original Unity folders.",
+    codeEyebrow: "Handwritten Shaders / URP Pipeline",
+    codeTitle: "Rendering Code Lab",
+    codeBody:
+      "Selected studies from my public Unity-Shader learning archive. These cases show how I connect ShaderLab and HLSL with C#, Renderer Features, RenderGraph, and runtime rendering systems.",
+    codeLearningNote: "Learning archive · implementations and adaptations",
+    mediaPlaceholder: "IMAGE / VIDEO PLACEHOLDER",
+    flowLabel: "Implementation flow",
+    sourceLabel: "Source files",
+    snippetLabel: "Core logic",
+    viewRepo: "View full GitHub repository",
+    archiveEyebrow: "Full learning archive",
+    archiveTitle: "Beyond the four featured cases.",
+    archiveBody:
+      "The repository also records the wider learning path from lighting fundamentals to URP custom rendering. Expand a track to browse every chapter.",
+    openChapter: "Open chapter",
     placeholder: "Unity practice · Complete",
     folderLabel: "Source folder",
     videoLabel: "Result footage",
@@ -153,6 +172,24 @@ const copy = {
     workTitle: "四个项目，一次连续的案例浏览。",
     workBody:
       "完整展示四个 Unity 实践文件夹：所有视频、Gallery 截图、Shader Graph 节点图，以及已有的 Script 与 Technical_Summary 内容都按原文件夹分类呈现。",
+    workTracks: ["节点式视觉特效", "渲染代码实验室"],
+    visualTrack: "Shader Graph / 视觉特效",
+    visualTrackBody: "四个完整视觉案例，按原始 Unity 文件夹分类展示。",
+    codeEyebrow: "手写 Shader / URP 渲染管线",
+    codeTitle: "渲染代码实验室",
+    codeBody:
+      "从公开 Unity-Shader 学习仓库中选出的代表案例，展示我如何把 ShaderLab、HLSL 与 C#、Renderer Feature、RenderGraph 和运行时渲染系统连接起来。",
+    codeLearningNote: "学习归档 · 实现与改编练习",
+    mediaPlaceholder: "图片 / 视频展示位",
+    flowLabel: "实现流程",
+    sourceLabel: "源码文件",
+    snippetLabel: "核心逻辑",
+    viewRepo: "查看完整 GitHub 仓库",
+    archiveEyebrow: "完整学习归档",
+    archiveTitle: "四个精选案例之外。",
+    archiveBody:
+      "仓库还记录了从基础光照到 URP 自定义渲染的完整学习路径。展开分类即可浏览每个章节。",
+    openChapter: "打开章节",
     placeholder: "Unity 实践 · 已完成",
     folderLabel: "源文件夹",
     videoLabel: "效果录屏",
@@ -453,6 +490,25 @@ export default function Home() {
             <h2>{text.workTitle}</h2>
             <p>{text.workBody}</p>
           </div>
+          <nav className="work-track-nav" aria-label={locale === "zh" ? "作品类型导航" : "Work type navigation"} data-reveal>
+            <a href="#visual-vfx">
+              <span>01</span>
+              <strong>{text.workTracks[0]}</strong>
+              <small>SHADER GRAPH</small>
+            </a>
+            <a href="#rendering-code">
+              <span>02</span>
+              <strong>{text.workTracks[1]}</strong>
+              <small>HLSL + C# + URP</small>
+            </a>
+          </nav>
+          <div className="track-heading" id="visual-vfx" data-reveal>
+            <p>TRACK 01 / NODE-BASED VFX</p>
+            <div>
+              <h3>{text.visualTrack}</h3>
+              <span>{text.visualTrackBody}</span>
+            </div>
+          </div>
           <nav className="project-index" aria-label={locale === "zh" ? "项目快速导航" : "Project quick navigation"}>
             {text.projects.map((project, index) => (
               <a href={`#${projectCatalog[index].id}`} key={project.title}>
@@ -598,6 +654,126 @@ export default function Home() {
               );
             })}
           </div>
+
+          <section className="rendering-lab" id="rendering-code">
+            <header className="rendering-lab-header" data-reveal>
+              <div>
+                <p>TRACK 02 / {text.codeEyebrow}</p>
+                <h2>{text.codeTitle}</h2>
+              </div>
+              <div>
+                <p>{text.codeBody}</p>
+                <span>{text.codeLearningNote}</span>
+                <a href={renderingRepo} target="_blank" rel="noreferrer">
+                  {text.viewRepo} ↗
+                </a>
+              </div>
+            </header>
+
+            <div className="code-study-list">
+              {codeStudies.map((study, index) => (
+                <article className="code-study" id={study.id} key={study.id}>
+                  <header className="code-study-header" data-reveal>
+                    <span>0{index + 1}</span>
+                    <div>
+                      <p>{study.category[locale]}</p>
+                      <h3>{study.title[locale]}</h3>
+                    </div>
+                    <p>{study.description[locale]}</p>
+                  </header>
+
+                  <div className="code-media-placeholder" data-reveal>
+                    <div className="placeholder-grid" aria-hidden="true" />
+                    <div className="placeholder-orbit" aria-hidden="true"><i /><i /><i /></div>
+                    <span>MEDIA SLOT / 16:9</span>
+                    <div>
+                      <strong>{text.mediaPlaceholder}</strong>
+                      <p>{study.mediaNote[locale]}</p>
+                    </div>
+                    <small>READY FOR SCREENSHOT · GIF · MP4</small>
+                  </div>
+
+                  <div className="code-study-details">
+                    <section className="code-flow" data-reveal>
+                      <div className="code-block-label">
+                        <span>{text.flowLabel}</span>
+                        <small>PIPELINE</small>
+                      </div>
+                      <ol>
+                        {study.flow.map((step, stepIndex) => (
+                          <li key={step.en}>
+                            <span>{String(stepIndex + 1).padStart(2, "0")}</span>
+                            <p>{step[locale]}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    </section>
+
+                    <section className="code-snippet" data-reveal>
+                      <div className="code-block-label">
+                        <span>{text.snippetLabel}</span>
+                        <small>CODE EXCERPT</small>
+                      </div>
+                      <pre><code>{study.snippet}</code></pre>
+                    </section>
+
+                    <section className="code-sources" data-reveal>
+                      <div className="code-block-label">
+                        <span>{text.sourceLabel}</span>
+                        <small>{String(study.files.length).padStart(2, "0")} FILES</small>
+                      </div>
+                      <div className="source-links">
+                        {study.files.map((file) => (
+                          <a href={file.url} target="_blank" rel="noreferrer" key={file.url}>
+                            <span>{file.kind}</span>
+                            <strong>{file.name}</strong>
+                            <b>↗</b>
+                          </a>
+                        ))}
+                      </div>
+                    </section>
+                  </div>
+
+                  <div className="project-tags code-tags" data-reveal>
+                    {study.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <section className="learning-archive" data-reveal>
+              <header>
+                <p>{text.archiveEyebrow}</p>
+                <h3>{text.archiveTitle}</h3>
+                <span>{text.archiveBody}</span>
+              </header>
+              <div className="archive-tracks">
+                {archiveTracks.map((track, index) => (
+                  <details key={track.title.en} open={index === 0}>
+                    <summary>
+                      <span>0{index + 1}</span>
+                      <div>
+                        <strong>{track.title[locale]}</strong>
+                        <small>{track.subtitle[locale]}</small>
+                      </div>
+                      <b aria-hidden="true">+</b>
+                    </summary>
+                    <div className="archive-chapters">
+                      {track.chapters.map((chapter) => (
+                        <a href={chapter.url} target="_blank" rel="noreferrer" key={chapter.name}>
+                          <div>
+                            <strong>{chapter.name}</strong>
+                            <p>{chapter.topics[locale]}</p>
+                          </div>
+                          <span>{text.openChapter} ↗</span>
+                        </a>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          </section>
         </div>
       </section>
 
