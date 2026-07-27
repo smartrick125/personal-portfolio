@@ -451,11 +451,16 @@ export default function Home() {
           <span>ABOUT / 关于</span>
         </div>
         <div className="profile-grid">
-          <div className="profile-portrait placeholder-portrait" data-reveal>
-            <div className="portrait-orbit" />
-            <span>PORTRAIT</span>
-            <small>{locale === "en" ? "Placeholder" : "头像占位"}</small>
-          </div>
+          <figure className="profile-portrait portrait-photo" data-reveal>
+            <img
+              src="/profile/smartrick-portrait.jpg"
+              alt={locale === "zh" ? "Smartrick 的个人照片" : "Portrait of Smartrick"}
+            />
+            <figcaption>
+              <span>SMARTRICK / 2026</span>
+              <small>{text.location}</small>
+            </figcaption>
+          </figure>
           <div className="profile-copy" data-reveal>
             <h2>{text.profileTitle}</h2>
             <p>{text.profileBody}</p>
@@ -682,16 +687,14 @@ export default function Home() {
                     <p>{study.description[locale]}</p>
                   </header>
 
-                  <div className="code-media-placeholder" data-reveal>
-                    <div className="placeholder-grid" aria-hidden="true" />
-                    <div className="placeholder-orbit" aria-hidden="true"><i /><i /><i /></div>
-                    <span>MEDIA SLOT / 16:9</span>
-                    <div>
-                      <strong>{text.mediaPlaceholder}</strong>
+                  <figure className="code-media" data-reveal>
+                    <img src={study.media.src} alt={study.media.alt[locale]} loading="lazy" />
+                    <span>RESULT IMAGE / 16:9</span>
+                    <figcaption>
+                      <strong>{study.media.source[locale]}</strong>
                       <p>{study.mediaNote[locale]}</p>
-                    </div>
-                    <small>READY FOR SCREENSHOT · GIF · MP4</small>
-                  </div>
+                    </figcaption>
+                  </figure>
 
                   <div className="code-study-details">
                     <section className="code-flow" data-reveal>

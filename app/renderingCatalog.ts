@@ -4,7 +4,7 @@ type LocalizedText = {
 };
 
 const repoRoot = "https://github.com/smartrick125/Unity-Shader";
-const sourceRoot = `${repoRoot}/blob/main/Assets/Shader/UnityShaderBook`;
+const sourceRoot = `${repoRoot}/blob/main`;
 
 export type CodeStudy = {
   id: string;
@@ -12,6 +12,11 @@ export type CodeStudy = {
   category: LocalizedText;
   description: LocalizedText;
   mediaNote: LocalizedText;
+  media: {
+    src: string;
+    alt: LocalizedText;
+    source: LocalizedText;
+  };
   tags: string[];
   flow: LocalizedText[];
   snippet: string;
@@ -34,8 +39,13 @@ export const codeStudies: CodeStudy[] = [
       zh: "通过 Renderer Feature 注入的双 Pass HLSL 高斯模糊。RenderGraph 管理中间纹理，Volume 组件控制迭代次数、模糊半径与降采样。",
     },
     mediaNote: {
-      en: "Reserved for before / after frames or a live parameter demo.",
-      zh: "预留：效果前后对比图，或参数实时调节录屏。",
+      en: "Gaussian blur result shown beside the active Volume parameters.",
+      zh: "高斯模糊效果与当前 Volume 参数的同屏记录。",
+    },
+    media: {
+      src: "/rendering-code/gaussian-blur.jpg",
+      alt: { en: "Gaussian blur result and Volume settings in Unity", zh: "Unity 中的高斯模糊效果与 Volume 参数" },
+      source: { en: "Local practice capture", zh: "本地实践截图" },
     },
     tags: ["ShaderLab", "HLSL", "RenderGraph", "RendererFeature", "Volume"],
     flow: [
@@ -67,8 +77,13 @@ renderGraph.AddBlitPass(temp, source, material, 1);`,
       zh: "在运行时由 C# 捕获环境 Cubemap，每帧更新一个面，再通过 MaterialPropertyBlock 把结果传递给反射 Shader。",
     },
     mediaNote: {
-      en: "Reserved for the reflective object, capture point, and cubemap faces.",
-      zh: "预留：反射物体效果、捕获点与 Cubemap 六面展示。",
+      en: "A material comparison covering reflection, refraction, and Fresnel response.",
+      zh: "反射、折射与菲涅尔响应的材质效果对比。",
+    },
+    media: {
+      src: "/rendering-code/realtime-cubemap.jpg",
+      alt: { en: "Reflection, refraction, and Fresnel material study in Unity", zh: "Unity 中的反射、折射与菲涅尔材质实验" },
+      source: { en: "Local practice capture", zh: "本地实践截图" },
     },
     tags: ["ShaderLab", "Cubemap", "C#", "Runtime Camera", "MaterialPropertyBlock"],
     flow: [
@@ -99,8 +114,13 @@ renderer.SetPropertyBlock(properties);`,
       zh: "手写 URP 光照案例：构建世界空间数据，通过级联阴影坐标获取主光源，遍历附加光源，并组合漫反射与 Blinn–Phong 高光。",
     },
     mediaNote: {
-      en: "Reserved for cascade boundaries, lit result, and shadow comparison.",
-      zh: "预留：级联范围、受光结果与阴影对比截图。",
+      en: "Cascade regions visualized by color alongside the URP shadow settings.",
+      zh: "用颜色显示级联分区，并同步展示 URP 阴影设置。",
+    },
+    media: {
+      src: "/rendering-code/cascade-shadow.jpg",
+      alt: { en: "Unity cascade shadow split visualization", zh: "Unity 级联阴影分区可视化" },
+      source: { en: "GitHub · Unity-Shader / Chapter 09", zh: "GitHub · Unity-Shader / 第 09 章" },
     },
     tags: ["URP Lighting", "HLSL", "Cascade Shadow", "Blinn–Phong"],
     flow: [
@@ -130,8 +150,13 @@ color += albedo * mainLight.color * diffuse * shadow;`,
       zh: "完整的 URP 后处理链路：Volume 控制效果参数，Renderer Feature 调度 Render Pass，HLSL 图像卷积提取边缘并合成最终画面。",
     },
     mediaNote: {
-      en: "Reserved for source, edge-only, and final composite frames.",
-      zh: "预留：原图、纯边缘结果与最终合成效果。",
+      en: "The detected contour composited over the source frame.",
+      zh: "将检测到的轮廓与原始画面进行合成后的结果。",
+    },
+    media: {
+      src: "/rendering-code/edge-detection.jpg",
+      alt: { en: "Edge detection post-processing result in Unity", zh: "Unity 边缘检测后处理效果" },
+      source: { en: "Local practice capture", zh: "本地实践截图" },
     },
     tags: ["Post Process", "HLSL", "RendererFeature", "RenderPass", "Volume"],
     flow: [
@@ -162,17 +187,17 @@ export const archiveTracks = [
       {
         name: "Chapter 06 · Lighting Models",
         topics: { en: "Diffuse, Half-Lambert, Phong, Blinn–Phong", zh: "漫反射、Half-Lambert、Phong、Blinn–Phong" },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter6`,
+        url: `${repoRoot}/tree/main/Chapter6`,
       },
       {
         name: "Chapter 07 · Textures & Normals",
         topics: { en: "Normal maps, ramp textures, mask textures", zh: "法线贴图、渐变纹理、遮罩纹理" },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter7`,
+        url: `${repoRoot}/tree/main/Chapter7`,
       },
       {
         name: "Chapter 08 · Transparency",
         topics: { en: "Alpha test, alpha blend, depth writing", zh: "透明度测试、透明混合、深度写入" },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter8`,
+        url: `${repoRoot}/tree/main/Chapter8`,
       },
     ],
   },
@@ -183,17 +208,17 @@ export const archiveTracks = [
       {
         name: "Chapter 09 · Shadows",
         topics: { en: "Casting, receiving, screen-space and cascade shadows", zh: "阴影投射、接收、屏幕空间与级联阴影" },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter9`,
+        url: `${repoRoot}/tree/main/Chapter9`,
       },
       {
         name: "Chapter 10 · Environment",
         topics: { en: "Reflection, refraction, glass, mirrors, Fresnel", zh: "反射、折射、玻璃、镜面、菲涅尔" },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter10`,
+        url: `${repoRoot}/tree/main/Chapter10`,
       },
       {
         name: "Chapter 11 · Animated Surfaces",
         topics: { en: "Billboards, scrolling, sequences, water", zh: "广告牌、滚动背景、序列帧、水面" },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter11`,
+        url: `${repoRoot}/tree/main/Chapter11`,
       },
     ],
   },
@@ -207,7 +232,7 @@ export const archiveTracks = [
           en: "Blur, Gaussian blur, edge detection, color adjustment, Renderer Features, Render Passes, Volume",
           zh: "模糊、高斯模糊、边缘检测、颜色调整、Renderer Feature、Render Pass、Volume",
         },
-        url: `${repoRoot}/tree/main/Assets/Shader/UnityShaderBook/Chapter12`,
+        url: `${repoRoot}/tree/main/Chapter12`,
       },
     ],
   },

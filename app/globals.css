@@ -659,6 +659,54 @@ button {
   animation: ring-spin 24s linear infinite;
 }
 
+.portrait-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(18, 30, 58, 0.2);
+  background: #b9c8f2;
+}
+
+.portrait-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 56%, rgba(7, 12, 28, 0.72)),
+    linear-gradient(135deg, rgba(119, 243, 255, 0.08), transparent 46%);
+}
+
+.portrait-photo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.portrait-photo figcaption {
+  position: absolute;
+  z-index: 1;
+  right: 20px;
+  bottom: 18px;
+  left: 20px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  color: #f2f6ff;
+  font: 700 9px/1.2 var(--font-geist-mono), monospace;
+  letter-spacing: 0.1em;
+}
+
+.portrait-photo figcaption small {
+  color: rgba(242, 246, 255, 0.62);
+  font: inherit;
+  font-size: 8px;
+}
+
 .profile-copy h2 {
   max-width: 850px;
   margin: 0;
@@ -1863,6 +1911,76 @@ button {
   box-shadow: 0 30px 100px rgba(0, 0, 0, 0.25);
 }
 
+.code-media {
+  position: relative;
+  aspect-ratio: 16 / 8.4;
+  margin: 0 0 0 88px;
+  overflow: hidden;
+  border: 1px solid rgba(145, 190, 255, 0.33);
+  background: #060917;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.25);
+}
+
+.code-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 8, 20, 0.04) 48%, rgba(5, 8, 20, 0.82)),
+    linear-gradient(90deg, rgba(80, 88, 255, 0.12), transparent 48%);
+}
+
+.code-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #050711;
+}
+
+.code-media > span {
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  left: 20px;
+  padding: 8px 10px;
+  color: rgba(242, 246, 255, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  background: rgba(5, 8, 20, 0.58);
+  backdrop-filter: blur(10px);
+  font: 700 8px/1 var(--font-geist-mono), monospace;
+  letter-spacing: 0.12em;
+}
+
+.code-media figcaption {
+  position: absolute;
+  z-index: 1;
+  right: 24px;
+  bottom: 22px;
+  left: 24px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.code-media figcaption strong {
+  color: var(--sky);
+  font: 700 9px/1.25 var(--font-geist-mono), monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.code-media figcaption p {
+  max-width: 520px;
+  margin: 0;
+  color: rgba(242, 246, 255, 0.72);
+  font-size: 11px;
+  line-height: 1.55;
+  text-align: right;
+}
+
 .placeholder-grid {
   position: absolute;
   inset: 0;
@@ -2572,6 +2690,7 @@ button {
   }
 
   .code-media-placeholder,
+  .code-media,
   .code-study-details,
   .code-tags {
     margin-left: 40px;
@@ -2579,7 +2698,27 @@ button {
 
   .code-media-placeholder {
     min-height: 330px;
+  }
+
+  .code-media {
+    min-height: 0;
+    aspect-ratio: 16 / 10;
+  }
+
+  .code-media-placeholder {
     padding: 18px;
+  }
+
+  .code-media figcaption {
+    right: 16px;
+    bottom: 15px;
+    left: 16px;
+    display: block;
+  }
+
+  .code-media figcaption p {
+    margin-top: 8px;
+    text-align: left;
   }
 
   .code-media-placeholder > div:nth-of-type(3) {
