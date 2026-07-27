@@ -25,9 +25,9 @@ const copy = {
     practice: "Practising",
     explore: "Exploring",
     workEyebrow: "02 / Selected practice",
-    workTitle: "Four projects. One continuous walkthrough.",
+    workTitle: "See the result first. Then explore how it works.",
     workBody:
-      "A complete archive of the four Unity practice folders. Every video, gallery image, Shader Graph capture, available script, and technical summary is grouped by its original folder.",
+      "Selected Unity studies presented as clear visual stories: final result, implementation logic, node structure, and code where it exists.",
     workTracks: ["Node-based VFX", "Rendering Code Lab"],
     visualTrack: "Shader Graph / Visual VFX",
     visualTrackBody: "Four complete visual case studies, organized by their original Unity folders.",
@@ -286,6 +286,29 @@ const statusLabels = {
   en: ["Learning", "Practising", "Exploring"],
   zh: ["学习中", "实践中", "探索中"],
 } as const;
+
+const projectHighlights = [
+  {
+    promise: "One timeline. Four visual beats.",
+    metric: "04",
+    metricLabel: "VFX stages",
+  },
+  {
+    promise: "A shield that remembers every hit.",
+    metric: "02",
+    metricLabel: "Ripple slots",
+  },
+  {
+    promise: "Flow, distortion, and glow in one beam.",
+    metric: "10",
+    metricLabel: "Node studies",
+  },
+  {
+    promise: "A dissolve edge that reads as fire.",
+    metric: "04",
+    metricLabel: "Core modules",
+  },
+] as const;
 
 function CodeViewer({ src, name }: { src: string; name: string }) {
   const [code, setCode] = useState("");
@@ -636,6 +659,44 @@ export default function Home() {
             <h2>{text.workTitle}</h2>
             <p>{text.workBody}</p>
           </div>
+          <section className="project-highlights" aria-labelledby="project-highlights-title" data-reveal>
+            <header className="highlights-heading">
+              <div>
+                <p>GET THE HIGHLIGHTS</p>
+                <h3 id="project-highlights-title">Selected visual systems.</h3>
+              </div>
+              <span>Choose a case to explore the full breakdown.</span>
+            </header>
+            <div className="highlight-scroll">
+              {text.projects.map((project, index) => {
+                const assets = projectCatalog[index];
+                const highlight = projectHighlights[index];
+                return (
+                  <a className="highlight-card" href={`#${assets.id}`} key={project.title}>
+                    <img
+                      src={assets.gallery[0]?.src}
+                      alt=""
+                      loading="lazy"
+                    />
+                    <span className="highlight-shade" aria-hidden="true" />
+                    <div className="highlight-topline">
+                      <span>0{index + 1}</span>
+                      <span>{project.tags[0]}</span>
+                    </div>
+                    <div className="highlight-copy">
+                      <p>{project.title}</p>
+                      <h4>{highlight.promise}</h4>
+                    </div>
+                    <div className="highlight-proof">
+                      <strong>{highlight.metric}</strong>
+                      <span>{highlight.metricLabel}</span>
+                    </div>
+                    <b aria-hidden="true">↘</b>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
           <nav className="work-track-nav" aria-label="Work type navigation" data-reveal>
             <a href="#visual-vfx">
               <span>01</span>
@@ -672,13 +733,17 @@ export default function Home() {
                   <header className="case-header" data-reveal>
                     <div className="case-number">0{index + 1}</div>
                     <div>
-                      <p>{project.subtitle}</p>
+                      <p>{projectHighlights[index].promise}</p>
                       <h3>{project.title}</h3>
                     </div>
                     <div className="case-summary">
                       <p>{project.description}</p>
                       <div className="project-tags">
                         {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                      </div>
+                      <div className="case-proof">
+                        <strong>{projectHighlights[index].metric}</strong>
+                        <span>{projectHighlights[index].metricLabel}</span>
                       </div>
                     </div>
                   </header>
