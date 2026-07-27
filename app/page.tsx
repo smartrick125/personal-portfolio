@@ -517,10 +517,6 @@ export default function Home() {
   return (
     <main className="site">
       <nav className="topbar" aria-label="Primary navigation">
-        <a className="wordmark" href="#top" aria-label="Smartrick homepage">
-          <span className="wordmark-glyph">S</span>
-          <span>SMARTRICK</span>
-        </a>
         <div className="nav-center">
           <a href="#profile">Profile</a>
           <a href="#work">Work</a>
