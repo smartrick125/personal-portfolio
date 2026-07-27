@@ -625,27 +625,6 @@ button {
   transform: rotate(-6deg) scale(1.04);
 }
 
-.scroll-cue {
-  position: absolute;
-  z-index: 12;
-  right: 24px;
-  bottom: 48px;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  color: rgba(255, 255, 255, 0.45);
-  font: 600 8px/1 var(--font-geist-mono), monospace;
-  letter-spacing: 0.16em;
-  transform: rotate(90deg) translateX(100%);
-  transform-origin: right bottom;
-}
-
-.scroll-cue i {
-  width: 52px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.36);
-}
-
 .focus-strip {
   position: relative;
   z-index: 15;
@@ -923,13 +902,14 @@ button {
 .skill-line {
   height: 2px;
   overflow: hidden;
-  background: rgba(30, 48, 86, 0.12);
+  background: rgba(104, 79, 255, 0.18);
 }
 
 .skill-line i {
   display: block;
+  width: 100% !important;
   height: 100%;
-  background: linear-gradient(90deg, var(--electric), var(--violet));
+  background: linear-gradient(90deg, #6754ff, #8b61ff);
   transform-origin: left;
   animation: line-grow 1.4s ease both;
 }
@@ -3204,10 +3184,6 @@ body {
     height: 94px;
     padding: 16px;
     font-size: 9px;
-  }
-
-  .scroll-cue {
-    display: none;
   }
 
   .focus-track {

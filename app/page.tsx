@@ -587,10 +587,6 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="scroll-cue" aria-hidden="true">
-          <span>SCROLL TO EXPLORE</span>
-          <i />
-        </div>
       </section>
 
       <section className="focus-strip" aria-label={text.focusLabel}>
