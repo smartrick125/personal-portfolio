@@ -3642,8 +3642,9 @@ body {
   grid-auto-columns: minmax(310px, 1fr);
   gap: 16px;
   overflow-x: auto;
-  padding: 4px 4px 22px;
+  padding: 16px 4px 34px;
   margin-inline: -4px;
+  perspective: 1400px;
   scroll-snap-type: inline mandatory;
   scrollbar-color: rgba(88, 105, 196, 0.42) transparent;
   scrollbar-width: thin;
@@ -3669,6 +3670,74 @@ body {
     border-color 300ms ease;
 }
 
+.holographic-tilt-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --shine-x: 50%;
+  --shine-y: 50%;
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+  --card-accent: #7c6cff;
+  transform:
+    perspective(1100px)
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.holographic-tilt-card::before,
+.holographic-tilt-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.holographic-tilt-card::before {
+  z-index: 1;
+  background:
+    radial-gradient(
+      circle at var(--shine-x) var(--shine-y),
+      rgba(255, 255, 255, 0.7) 0,
+      rgba(99, 230, 255, 0.34) 12%,
+      rgba(124, 108, 255, 0.24) 27%,
+      rgba(255, 123, 205, 0.18) 39%,
+      transparent 58%
+    ),
+    linear-gradient(
+      118deg,
+      transparent 18%,
+      rgba(99, 230, 255, 0.12) 34%,
+      rgba(124, 108, 255, 0.22) 48%,
+      rgba(255, 123, 205, 0.13) 62%,
+      transparent 78%
+    );
+  background-size: 100% 100%, 220% 220%;
+  background-position: center, var(--shine-x) var(--shine-y);
+  mix-blend-mode: screen;
+  opacity: 0.24;
+  transition: opacity 320ms ease;
+}
+
+.holographic-tilt-card::after {
+  z-index: 2;
+  border: 1px solid color-mix(in srgb, var(--card-accent) 54%, transparent);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 0 42px color-mix(in srgb, var(--card-accent) 12%, transparent);
+  opacity: 0.72;
+  transition: opacity 300ms ease, box-shadow 420ms ease;
+}
+
+.holographic-tilt-card > .highlight-topline,
+.holographic-tilt-card > .highlight-copy,
+.holographic-tilt-card > .highlight-proof,
+.holographic-tilt-card > b {
+  z-index: 3;
+}
+
 .highlight-card > img,
 .highlight-shade {
   position: absolute;
@@ -3683,6 +3752,13 @@ body {
   opacity: 0.68;
   transform: scale(1.025);
   transition: transform 700ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.holographic-tilt-card > img {
+  transform:
+    translate3d(var(--parallax-x), var(--parallax-y), 0)
+    scale(1.035);
+  will-change: transform;
 }
 
 .highlight-shade {
@@ -3762,6 +3838,51 @@ body {
   transform: translateY(-8px);
   border-color: rgba(139, 207, 255, 0.58);
   box-shadow: 0 34px 78px rgba(25, 38, 79, 0.24);
+}
+
+.holographic-tilt-card:hover {
+  transform:
+    translateY(-8px)
+    perspective(1100px)
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y))
+    scale(1.012);
+  border-color: color-mix(in srgb, var(--card-accent) 72%, white 18%);
+  box-shadow:
+    0 38px 84px rgba(25, 38, 79, 0.26),
+    0 14px 42px color-mix(in srgb, var(--card-accent) 24%, transparent);
+}
+
+.holographic-tilt-card:hover::before {
+  opacity: 0.86;
+}
+
+.holographic-tilt-card:hover::after {
+  opacity: 1;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 0 58px color-mix(in srgb, var(--card-accent) 19%, transparent),
+    0 0 30px color-mix(in srgb, var(--card-accent) 24%, transparent);
+}
+
+.holographic-tilt-card:hover > img {
+  transform:
+    translate3d(var(--parallax-x), var(--parallax-y), 0)
+    scale(1.08);
+}
+
+.holographic-tilt-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--card-accent) 76%, white 24%);
+  outline-offset: 5px;
+  transform: translateY(-3px);
+  border-color: var(--card-accent);
+  box-shadow:
+    0 28px 64px rgba(25, 38, 79, 0.22),
+    0 0 0 6px color-mix(in srgb, var(--card-accent) 17%, transparent);
+}
+
+.holographic-tilt-card:focus-visible::before {
+  opacity: 0.5;
 }
 
 .highlight-card:hover > img,
@@ -3944,5 +4065,45 @@ body {
   .highlight-card > b {
     right: 20px;
     bottom: 20px;
+  }
+}
+
+@media (pointer: coarse) {
+  .holographic-tilt-card,
+  .holographic-tilt-card:hover {
+    transform: none;
+  }
+
+  .holographic-tilt-card::before {
+    background-position: center;
+    opacity: 0.42;
+  }
+
+  .holographic-tilt-card > img,
+  .holographic-tilt-card:hover > img {
+    transform: scale(1.045);
+  }
+
+  .holographic-tilt-card:active {
+    transform: scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .holographic-tilt-card,
+  .holographic-tilt-card:hover,
+  .holographic-tilt-card:focus-visible {
+    transform: none;
+  }
+
+  .holographic-tilt-card::before {
+    background-position: center;
+    opacity: 0.3;
+  }
+
+  .holographic-tilt-card > img,
+  .holographic-tilt-card:hover > img,
+  .holographic-tilt-card:focus-visible > img {
+    transform: scale(1.035);
   }
 }

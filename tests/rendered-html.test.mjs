@@ -76,5 +76,11 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(catalog, /comparison\?:/);
   assert.match(css, /\.archive-mega/);
   assert.match(css, /\.code-comparison/);
+  assert.match(css, /\.holographic-tilt-card::before/);
+  assert.match(css, /--card-accent/);
+  assert.match(css, /--shine-x/);
+  assert.match(css, /--tilt-x/);
+  assert.match(css, /pointer:\s*coarse/);
+  assert.match(css, /\.holographic-tilt-card:focus-visible/);
   assert.match(css, /prefers-reduced-motion/);
 });
