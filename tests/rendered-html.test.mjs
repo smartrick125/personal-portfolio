@@ -29,6 +29,11 @@ test("server-renders the portfolio and its new archive structure", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
+  const holographicCards = html.match(/data-holographic-card="true"/g) ?? [];
+  assert.equal(holographicCards.length, 4);
+  for (const accent of ["skill", "shield", "beam", "fire"]) {
+    assert.match(html, new RegExp(`data-accent="${accent}"`));
+  }
   assert.match(html, /<title>Smartrick — Technical Artist<\/title>/i);
   assert.match(html, /class="starfield-canvas"/);
   assert.match(html, /A growing technical-art archive/);
@@ -54,13 +59,19 @@ test("keeps all comparison media available in the deployment bundle", async () =
 
   await Promise.all(media.map((path) => access(new URL(path, import.meta.url))));
 
-  const [page, catalog, css] = await Promise.all([
+  const [page, catalog, css, holographicCard] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/renderingCatalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/HolographicTiltCard.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /function StarfieldCanvas/);
+  assert.match(page, /HolographicTiltCard/);
+  assert.match(holographicCard, /requestAnimationFrame/);
+  assert.match(holographicCard, /cancelAnimationFrame/);
+  assert.match(holographicCard, /onPointerMove/);
+  assert.match(holographicCard, /onPointerLeave/);
   assert.match(page, /study\.comparison/);
   assert.match(catalog, /comparison\?:/);
   assert.match(css, /\.archive-mega/);

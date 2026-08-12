@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { HolographicTiltCard } from "./components/HolographicTiltCard";
 import { projectCatalog } from "./projectCatalog";
 import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
 
@@ -308,6 +309,13 @@ const projectHighlights = [
     metric: "04",
     metricLabel: "Core modules",
   },
+] as const;
+
+const projectHighlightAccents = [
+  { name: "skill", color: "#7c6cff" },
+  { name: "shield", color: "#63e6ff" },
+  { name: "beam", color: "#4ca6ff" },
+  { name: "fire", color: "#ff7b9d" },
 ] as const;
 
 function CodeViewer({ src, name }: { src: string; name: string }) {
@@ -663,8 +671,14 @@ export default function Home() {
               {text.projects.map((project, index) => {
                 const assets = projectCatalog[index];
                 const highlight = projectHighlights[index];
+                const accent = projectHighlightAccents[index];
                 return (
-                  <a className="highlight-card" href={`#${assets.id}`} key={project.title}>
+                  <HolographicTiltCard
+                    href={`#${assets.id}`}
+                    accent={accent.color}
+                    accentName={accent.name}
+                    key={project.title}
+                  >
                     <img
                       src={assets.gallery[0]?.src}
                       alt=""
@@ -684,7 +698,7 @@ export default function Home() {
                       <span>{highlight.metricLabel}</span>
                     </div>
                     <b aria-hidden="true">↘</b>
-                  </a>
+                  </HolographicTiltCard>
                 );
               })}
             </div>
