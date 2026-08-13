@@ -61,6 +61,14 @@ test("server-renders the portfolio and its new archive structure", async () => {
   assert.match(html, /gaussian-effect\.jpg/);
   assert.match(html, /edge-original\.jpg/);
   assert.match(html, /edge-effect\.jpg/);
+  for (const title of [
+    "Full Skill Effect",
+    "Interactive Energy Shield",
+    "Energy Beam",
+    "Stylized Dissolve Fire",
+  ]) {
+    assert.match(html, new RegExp(title, "i"));
+  }
   assert.match(html, /DIRECT CONTACT/);
   assert.match(html, /TECHNICAL PROFILE/);
   assert.match(html, /PERSONAL LIFE ACCOUNT/);
@@ -117,7 +125,11 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(holographicCard, /onPointerMove/);
   assert.match(holographicCard, /onPointerLeave/);
   assert.match(page, /study\.comparison/);
+  assert.doesNotMatch(page, /case-study-list/);
+  assert.doesNotMatch(page, /className="case-study"/);
   assert.match(catalog, /comparison\?:/);
+  assert.match(page, /className="rendering-lab"/);
+  assert.match(css, /\.rendering-lab\s*\{/);
   assert.match(css, /\.archive-mega/);
   assert.match(css, /\.code-comparison/);
   assert.match(css, /\.holographic-tilt-card::before/);
@@ -197,6 +209,14 @@ test("keeps all comparison media available in the deployment bundle", async () =
     projectLabCss,
     /\.lab\[data-lab-phase="compact"\]\s+\.inspector,\s*\.lab\[data-lab-phase="compact"\]\s+\.toolDock\s*\{[\s\S]*?visibility:\s*visible;[\s\S]*?opacity:\s*1;[\s\S]*?pointer-events:\s*auto;/,
   );
+  assert.match(
+    projectLabCss,
+    /\.inspector\s*\{[^}]*transition:\s*opacity 260ms ease,\s*transform 360ms cubic-bezier\(\.2, \.8, \.2, 1\),\s*visibility 0s linear 360ms;/,
+  );
+  assert.match(
+    projectLabCss,
+    /\.lab\[data-lab-phase="compact"\]\s+\.inspector\s*\{[^}]*transition:\s*opacity 260ms ease,\s*transform 360ms cubic-bezier\(\.2, \.8, \.2, 1\),\s*visibility 0s linear 0s;/,
+  );
   assert.match(projectLab, /<ProjectInspector[\s\S]*?compact=\{compact\}/);
   assert.doesNotMatch(projectLab, /mobileLayout/);
   const stagePosition = projectLab.indexOf("<ProjectStage");
@@ -231,4 +251,14 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectLab, /<noscript>/);
   assert.match(page, /activeProjectIndex/);
   assert.match(page, /setActiveProjectIndex/);
+});
+
+test("removes the legacy project index presentation", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.doesNotMatch(css, /\.project-index\s*\{/);
+});
+
+test("removes the legacy VFX case study presentation", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.doesNotMatch(css, /\.case-study\s*\{/);
 });
