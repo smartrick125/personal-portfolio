@@ -21,6 +21,81 @@
 }
 
 .shell {
-  min-height: 70vh;
+  padding: 20px 22px;
+}
+
+.transitionTrack {
+  position: relative;
+  min-height: 150svh;
+}
+
+.experience {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  padding: 6svh 0;
+}
+
+.projectContent {
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.projectContentTransitioning {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.stageFrame {
+  width: 100%;
+  height: 88svh;
+  overflow: hidden;
+  transition:
+    width 520ms cubic-bezier(.2, .8, .2, 1),
+    height 520ms cubic-bezier(.2, .8, .2, 1),
+    border-radius 520ms ease;
+}
+
+.lab[data-lab-phase="compact"] .stageFrame {
+  width: 65%;
+  height: 78svh;
+  border-radius: 0 0 0 24px;
+}
+
+.heroMedia {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #03050d;
+}
+
+.heroMedia video,
+.heroMedia img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playButton {
+  position: absolute;
+  inset: auto 20px 20px auto;
+}
+
+.emptyHero {
+  display: grid;
+  place-content: center;
+  min-height: 100%;
   padding: 48px;
+}
+
+.heroTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.phaseSentinel {
+  height: 1px;
 }
