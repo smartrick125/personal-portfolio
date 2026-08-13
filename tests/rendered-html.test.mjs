@@ -66,7 +66,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
 
   await Promise.all(media.map((path) => access(new URL(path, import.meta.url))));
 
-  const [page, catalog, css, holographicCard, projectLabModel, projectLab, projectLabHero] = await Promise.all([
+  const [page, catalog, css, holographicCard, projectLabModel, projectLab, projectLabHero, projectLabCss] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/renderingCatalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
@@ -74,6 +74,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
     readFile(new URL("../app/components/project-lab/projectLabModel.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectLab.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectLabHero.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/ProjectLab.module.css", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /function StarfieldCanvas/);
@@ -105,6 +106,17 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectLabHero, /IntersectionObserver/);
   assert.match(projectLabHero, /\.pause\(\)/);
   assert.match(projectLabHero, /onPlayRejected/);
+  assert.match(projectLabHero, /<video[\s\S]*src=\{hero\.src\}/);
+  assert.doesNotMatch(projectLabHero, /<source\s+src=\{hero\.src\}/);
+  assert.match(projectLabHero, /onPointerMove/);
+  assert.match(projectLabHero, /prefers-reduced-motion/);
+  assert.match(projectLab, /window\.clearTimeout\(switchTimeoutRef\.current\)/);
+  assert.match(projectLab, /window\.cancelAnimationFrame\(exitFrameRef\.current\)/);
+  assert.match(projectLab, /window\.cancelAnimationFrame\(transitionFrameRef\.current\)/);
+  assert.match(projectLab, /if \(activeProjectIndex === displayedProjectIndex\) \{[\s\S]*finishProjectSwitch/);
+  assert.match(projectLabCss, /\.heroParallaxImage/);
+  assert.match(projectLabCss, /--image-parallax-x/);
+  assert.match(projectLabCss, /@media\s*\(prefers-reduced-motion:\s*reduce\),\s*\(pointer:\s*coarse\)/);
   assert.match(projectLab, /<noscript>/);
   assert.match(page, /activeProjectIndex/);
   assert.match(page, /setActiveProjectIndex/);

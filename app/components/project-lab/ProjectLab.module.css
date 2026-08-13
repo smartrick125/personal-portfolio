@@ -76,6 +76,21 @@
   object-fit: cover;
 }
 
+.heroParallaxImage {
+  --image-parallax-x: 0px;
+  --image-parallax-y: 0px;
+  transform: translate3d(var(--image-parallax-x), var(--image-parallax-y), 0) scale(1.015);
+  transition: transform 220ms ease-out;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .heroParallaxImage {
+    transform: none;
+    transition: none;
+  }
+}
+
 .playButton {
   position: absolute;
   inset: auto 20px 20px auto;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./ProjectLab.module.css";
 import type { ProjectLabProject } from "./projectLabModel";
 import { ProjectLabHero } from "./ProjectLabHero";
@@ -19,7 +19,30 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const switchTimeoutRef = useRef<number | null>(null);
+  const exitFrameRef = useRef<number | null>(null);
+  const transitionFrameRef = useRef<number | null>(null);
   const displayedProject = projects[displayedProjectIndex] ?? projects[0];
+
+  const clearScheduledSwitch = useCallback(() => {
+    if (switchTimeoutRef.current !== null) {
+      window.clearTimeout(switchTimeoutRef.current);
+      switchTimeoutRef.current = null;
+    }
+    if (exitFrameRef.current !== null) {
+      window.cancelAnimationFrame(exitFrameRef.current);
+      exitFrameRef.current = null;
+    }
+    if (transitionFrameRef.current !== null) {
+      window.cancelAnimationFrame(transitionFrameRef.current);
+      transitionFrameRef.current = null;
+    }
+  }, []);
+
+  const finishProjectSwitch = useCallback(() => {
+    setCompact(false);
+    setTransitioning(false);
+  }, []);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -29,27 +52,42 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   }, []);
 
   useEffect(() => {
-    if (activeProjectIndex === displayedProjectIndex) return;
-    if (reduceMotion) {
-      const frame = requestAnimationFrame(() => {
-        setDisplayedProjectIndex(activeProjectIndex);
-        setCompact(false);
+    clearScheduledSwitch();
+
+    if (activeProjectIndex === displayedProjectIndex) {
+      transitionFrameRef.current = window.requestAnimationFrame(() => {
+        transitionFrameRef.current = null;
+        finishProjectSwitch();
       });
-      return () => cancelAnimationFrame(frame);
+      return clearScheduledSwitch;
+    }
+    if (reduceMotion) {
+      transitionFrameRef.current = window.requestAnimationFrame(() => {
+        transitionFrameRef.current = null;
+        setDisplayedProjectIndex(activeProjectIndex);
+        finishProjectSwitch();
+      });
+      return clearScheduledSwitch;
     }
 
-    const exitFrame = requestAnimationFrame(() => setTransitioning(true));
-    const timeout = window.setTimeout(() => {
+    exitFrameRef.current = window.requestAnimationFrame(() => {
+      exitFrameRef.current = null;
+      setTransitioning(true);
+    });
+    switchTimeoutRef.current = window.setTimeout(() => {
+      switchTimeoutRef.current = null;
       setDisplayedProjectIndex(activeProjectIndex);
       setCompact(false);
-      requestAnimationFrame(() => setTransitioning(false));
+      transitionFrameRef.current = window.requestAnimationFrame(() => {
+        transitionFrameRef.current = null;
+        setTransitioning(false);
+      });
     }, 160);
 
-    return () => {
-      cancelAnimationFrame(exitFrame);
-      window.clearTimeout(timeout);
-    };
-  }, [activeProjectIndex, displayedProjectIndex, reduceMotion]);
+    return clearScheduledSwitch;
+  }, [activeProjectIndex, clearScheduledSwitch, displayedProjectIndex, finishProjectSwitch, reduceMotion]);
+
+  useEffect(() => () => clearScheduledSwitch(), [clearScheduledSwitch]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import styles from "./ProjectLab.module.css";
 import { getHeroMedia, type ProjectLabProject } from "./projectLabModel";
 
@@ -12,7 +12,12 @@ type ProjectLabHeroProps = {
 export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
   const heroRootRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [playRejected, setPlayRejected] = useState(false);
+  const [imageParallaxEnabled, setImageParallaxEnabled] = useState(
+    () => typeof window !== "undefined"
+      && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches,
+  );
   const hero = getHeroMedia(project);
 
   const onPlayRejected = useCallback(() => {
@@ -26,6 +31,25 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
     void video.play().catch(onPlayRejected);
   }, [onPlayRejected]);
 
+  const resetImageParallax = useCallback((event?: PointerEvent<HTMLImageElement>) => {
+    const image = event?.currentTarget ?? imageRef.current;
+    image?.style.setProperty("--image-parallax-x", "0px");
+    image?.style.setProperty("--image-parallax-y", "0px");
+  }, []);
+
+  const onImagePointerMove = useCallback((event: PointerEvent<HTMLImageElement>) => {
+    if (!imageParallaxEnabled) return;
+
+    const image = event.currentTarget;
+    const bounds = image.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+
+    const offsetX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 8;
+    const offsetY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 8;
+    image.style.setProperty("--image-parallax-x", `${offsetX.toFixed(2)}px`);
+    image.style.setProperty("--image-parallax-y", `${offsetY.toFixed(2)}px`);
+  }, [imageParallaxEnabled]);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -33,6 +57,17 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
     void video.play().then(() => setPlayRejected(false)).catch(onPlayRejected);
     return () => video.pause();
   }, [hero?.src, onPlayRejected, project.id]);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)");
+    const sync = () => setImageParallaxEnabled(!query.matches);
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!imageParallaxEnabled) resetImageParallax();
+  }, [hero?.src, imageParallaxEnabled, resetImageParallax]);
 
   useEffect(() => {
     const root = heroRootRef.current;
@@ -65,7 +100,9 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
       {hero?.kind === "video" && (
         <>
           <video
+            key={hero.src}
             ref={videoRef}
+            src={hero.src}
             autoPlay
             muted
             loop
@@ -73,9 +110,7 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
             preload="metadata"
             poster={project.gallery[0]?.src}
             onPlay={() => setPlayRejected(false)}
-          >
-            <source src={hero.src} type="video/mp4" />
-          </video>
+          />
           {playRejected && (
             <button className={styles.playButton} type="button" onClick={playVideo}>
               Play project video
@@ -87,7 +122,16 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
       {hero?.kind === "image" && (
         // This is a local catalog asset rendered by the Vite runtime, not a Next image route.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={hero.src} alt={project.title} />
+        <img
+          ref={imageRef}
+          className={styles.heroParallaxImage}
+          data-parallax={imageParallaxEnabled ? "active" : "disabled"}
+          src={hero.src}
+          alt={project.title}
+          onPointerMove={onImagePointerMove}
+          onPointerLeave={resetImageParallax}
+          onPointerCancel={resetImageParallax}
+        />
       )}
 
       {!hero && (
