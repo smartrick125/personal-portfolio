@@ -54,7 +54,6 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   }, []);
 
   const finishProjectSwitch = useCallback(() => {
-    setCompact(false);
     setTransitioning(false);
   }, []);
 
@@ -91,7 +90,6 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
     switchTimeoutRef.current = window.setTimeout(() => {
       switchTimeoutRef.current = null;
       setDisplayedProjectIndex(activeProjectIndex);
-      setCompact(false);
       transitionFrameRef.current = window.requestAnimationFrame(() => {
         transitionFrameRef.current = null;
         setTransitioning(false);

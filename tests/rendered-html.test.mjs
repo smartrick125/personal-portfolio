@@ -274,3 +274,21 @@ test("removes the legacy VFX case study presentation", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.doesNotMatch(css, /\.case-study\s*\{/);
 });
+
+test("project switching preserves the sentinel-owned lab phase", async () => {
+  const projectLab = await readFile(
+    new URL("../app/components/project-lab/ProjectLab.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(projectLab, /const \[compact, setCompact\] = useState\(false\)/);
+  assert.match(
+    projectLab,
+    /setCompact\(\(entry\?\.boundingClientRect\.top \?\? Number\.POSITIVE_INFINITY\) <= window\.innerHeight \* 0\.35\)/,
+  );
+  assert.doesNotMatch(
+    projectLab,
+    /setCompact\(false\)/,
+    "project switch completion must not overwrite the phase last synchronized by the sentinel",
+  );
+});
