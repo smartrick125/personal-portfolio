@@ -1,0 +1,26 @@
+.lab {
+  --lab-accent: #7c6cff;
+  position: relative;
+  margin-bottom: 120px;
+  color: #f7f9ff;
+  background: #060a19;
+  border: 1px solid rgba(151, 177, 255, 0.2);
+  border-radius: 30px;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.header {
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(151, 177, 255, 0.16);
+}
+
+.header nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.shell {
+  min-height: 70vh;
+  padding: 48px;
+}

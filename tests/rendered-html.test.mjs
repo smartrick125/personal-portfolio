@@ -30,7 +30,13 @@ test("server-renders the portfolio and its new archive structure", async () => {
 
   const html = await response.text();
   const holographicCards = html.match(/data-holographic-card="true"/g) ?? [];
+  const labs = html.match(/data-project-lab="true"/g) ?? [];
+  const projectSwitches = html.match(/data-project-switch="true"/g) ?? [];
   assert.equal(holographicCards.length, 4);
+  assert.equal(labs.length, 1);
+  assert.equal(projectSwitches.length, 4);
+  assert.match(html, /id="project-lab"/);
+  assert.doesNotMatch(html, /class="case-study"/);
   for (const accent of ["skill", "shield", "beam", "fire"]) {
     assert.match(html, new RegExp(`data-accent="${accent}"`));
   }
@@ -59,11 +65,13 @@ test("keeps all comparison media available in the deployment bundle", async () =
 
   await Promise.all(media.map((path) => access(new URL(path, import.meta.url))));
 
-  const [page, catalog, css, holographicCard] = await Promise.all([
+  const [page, catalog, css, holographicCard, projectLabModel, projectLab] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/renderingCatalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/components/HolographicTiltCard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/projectLabModel.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/ProjectLab.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /function StarfieldCanvas/);
@@ -83,4 +91,11 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(css, /pointer:\s*coarse/);
   assert.match(css, /\.holographic-tilt-card:focus-visible/);
   assert.match(css, /prefers-reduced-motion/);
+  assert.match(projectLabModel, /type ProjectLabView/);
+  assert.match(projectLabModel, /function getAvailableViews/);
+  assert.match(projectLabModel, /function getHeroMedia/);
+  assert.match(projectLab, /data-project-lab="true"/);
+  assert.match(projectLab, /<noscript>/);
+  assert.match(page, /activeProjectIndex/);
+  assert.match(page, /setActiveProjectIndex/);
 });

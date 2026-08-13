@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HolographicTiltCard } from "./components/HolographicTiltCard";
+import { ProjectLab } from "./components/project-lab/ProjectLab";
 import { projectCatalog } from "./projectCatalog";
 import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
 
@@ -318,32 +319,6 @@ const projectHighlightAccents = [
   { name: "fire", color: "#ff7b9d" },
 ] as const;
 
-function CodeViewer({ src, name }: { src: string; name: string }) {
-  const [code, setCode] = useState("");
-
-  useEffect(() => {
-    let active = true;
-    fetch(src)
-      .then((response) => response.text())
-      .then((content) => {
-        if (active) setCode(content);
-      });
-    return () => {
-      active = false;
-    };
-  }, [src]);
-
-  return (
-    <details className="source-panel">
-      <summary>
-        <span>{name}</span>
-        <b aria-hidden="true">＋</b>
-      </summary>
-      <pre><code>{code}</code></pre>
-    </details>
-  );
-}
-
 type Star = {
   x: number;
   y: number;
@@ -490,6 +465,29 @@ function StarfieldCanvas() {
 
 export default function Home() {
   const text = copy.en;
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const labProjects = text.projects.map((project, index) => ({
+    ...projectCatalog[index],
+    title: project.title,
+    description: project.description,
+    tags: project.tags,
+    logic: project.logic,
+    promise: projectHighlights[index].promise,
+    metric: projectHighlights[index].metric,
+    metricLabel: projectHighlights[index].metricLabel,
+    accentName: projectHighlightAccents[index].name,
+    accentColor: projectHighlightAccents[index].color,
+  }));
+
+  const activateProject = (index: number) => {
+    setActiveProjectIndex(index);
+    requestAnimationFrame(() => {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("project-lab")?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    });
+  };
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -674,10 +672,14 @@ export default function Home() {
                 const accent = projectHighlightAccents[index];
                 return (
                   <HolographicTiltCard
-                    href={`#${assets.id}`}
+                    href="#project-lab"
                     accent={accent.color}
                     accentName={accent.name}
                     key={project.title}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      activateProject(index);
+                    }}
                   >
                     <img
                       src={assets.gallery[0]?.src}
@@ -722,146 +724,11 @@ export default function Home() {
               <span>{text.visualTrackBody}</span>
             </div>
           </div>
-          <nav className="project-index" aria-label="Project quick navigation">
-            {text.projects.map((project, index) => (
-              <a href={`#${projectCatalog[index].id}`} key={project.title}>
-                <span>0{index + 1}</span>
-                <strong>{projectCatalog[index].folderName}</strong>
-              </a>
-            ))}
-          </nav>
-          <div className="case-study-list">
-            {text.projects.map((project, index) => {
-              const assets = projectCatalog[index];
-              return (
-                <article className="case-study" id={assets.id} key={project.title} data-section-reveal>
-                  <div className="section-divider" aria-hidden="true" />
-                  <header className="case-header" data-reveal>
-                    <div className="case-number">0{index + 1}</div>
-                    <div>
-                      <p>{projectHighlights[index].promise}</p>
-                      <h3>{project.title}</h3>
-                    </div>
-                    <div className="case-summary">
-                      <p>{project.description}</p>
-                      <div className="project-tags">
-                        {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
-                      </div>
-                      <div className="case-proof">
-                        <strong>{projectHighlights[index].metric}</strong>
-                        <span>{projectHighlights[index].metricLabel}</span>
-                      </div>
-                    </div>
-                  </header>
-
-                  <div className="folder-banner" data-reveal>
-                    <code>{assets.folderName}</code>
-                  </div>
-
-                  {assets.videos.length > 0 && (
-                    <section className="case-block case-video" aria-labelledby={`${assets.id}-video`} data-reveal>
-                      <div className="case-label">
-                        <span id={`${assets.id}-video`}>{text.videoLabel}</span>
-                      </div>
-                      <div className="media-scroll video-scroll">
-                        {assets.videos.map((video) => (
-                          <figure className="case-video-frame" key={video.src}>
-                            <video controls loop muted playsInline preload="metadata" poster={assets.gallery[0]?.src}>
-                              <source src={video.src} type="video/mp4" />
-                            </video>
-                            <figcaption>{video.name}</figcaption>
-                          </figure>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {assets.gallery.length > 0 && (
-                    <section className="case-block" aria-labelledby={`${assets.id}-gallery`} data-reveal>
-                      <div className="case-label">
-                        <span id={`${assets.id}-gallery`}>{text.galleryLabel}</span>
-                      </div>
-                      <div className="media-scroll gallery-scroll">
-                        {assets.gallery.map((item, mediaIndex) => (
-                          <figure key={item.src}>
-                            <img
-                              src={item.src}
-                              alt={`${project.title} result frame ${mediaIndex + 1}`}
-                              loading="lazy"
-                            />
-                            <figcaption>{item.name}</figcaption>
-                          </figure>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  <section className="case-block" aria-labelledby={`${assets.id}-logic`} data-reveal>
-                    <div className="case-label">
-                      <span id={`${assets.id}-logic`}>{text.logicLabel}</span>
-                    </div>
-                    <ol className="logic-grid">
-                      {project.logic.map((item, logicIndex) => (
-                        <li key={item}>
-                          <span>{String(logicIndex + 1).padStart(2, "0")}</span>
-                          <p>{item}</p>
-                        </li>
-                      ))}
-                    </ol>
-                  </section>
-
-                  {assets.nodes.length > 0 && (
-                    <section className="case-block case-nodes" aria-labelledby={`${assets.id}-nodes`} data-reveal>
-                      <div className="case-label">
-                        <span id={`${assets.id}-nodes`}>{text.nodesLabel}</span>
-                      </div>
-                      <div className="media-scroll node-scroll">
-                        {assets.nodes.map((item, nodeIndex) => (
-                          <figure key={item.src}>
-                            <div className="node-image">
-                              <img
-                                src={item.src}
-                                alt={`${project.title} ${item.name}`}
-                                loading="lazy"
-                              />
-                            </div>
-                            <figcaption>
-                              <span>{String(nodeIndex + 1).padStart(2, "0")}</span>
-                              <div>
-                                <strong>{item.name}</strong>
-                              </div>
-                            </figcaption>
-                          </figure>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {assets.script && (
-                    <section className="case-block" aria-labelledby={`${assets.id}-script`} data-reveal>
-                      <div className="case-label">
-                        <span id={`${assets.id}-script`}>{text.scriptLabel}</span>
-                      </div>
-                      <CodeViewer src={assets.script.src} name={assets.script.name} />
-                    </section>
-                  )}
-
-                  <section className="case-block" aria-labelledby={`${assets.id}-summary`} data-reveal>
-                    <div className="case-label">
-                      <span id={`${assets.id}-summary`}>{text.summaryLabel}</span>
-                    </div>
-                    <div className="technical-summary">
-                      <div className="summary-copy">
-                        {assets.technicalSummary.paragraphs.map((paragraph) => (
-                          <p key={paragraph}>{paragraph}</p>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
-                </article>
-              );
-            })}
-          </div>
+          <ProjectLab
+            projects={labProjects}
+            activeProjectIndex={activeProjectIndex}
+            onProjectChange={setActiveProjectIndex}
+          />
 
           <section className="rendering-lab" id="rendering-code" data-section-reveal>
             <div className="section-divider" aria-hidden="true" />

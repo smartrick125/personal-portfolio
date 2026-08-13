@@ -2,6 +2,7 @@
 
 import {
   type CSSProperties,
+  type MouseEventHandler,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
   useEffect,
@@ -16,6 +17,7 @@ type HolographicTiltCardProps = {
   accentName: AccentName;
   children: ReactNode;
   className?: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 };
 
 type CardProperties = CSSProperties & {
@@ -43,6 +45,7 @@ export function HolographicTiltCard({
   accentName,
   children,
   className = "",
+  onClick,
 }: HolographicTiltCardProps) {
   const cardRef = useRef<HTMLAnchorElement>(null);
   const frameRef = useRef<number | null>(null);
@@ -122,6 +125,7 @@ export function HolographicTiltCard({
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       onPointerCancel={onPointerLeave}
+      onClick={onClick}
     >
       {children}
     </a>

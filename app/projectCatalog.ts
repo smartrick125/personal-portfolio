@@ -1,15 +1,15 @@
-type MediaItem = {
+export type MediaItem = {
   name: string;
   src: string;
 };
 
-type TechnicalSummary = {
+export type TechnicalSummary = {
   name: string;
   src: string;
   paragraphs: string[];
 };
 
-type ProjectCatalogItem = {
+export type ProjectCatalogItem = {
   id: string;
   folderName: string;
   videos: MediaItem[];
