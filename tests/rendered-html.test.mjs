@@ -36,6 +36,13 @@ test("server-renders the portfolio and its new archive structure", async () => {
   assert.equal(labs.length, 1);
   assert.equal(projectSwitches.length, 4);
   assert.match(html, /id="project-lab"/);
+  assert.match(html, /role="tablist"[^>]*aria-label="Project lab tools"/);
+  assert.match(html, /role="tab"[^>]*aria-selected="true"/);
+  for (const label of ["Result", "Gallery", "Logic", "Nodes", "Code"]) {
+    assert.match(html, new RegExp(`>${label}<`));
+  }
+  assert.match(html, /data-project-stage="true"/);
+  assert.match(html, /data-project-inspector="true"/);
   assert.match(html, /<video[^>]*autoplay[^>]*muted[^>]*loop[^>]*playsinline/i);
   assert.doesNotMatch(html, /class="case-study"/);
   for (const accent of ["skill", "shield", "beam", "fire"]) {
@@ -66,7 +73,19 @@ test("keeps all comparison media available in the deployment bundle", async () =
 
   await Promise.all(media.map((path) => access(new URL(path, import.meta.url))));
 
-  const [page, catalog, css, holographicCard, projectLabModel, projectLab, projectLabHero, projectLabCss] = await Promise.all([
+  const [
+    page,
+    catalog,
+    css,
+    holographicCard,
+    projectLabModel,
+    projectLab,
+    projectLabHero,
+    projectToolDock,
+    projectStage,
+    projectInspector,
+    projectLabCss,
+  ] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/renderingCatalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
@@ -74,6 +93,9 @@ test("keeps all comparison media available in the deployment bundle", async () =
     readFile(new URL("../app/components/project-lab/projectLabModel.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectLab.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectLabHero.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/ProjectToolDock.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/ProjectStage.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/ProjectInspector.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectLab.module.css", import.meta.url), "utf8"),
   ]);
 
@@ -114,7 +136,12 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectLab, /window\.cancelAnimationFrame\(exitFrameRef\.current\)/);
   assert.match(projectLab, /window\.cancelAnimationFrame\(transitionFrameRef\.current\)/);
   assert.match(projectLab, /if \(activeProjectIndex === displayedProjectIndex\) \{[\s\S]*finishProjectSwitch/);
+  assert.match(projectToolDock, /viewLabels/);
+  assert.match(projectToolDock, /role="tablist"/);
+  assert.match(projectStage, /data-project-stage="true"/);
+  assert.match(projectInspector, /technicalSummary/);
   assert.match(projectLabCss, /\.heroParallaxImage/);
+  assert.match(projectLabCss, /object-fit:\s*contain/);
   assert.match(projectLabCss, /--image-parallax-x/);
   assert.match(projectLabCss, /@media\s*\(prefers-reduced-motion:\s*reduce\),\s*\(pointer:\s*coarse\)/);
   assert.match(projectLab, /<noscript>/);

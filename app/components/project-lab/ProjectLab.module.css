@@ -37,6 +37,7 @@
 }
 
 .projectContent {
+  position: relative;
   transition: opacity 260ms ease, transform 260ms ease;
 }
 
@@ -46,6 +47,8 @@
 }
 
 .stageFrame {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 88svh;
   overflow: hidden;
@@ -59,6 +62,311 @@
   width: 65%;
   height: 78svh;
   border-radius: 0 0 0 24px;
+}
+
+.stage {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #050817;
+  border-right: 1px solid rgba(151, 177, 255, 0.16);
+}
+
+.stageContent {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.resultMedia {
+  width: 100%;
+  height: 100%;
+}
+
+.inspector {
+  position: absolute;
+  top: 6svh;
+  right: 0;
+  z-index: 3;
+  width: 35%;
+  height: 78svh;
+  overflow: auto;
+  padding: 28px;
+  background: rgba(8, 13, 32, 0.96);
+  opacity: 0;
+  transform: translateX(32px);
+  pointer-events: none;
+  transition: opacity 260ms ease, transform 360ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.lab[data-lab-phase="compact"] .inspector {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.toolDock {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(118px, 1fr);
+  border-top: 1px solid rgba(151, 177, 255, 0.18);
+  background: rgba(7, 11, 27, 0.94);
+  backdrop-filter: blur(18px);
+}
+
+.toolDock button {
+  min-height: 62px;
+  color: rgba(232, 238, 255, 0.7);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(151, 177, 255, 0.12);
+  cursor: pointer;
+}
+
+.toolDock button[aria-selected="true"] {
+  color: #fff;
+  background: color-mix(in srgb, var(--lab-accent) 20%, transparent);
+  box-shadow: inset 0 2px var(--lab-accent);
+}
+
+.toolDock button:focus-visible,
+.inspector button:focus-visible,
+.inspector a:focus-visible,
+.stage button:focus-visible,
+.stage pre:focus-visible {
+  outline: 2px solid var(--lab-accent);
+  outline-offset: -3px;
+}
+
+.galleryMedia,
+.nodeMedia {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  place-items: center;
+  overflow: hidden;
+}
+
+.galleryMedia img,
+.nodeMedia img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.galleryMedia figcaption,
+.nodeMedia figcaption {
+  position: absolute;
+  inset: auto auto 20px 20px;
+  padding: 8px 10px;
+  color: rgba(244, 247, 255, 0.86);
+  font-size: 0.75rem;
+  background: rgba(3, 5, 13, 0.78);
+}
+
+.nodeMedia > button {
+  position: absolute;
+  inset: 20px 20px auto auto;
+}
+
+.mediaUnavailable {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 32px;
+  place-items: center;
+  color: rgba(232, 238, 255, 0.68);
+}
+
+.codeViewer {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  padding: 24px;
+}
+
+.codeViewer > p {
+  margin: 0 0 14px;
+  color: rgba(232, 238, 255, 0.68);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.codeViewer pre {
+  max-width: 100%;
+  min-height: 0;
+  margin: 0;
+  overflow: auto;
+  padding: 22px;
+  color: #dce6ff;
+  background: #03050d;
+  border: 1px solid rgba(151, 177, 255, 0.16);
+}
+
+.codeViewer code {
+  white-space: pre;
+}
+
+.inspectorSection {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 18px;
+}
+
+.inspectorSection h3,
+.inspectorSection p {
+  margin: 0;
+}
+
+.inspectorTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inspectorTags li {
+  padding: 6px 9px;
+  color: color-mix(in srgb, var(--lab-accent) 74%, white);
+  font-size: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--lab-accent) 36%, transparent);
+}
+
+.projectMetric {
+  display: grid;
+  gap: 3px;
+}
+
+.projectMetric strong {
+  color: var(--lab-accent);
+  font-size: 2rem;
+}
+
+.projectMetric span {
+  color: rgba(232, 238, 255, 0.6);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.technicalNotes {
+  padding-top: 16px;
+  border-top: 1px solid rgba(151, 177, 255, 0.16);
+}
+
+.technicalNotes summary {
+  color: #fff;
+  cursor: pointer;
+}
+
+.technicalNotes p {
+  margin-top: 14px;
+  color: rgba(232, 238, 255, 0.68);
+  line-height: 1.65;
+}
+
+.mediaPager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mediaPager button,
+.expandButton,
+.nodeMedia > button {
+  padding: 10px 12px;
+  color: #f7f9ff;
+  font: inherit;
+  background: rgba(151, 177, 255, 0.08);
+  border: 1px solid rgba(151, 177, 255, 0.2);
+  cursor: pointer;
+}
+
+.mediaPager button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.thumbnailGrid button {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 5px;
+  color: rgba(232, 238, 255, 0.72);
+  text-align: left;
+  background: transparent;
+  border: 1px solid rgba(151, 177, 255, 0.14);
+  cursor: pointer;
+}
+
+.thumbnailGrid button[aria-current="true"] {
+  border-color: var(--lab-accent);
+}
+
+.thumbnailGrid img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.thumbnailGrid span {
+  overflow: hidden;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logicSteps {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logicSteps button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  color: rgba(232, 238, 255, 0.68);
+  text-align: left;
+  background: transparent;
+  border: 1px solid rgba(151, 177, 255, 0.12);
+  cursor: pointer;
+}
+
+.logicSteps button[aria-pressed="true"] {
+  color: #fff;
+  border-color: var(--lab-accent);
+  background: color-mix(in srgb, var(--lab-accent) 12%, transparent);
+}
+
+.logicSteps p {
+  line-height: 1.55;
 }
 
 .heroMedia {

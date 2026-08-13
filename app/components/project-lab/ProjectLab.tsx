@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./ProjectLab.module.css";
-import type { ProjectLabProject } from "./projectLabModel";
-import { ProjectLabHero } from "./ProjectLabHero";
+import { getAvailableViews, type ProjectLabProject, type ProjectLabView } from "./projectLabModel";
+import { ProjectInspector } from "./ProjectInspector";
+import { ProjectStage } from "./ProjectStage";
+import { ProjectToolDock } from "./ProjectToolDock";
 
 type ProjectLabProps = {
   projects: ProjectLabProject[];
@@ -15,6 +17,9 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   const [displayedProjectIndex, setDisplayedProjectIndex] = useState(activeProjectIndex);
   const [compact, setCompact] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  const [activeView, setActiveView] = useState<ProjectLabView>("result");
+  const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+  const [failedMedia, setFailedMedia] = useState<Set<string>>(() => new Set());
   const [reduceMotion, setReduceMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -23,6 +28,8 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   const exitFrameRef = useRef<number | null>(null);
   const transitionFrameRef = useRef<number | null>(null);
   const displayedProject = projects[displayedProjectIndex] ?? projects[0];
+  const availableViews = displayedProject ? getAvailableViews(displayedProject) : [];
+  const displayedActiveView = availableViews.includes(activeView) ? activeView : "result";
 
   const clearScheduledSwitch = useCallback(() => {
     if (switchTimeoutRef.current !== null) {
@@ -90,6 +97,23 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   useEffect(() => () => clearScheduledSwitch(), [clearScheduledSwitch]);
 
   useEffect(() => {
+    // This effect is the project-boundary reset required for all coordinated lab controls.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveView("result");
+    setActiveMediaIndex(0);
+    setFailedMedia(new Set());
+  }, [displayedProjectIndex]);
+
+  useEffect(() => {
+    if (displayedProject && !getAvailableViews(displayedProject).includes(activeView)) {
+      // Catalog data can remove a view while it is active, so recover to the guaranteed Result tab.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveView("result");
+      setActiveMediaIndex(0);
+    }
+  }, [activeView, displayedProject]);
+
+  useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !("IntersectionObserver" in window)) return;
 
@@ -110,6 +134,23 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
     if (index === activeProjectIndex) return;
     if (!reduceMotion) setTransitioning(true);
     onProjectChange(index);
+  };
+
+  const handleViewChange = (view: ProjectLabView) => {
+    setActiveView(view);
+    setActiveMediaIndex(0);
+  };
+
+  const handleMediaError = (src: string) => {
+    setFailedMedia((current) => {
+      const next = new Set(current);
+      next.add(src);
+      return next;
+    });
+  };
+
+  const handleExpand = (src: string) => {
+    window.open(src, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -141,12 +182,29 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
               </nav>
             </header>
             <div className={styles.stageFrame}>
-              <ProjectLabHero project={displayedProject} compact={compact} />
+              <ProjectStage
+                project={displayedProject}
+                activeView={displayedActiveView}
+                mediaIndex={activeMediaIndex}
+                failedMedia={failedMedia}
+                compact={compact}
+                onMediaError={handleMediaError}
+                onExpand={handleExpand}
+              />
+              <ProjectToolDock
+                views={availableViews}
+                activeView={displayedActiveView}
+                onViewChange={handleViewChange}
+              />
             </div>
-            <div className={styles.shell}>
-              <h2>{displayedProject.title}</h2>
-              <p>{displayedProject.description}</p>
-            </div>
+            <ProjectInspector
+              key={displayedProject.id}
+              project={displayedProject}
+              activeView={displayedActiveView}
+              mediaIndex={activeMediaIndex}
+              onMediaChange={setActiveMediaIndex}
+              onExpand={handleExpand}
+            />
           </div>
         </div>
         <div ref={sentinelRef} className={styles.phaseSentinel} aria-hidden="true" />
