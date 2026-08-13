@@ -199,6 +199,35 @@ test("keeps all comparison media available in the deployment bundle", async () =
   );
   assert.match(projectLab, /<ProjectInspector[\s\S]*?compact=\{compact\}/);
   assert.doesNotMatch(projectLab, /mobileLayout/);
+  const stagePosition = projectLab.indexOf("<ProjectStage");
+  const mobileSentinelPosition = projectLab.indexOf("ref={mobileSentinelRef}");
+  const toolDockPosition = projectLab.indexOf("<ProjectToolDock");
+  const inspectorPosition = projectLab.indexOf("<ProjectInspector");
+  const desktopSentinelPosition = projectLab.indexOf("ref={desktopSentinelRef}");
+  assert.ok(stagePosition >= 0, "ProjectStage must remain in the shared project lab workspace");
+  assert.ok(
+    stagePosition < mobileSentinelPosition
+      && mobileSentinelPosition < toolDockPosition
+      && toolDockPosition < inspectorPosition,
+    "mobile phase sentinel must follow Stage and precede Dock/Inspector",
+  );
+  assert.ok(
+    inspectorPosition < desktopSentinelPosition,
+    "desktop phase sentinel must remain after the sticky workspace",
+  );
+  assert.match(
+    projectLab,
+    /query\.matches\s*\?\s*mobileSentinelRef\.current\s*:\s*desktopSentinelRef\.current/,
+  );
+  assert.doesNotMatch(projectLab, /addEventListener\("scroll"/);
+  assert.match(
+    projectLabCss,
+    /\.lab\[data-lab-phase="hero"\]\s+\.inspector\s*\{[\s\S]*?max-height:\s*0;[\s\S]*?padding-block:\s*0;/,
+  );
+  assert.match(
+    projectLabCss,
+    /\.lab\[data-lab-phase="compact"\]\s+\.inspector\s*\{[\s\S]*?max-height:\s*42svh;/,
+  );
   assert.match(projectLab, /<noscript>/);
   assert.match(page, /activeProjectIndex/);
   assert.match(page, /setActiveProjectIndex/);

@@ -478,6 +478,10 @@
   height: 1px;
 }
 
+.mobilePhaseSentinel {
+  display: none;
+}
+
 .focusBackdrop {
   position: fixed;
   inset: 0;
@@ -622,6 +626,26 @@
     min-width: 112px;
     min-height: 48px;
     scroll-snap-align: start;
+  }
+
+  .mobilePhaseSentinel {
+    display: block;
+    flex: 0 0 1px;
+  }
+
+  .desktopPhaseSentinel {
+    display: none;
+  }
+
+  .lab[data-lab-phase="hero"] .inspector {
+    max-height: 0;
+    overflow: hidden;
+    padding-block: 0;
+    border-top-color: transparent;
+  }
+
+  .lab[data-lab-phase="compact"] .inspector {
+    max-height: 42svh;
   }
 
   .lab[data-lab-phase="hero"] .inspector,

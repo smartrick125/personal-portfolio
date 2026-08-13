@@ -28,7 +28,8 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   const [reduceMotion, setReduceMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const desktopSentinelRef = useRef<HTMLDivElement>(null);
+  const mobileSentinelRef = useRef<HTMLDivElement>(null);
   const switchTimeoutRef = useRef<number | null>(null);
   const exitFrameRef = useRef<number | null>(null);
   const transitionFrameRef = useRef<number | null>(null);
@@ -130,18 +131,30 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   }, []);
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !("IntersectionObserver" in window)) return;
+    if (!("IntersectionObserver" in window)) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setCompact((entry?.boundingClientRect.top ?? Number.POSITIVE_INFINITY) <= window.innerHeight * 0.35);
-      },
-      { rootMargin: "0px 0px -65% 0px", threshold: 0 },
-    );
+    const query = window.matchMedia("(max-width: 760px)");
+    let observer: IntersectionObserver | null = null;
+    const observePhaseBoundary = () => {
+      observer?.disconnect();
+      const sentinel = query.matches ? mobileSentinelRef.current : desktopSentinelRef.current;
+      if (!sentinel) return;
 
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          setCompact((entry?.boundingClientRect.top ?? Number.POSITIVE_INFINITY) <= window.innerHeight * 0.35);
+        },
+        { rootMargin: "0px 0px -65% 0px", threshold: 0 },
+      );
+      observer.observe(sentinel);
+    };
+
+    observePhaseBoundary();
+    query.addEventListener("change", observePhaseBoundary);
+    return () => {
+      query.removeEventListener("change", observePhaseBoundary);
+      observer?.disconnect();
+    };
   }, []);
 
   if (!displayedProject) return null;
@@ -219,6 +232,11 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
                 onExpand={handleExpand}
                 onCodeSourceChange={handleCodeSourceChange}
               />
+              <div
+                ref={mobileSentinelRef}
+                className={`${styles.phaseSentinel} ${styles.mobilePhaseSentinel}`}
+                aria-hidden="true"
+              />
               <ProjectToolDock
                 views={availableViews}
                 activeView={displayedActiveView}
@@ -236,7 +254,11 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
             />
           </div>
         </div>
-        <div ref={sentinelRef} className={styles.phaseSentinel} aria-hidden="true" />
+        <div
+          ref={desktopSentinelRef}
+          className={`${styles.phaseSentinel} ${styles.desktopPhaseSentinel}`}
+          aria-hidden="true"
+        />
       </div>
       <ProjectFocusViewer
         open={focusContent !== null}
