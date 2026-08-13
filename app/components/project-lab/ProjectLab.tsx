@@ -25,7 +25,6 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   const [failedMedia, setFailedMedia] = useState<Set<string>>(() => new Set());
   const [focusContent, setFocusContent] = useState<FocusContent>(null);
   const [codeSource, setCodeSource] = useState<ProjectCodeSource | null>(null);
-  const [mobileLayout, setMobileLayout] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -61,14 +60,6 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sync = () => setReduceMotion(query.matches);
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
-
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 760px)");
-    const sync = () => setMobileLayout(query.matches);
-    sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, []);
@@ -239,7 +230,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
               project={displayedProject}
               activeView={displayedActiveView}
               mediaIndex={activeMediaIndex}
-              compact={compact || mobileLayout}
+              compact={compact}
               onMediaChange={setActiveMediaIndex}
               onExpand={handleExpand}
             />

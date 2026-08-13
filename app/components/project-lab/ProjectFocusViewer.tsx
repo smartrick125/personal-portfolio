@@ -12,13 +12,24 @@ type ProjectFocusViewerProps = {
   triggerRef: RefObject<HTMLButtonElement | null>;
 };
 
+function tryRestoreFocus(candidate: HTMLElement | null) {
+  if (!candidate || !candidate.isConnected) return false;
+  if (candidate.closest("[inert]")) return false;
+  if (candidate.closest('[hidden], [aria-hidden="true"]')) return false;
+
+  const style = window.getComputedStyle(candidate);
+  if (style.display === "none" || style.visibility === "hidden") return false;
+
+  candidate.focus();
+  return document.activeElement === candidate;
+}
+
 function restoreFocus(
   triggerRef: RefObject<HTMLButtonElement | null>,
   savedActiveElement: HTMLElement | null,
 ) {
-  const trigger = triggerRef.current;
-  triggerRef.current?.focus();
-  if (!trigger) savedActiveElement?.focus();
+  if (tryRestoreFocus(triggerRef.current)) return;
+  tryRestoreFocus(savedActiveElement);
 }
 
 export function ProjectFocusViewer({

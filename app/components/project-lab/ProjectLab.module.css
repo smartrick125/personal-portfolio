@@ -607,22 +607,36 @@
     max-height: 42svh;
     overflow: auto;
     border-top: 1px solid rgba(151, 177, 255, 0.18);
-    visibility: visible;
-    opacity: 1;
     transform: none;
-    pointer-events: auto;
+    transition: opacity 180ms ease, visibility 0s linear 180ms;
   }
 
   .toolDock {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: inline mandatory;
+    transition: opacity 180ms ease, visibility 0s linear 180ms;
   }
 
   .toolDock button {
     min-width: 112px;
     min-height: 48px;
     scroll-snap-align: start;
+  }
+
+  .lab[data-lab-phase="hero"] .inspector,
+  .lab[data-lab-phase="hero"] .toolDock {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .lab[data-lab-phase="compact"] .inspector,
+  .lab[data-lab-phase="compact"] .toolDock {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 180ms ease, visibility 0s linear 0s;
   }
 
   .focusBackdrop {
@@ -654,13 +668,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero,
-  .workspace,
+  .projectContent,
+  .stageFrame,
   .inspector,
+  .toolDock,
   .stageContent,
   .focusDialog {
     animation: none !important;
     transition: none !important;
     transform: none !important;
+  }
+
+  .projectContentTransitioning {
+    opacity: 1 !important;
   }
 }

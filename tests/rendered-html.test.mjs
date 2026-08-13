@@ -169,7 +169,10 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectFocusViewer, /aria-modal="true"/);
   assert.match(projectFocusViewer, /Escape/);
   assert.match(projectFocusViewer, /focusableElements/);
-  assert.match(projectFocusViewer, /triggerRef\.current\?\.focus/);
+  assert.match(projectFocusViewer, /candidate\.isConnected/);
+  assert.match(projectFocusViewer, /candidate\.closest\("\[inert\]"\)/);
+  assert.match(projectFocusViewer, /document\.activeElement === candidate/);
+  assert.match(projectFocusViewer, /tryRestoreFocus\(triggerRef\.current\)/);
   assert.match(projectLabHero, /onError=\{\(\) => onMediaError\?\.\(hero\.src\)\}/);
   assert.match(projectLabCss, /\.heroParallaxImage/);
   assert.match(projectLabCss, /object-fit:\s*contain/);
@@ -178,6 +181,24 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectLabCss, /@media\s*\(max-width:\s*760px\)/);
   assert.match(projectLabCss, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(projectLabCss, /@media\s*\(pointer:\s*coarse\)/);
+  assert.match(
+    projectLabCss,
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?\.projectContent,[\s\S]*?\.stageFrame,[\s\S]*?\.inspector,[\s\S]*?\.stageContent,[\s\S]*?\.focusDialog\s*\{[\s\S]*?animation:\s*none\s*!important;[\s\S]*?transition:\s*none\s*!important;[\s\S]*?transform:\s*none\s*!important;/,
+  );
+  assert.doesNotMatch(
+    projectLabCss,
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?\.hero,\s*\.workspace/,
+  );
+  assert.match(
+    projectLabCss,
+    /\.lab\[data-lab-phase="hero"\]\s+\.inspector,\s*\.lab\[data-lab-phase="hero"\]\s+\.toolDock\s*\{[\s\S]*?visibility:\s*hidden;[\s\S]*?opacity:\s*0;[\s\S]*?pointer-events:\s*none;/,
+  );
+  assert.match(
+    projectLabCss,
+    /\.lab\[data-lab-phase="compact"\]\s+\.inspector,\s*\.lab\[data-lab-phase="compact"\]\s+\.toolDock\s*\{[\s\S]*?visibility:\s*visible;[\s\S]*?opacity:\s*1;[\s\S]*?pointer-events:\s*auto;/,
+  );
+  assert.match(projectLab, /<ProjectInspector[\s\S]*?compact=\{compact\}/);
+  assert.doesNotMatch(projectLab, /mobileLayout/);
   assert.match(projectLab, /<noscript>/);
   assert.match(page, /activeProjectIndex/);
   assert.match(page, /setActiveProjectIndex/);
