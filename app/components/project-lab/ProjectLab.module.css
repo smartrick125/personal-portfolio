@@ -95,6 +95,7 @@
   overflow: auto;
   padding: 28px;
   background: rgba(8, 13, 32, 0.96);
+  visibility: hidden;
   opacity: 0;
   transform: translateX(32px);
   pointer-events: none;
@@ -102,6 +103,7 @@
 }
 
 .lab[data-lab-phase="compact"] .inspector {
+  visibility: visible;
   opacity: 1;
   transform: none;
   pointer-events: auto;
@@ -275,6 +277,12 @@
   cursor: pointer;
 }
 
+.technicalNotes a {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--lab-accent);
+}
+
 .technicalNotes p {
   margin-top: 14px;
   color: rgba(232, 238, 255, 0.68);
@@ -285,6 +293,35 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.resultMediaPicker {
+  display: grid;
+  gap: 8px;
+}
+
+.resultMediaPicker button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  color: rgba(232, 238, 255, 0.72);
+  text-align: left;
+  background: transparent;
+  border: 1px solid rgba(151, 177, 255, 0.14);
+  cursor: pointer;
+}
+
+.resultMediaPicker button[aria-current="true"] {
+  color: #fff;
+  border-color: var(--lab-accent);
+}
+
+.resultMediaPicker strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mediaPager button,
@@ -365,7 +402,7 @@
   background: color-mix(in srgb, var(--lab-accent) 12%, transparent);
 }
 
-.logicSteps p {
+.logicStepText {
   line-height: 1.55;
 }
 

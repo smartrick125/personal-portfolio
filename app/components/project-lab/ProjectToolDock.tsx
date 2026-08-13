@@ -46,7 +46,7 @@ export function ProjectToolDock({ views, activeView, onViewChange }: ProjectTool
           role="tab"
           type="button"
           aria-selected={view === activeView}
-          aria-controls={`lab-panel-${view}`}
+          aria-controls="lab-panel-active"
           tabIndex={view === activeView ? 0 : -1}
           onClick={() => onViewChange(view)}
           onKeyDown={(event) => handleKeyDown(event, index)}

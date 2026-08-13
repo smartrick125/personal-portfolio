@@ -2,14 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import styles from "./ProjectLab.module.css";
-import { getHeroMedia, type ProjectLabProject } from "./projectLabModel";
+import { getHeroMedia, type ProjectLabMedia, type ProjectLabProject } from "./projectLabModel";
 
 type ProjectLabHeroProps = {
   project: ProjectLabProject;
   compact: boolean;
+  media?: ProjectLabMedia | null;
+  onMediaError?: (src: string) => void;
 };
 
-export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
+export function ProjectLabHero({ project, compact, media, onMediaError }: ProjectLabHeroProps) {
   const heroRootRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -18,7 +20,7 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
     () => typeof window !== "undefined"
       && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches,
   );
-  const hero = getHeroMedia(project);
+  const hero = media === undefined ? getHeroMedia(project) : media;
 
   const onPlayRejected = useCallback(() => {
     setPlayRejected(true);
@@ -110,6 +112,7 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
             preload="metadata"
             poster={project.gallery[0]?.src}
             onPlay={() => setPlayRejected(false)}
+            onError={() => onMediaError?.(hero.src)}
           />
           {playRejected && (
             <button className={styles.playButton} type="button" onClick={playVideo}>
@@ -131,6 +134,7 @@ export function ProjectLabHero({ project, compact }: ProjectLabHeroProps) {
           onPointerMove={onImagePointerMove}
           onPointerLeave={resetImageParallax}
           onPointerCancel={resetImageParallax}
+          onError={() => onMediaError?.(hero.src)}
         />
       )}
 

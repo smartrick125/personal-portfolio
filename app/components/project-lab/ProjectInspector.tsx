@@ -8,6 +8,7 @@ type ProjectInspectorProps = {
   project: ProjectLabProject;
   activeView: ProjectLabView;
   mediaIndex: number;
+  compact: boolean;
   onMediaChange: (index: number) => void;
   onExpand: (src: string) => void;
 };
@@ -21,6 +22,7 @@ export function ProjectInspector({
   project,
   activeView,
   mediaIndex,
+  compact,
   onMediaChange,
   onExpand,
 }: ProjectInspectorProps) {
@@ -48,7 +50,13 @@ export function ProjectInspector({
   );
 
   return (
-    <aside className={styles.inspector} data-project-inspector="true" aria-label="Project inspector">
+    <aside
+      className={styles.inspector}
+      data-project-inspector="true"
+      aria-label="Project inspector"
+      aria-hidden={!compact}
+      inert={!compact ? true : undefined}
+    >
       {activeView === "result" && (
         <div className={styles.inspectorSection}>
           <p>{project.description}</p>
@@ -60,8 +68,27 @@ export function ProjectInspector({
             <strong>{project.metric}</strong>
             <span>{project.metricLabel}</span>
           </p>
+          {project.videos.length > 0 && (
+            <div className={styles.resultMediaPicker} aria-label="Result videos">
+              {project.videos.map((item, index) => (
+                <button
+                  type="button"
+                  aria-label={`Show result video ${item.name}`}
+                  aria-current={index === mediaIndex ? "true" : undefined}
+                  onClick={() => onMediaChange(index)}
+                  key={item.src}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{item.name}</strong>
+                </button>
+              ))}
+            </div>
+          )}
           <details className={styles.technicalNotes}>
             <summary>Read technical notes</summary>
+            <a href={project.technicalSummary.src} target="_blank" rel="noreferrer">
+              {project.technicalSummary.name}
+            </a>
             {project.technicalSummary.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </details>
         </div>
@@ -103,7 +130,7 @@ export function ProjectInspector({
                   onClick={() => setActiveLogicIndex(index)}
                 >
                   <span>{String(index + 1).padStart(2, "0")}</span>
-                  <p>{step}</p>
+                  <span className={styles.logicStepText}>{step}</span>
                 </button>
               </li>
             ))}

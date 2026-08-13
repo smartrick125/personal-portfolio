@@ -38,11 +38,15 @@ test("server-renders the portfolio and its new archive structure", async () => {
   assert.match(html, /id="project-lab"/);
   assert.match(html, /role="tablist"[^>]*aria-label="Project lab tools"/);
   assert.match(html, /role="tab"[^>]*aria-selected="true"/);
+  const controlledPanels = html.match(/role="tab"[^>]*aria-controls="lab-panel-active"/g) ?? [];
+  assert.equal(controlledPanels.length, 5);
   for (const label of ["Result", "Gallery", "Logic", "Nodes", "Code"]) {
     assert.match(html, new RegExp(`>${label}<`));
   }
-  assert.match(html, /data-project-stage="true"/);
-  assert.match(html, /data-project-inspector="true"/);
+  assert.match(html, /id="lab-panel-active"[^>]*data-project-stage="true"/);
+  assert.match(html, /data-project-inspector="true"[^>]*aria-hidden="true"[^>]*inert=""/);
+  assert.match(html, /aria-label="Show result video Full_View\.mp4"/);
+  assert.match(html, /href="\/projects\/catalog\/Full_Skill_Effect\/Technical_Summary\/full-skill-effect-shader\.docx"[^>]*>Full_Skill_Effect_Shader\.docx</);
   assert.match(html, /<video[^>]*autoplay[^>]*muted[^>]*loop[^>]*playsinline/i);
   assert.doesNotMatch(html, /class="case-study"/);
   for (const accent of ["skill", "shield", "beam", "fire"]) {
@@ -138,8 +142,23 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectLab, /if \(activeProjectIndex === displayedProjectIndex\) \{[\s\S]*finishProjectSwitch/);
   assert.match(projectToolDock, /viewLabels/);
   assert.match(projectToolDock, /role="tablist"/);
+  assert.match(projectToolDock, /aria-controls="lab-panel-active"/);
   assert.match(projectStage, /data-project-stage="true"/);
+  assert.match(projectStage, /project\.videos\[mediaIndex\]/);
+  assert.match(projectStage, /project\.gallery\.find/);
+  assert.match(projectStage, /failedMedia\?\.has\(resultVideo\.src\)/);
+  assert.match(projectStage, /!response\.ok/);
+  assert.match(projectStage, /\.catch\(/);
+  assert.match(projectStage, /This source file is currently unavailable\./);
+  assert.match(projectStage, /id="lab-panel-active"/);
   assert.match(projectInspector, /technicalSummary/);
+  assert.match(projectInspector, /project\.videos\.map/);
+  assert.match(projectInspector, /href=\{project\.technicalSummary\.src\}/);
+  assert.match(projectInspector, /inert=\{!compact \? true : undefined\}/);
+  assert.match(projectInspector, /aria-hidden=\{!compact\}/);
+  assert.match(projectInspector, /<span className=\{styles\.logicStepText\}>\{step\}<\/span>/);
+  assert.doesNotMatch(projectInspector, /<p>\{step\}<\/p>/);
+  assert.match(projectLabHero, /onError=\{\(\) => onMediaError\?\.\(hero\.src\)\}/);
   assert.match(projectLabCss, /\.heroParallaxImage/);
   assert.match(projectLabCss, /object-fit:\s*contain/);
   assert.match(projectLabCss, /--image-parallax-x/);

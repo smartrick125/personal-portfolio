@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./ProjectLab.module.css";
 import { ProjectLabHero } from "./ProjectLabHero";
-import { getHeroMedia, type ProjectLabProject, type ProjectLabView } from "./projectLabModel";
+import type { ProjectLabMedia, ProjectLabProject, ProjectLabView } from "./projectLabModel";
 
 type ProjectStageProps = {
   project: ProjectLabProject;
@@ -16,24 +16,42 @@ type ProjectStageProps = {
 };
 
 function ProjectCodeViewer({ src, name }: { src: string; name: string }) {
-  const [loadedCode, setLoadedCode] = useState({ src: "", content: "" });
+  const [loadedCode, setLoadedCode] = useState<{
+    src: string;
+    status: "ready" | "error";
+    content: string;
+  }>({ src: "", status: "ready", content: "" });
 
   useEffect(() => {
     let active = true;
     fetch(src)
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) throw new Error(`Unable to load source: ${response.status}`);
+        return response.text();
+      })
       .then((content) => {
-        if (active) setLoadedCode({ src, content });
+        if (active) setLoadedCode({ src, status: "ready", content });
+      })
+      .catch(() => {
+        if (active) setLoadedCode({ src, status: "error", content: "" });
       });
     return () => {
       active = false;
     };
   }, [src]);
 
+  const status = loadedCode.src === src ? loadedCode.status : "loading";
+
   return (
     <section className={styles.codeViewer} aria-label={name}>
       <p>{name}</p>
-      <pre aria-label={name} tabIndex={0}><code>{loadedCode.src === src ? loadedCode.content : ""}</code></pre>
+      {status === "error" ? (
+        <p className={styles.mediaUnavailable} role="status">This source file is currently unavailable.</p>
+      ) : (
+        <pre aria-label={name} aria-busy={status === "loading"} tabIndex={0}>
+          <code>{status === "ready" ? loadedCode.content : ""}</code>
+        </pre>
+      )}
     </section>
   );
 }
@@ -49,34 +67,34 @@ export function ProjectStage({
 }: ProjectStageProps) {
   const galleryItem = project.gallery[mediaIndex] ?? project.gallery[0];
   const nodeItem = project.nodes[mediaIndex] ?? project.nodes[0];
-  const resultMedia = getHeroMedia(project);
+  const resultVideo = project.videos[mediaIndex] ?? project.videos[0];
+  const resultVideoUnavailable = resultVideo ? (failedMedia?.has(resultVideo.src) ?? false) : false;
+  const resultImage = project.gallery.find((item) => !(failedMedia?.has(item.src) ?? false));
+  const resultMedia: ProjectLabMedia | null = resultVideo && !resultVideoUnavailable
+    ? { ...resultVideo, kind: "video" }
+    : resultImage
+      ? { ...resultImage, kind: "image" }
+      : null;
   const imageItem = activeView === "gallery" ? galleryItem : activeView === "nodes" ? nodeItem : undefined;
   const imageUnavailable = imageItem ? (failedMedia?.has(imageItem.src) ?? false) : false;
-  const resultImageUnavailable = resultMedia?.kind === "image" && (failedMedia?.has(resultMedia.src) ?? false);
 
   return (
     <section
-      id={`lab-panel-${activeView}`}
+      id="lab-panel-active"
       className={styles.stage}
       data-project-stage="true"
       role="tabpanel"
       aria-labelledby={`lab-tab-${activeView}`}
     >
       <div className={styles.stageContent}>
-        {(activeView === "result" || activeView === "logic") && !resultImageUnavailable && (
-          <div
-            className={styles.resultMedia}
-            onErrorCapture={() => {
-              if (resultMedia?.kind === "image") onMediaError(resultMedia.src);
-            }}
-          >
-            <ProjectLabHero project={project} compact={compact} />
-          </div>
-        )}
-
-        {(activeView === "result" || activeView === "logic") && resultImageUnavailable && (
-          <div className={styles.mediaUnavailable} role="status">
-            <p>This media is currently unavailable.</p>
+        {(activeView === "result" || activeView === "logic") && (
+          <div className={styles.resultMedia}>
+            <ProjectLabHero
+              project={project}
+              compact={compact}
+              media={resultMedia}
+              onMediaError={onMediaError}
+            />
           </div>
         )}
 

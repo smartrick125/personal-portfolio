@@ -202,6 +202,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
               project={displayedProject}
               activeView={displayedActiveView}
               mediaIndex={activeMediaIndex}
+              compact={compact}
               onMediaChange={setActiveMediaIndex}
               onExpand={handleExpand}
             />
