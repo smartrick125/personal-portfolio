@@ -242,6 +242,18 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.doesNotMatch(projectLab, /addEventListener\("scroll"/);
   assert.match(
     projectLabCss,
+    /\.transitionTrack\s*\{[^}]*position:\s*relative;[^}]*min-height:\s*150svh;/,
+  );
+  assert.match(
+    projectLabCss,
+    /\.desktopPhaseSentinel\s*\{[^}]*position:\s*absolute;[^}]*inset-inline:\s*0;[^}]*top:\s*50svh;/,
+  );
+  assert.match(
+    projectLabCss,
+    /@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.desktopPhaseSentinel\s*\{[^}]*display:\s*none;/,
+  );
+  assert.match(
+    projectLabCss,
     /\.lab\[data-lab-phase="hero"\]\s+\.inspector\s*\{[\s\S]*?max-height:\s*0;[\s\S]*?padding-block:\s*0;/,
   );
   assert.match(

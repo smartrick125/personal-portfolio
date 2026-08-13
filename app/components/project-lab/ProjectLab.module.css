@@ -483,6 +483,12 @@
   display: none;
 }
 
+.desktopPhaseSentinel {
+  position: absolute;
+  inset-inline: 0;
+  top: 50svh;
+}
+
 .focusBackdrop {
   position: fixed;
   inset: 0;
