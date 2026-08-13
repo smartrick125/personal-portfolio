@@ -12,10 +12,24 @@ type ProjectStageProps = {
   failedMedia?: ReadonlySet<string>;
   compact?: boolean;
   onMediaError: (src: string) => void;
-  onExpand: (src: string) => void;
+  onExpand: (kind: "node" | "code", trigger: HTMLButtonElement) => void;
+  onCodeSourceChange: (source: ProjectCodeSource) => void;
 };
 
-function ProjectCodeViewer({ src, name }: { src: string; name: string }) {
+export type ProjectCodeSource = {
+  src: string;
+  status: "loading" | "ready" | "error";
+  content: string;
+};
+
+type ProjectCodeViewerProps = {
+  src: string;
+  name: string;
+  onExpand: ProjectStageProps["onExpand"];
+  onCodeSourceChange: ProjectStageProps["onCodeSourceChange"];
+};
+
+function ProjectCodeViewer({ src, name, onExpand, onCodeSourceChange }: ProjectCodeViewerProps) {
   const [loadedCode, setLoadedCode] = useState<{
     src: string;
     status: "ready" | "error";
@@ -24,27 +38,41 @@ function ProjectCodeViewer({ src, name }: { src: string; name: string }) {
 
   useEffect(() => {
     let active = true;
+    onCodeSourceChange({ src, status: "loading", content: "" });
     fetch(src)
       .then((response) => {
         if (!response.ok) throw new Error(`Unable to load source: ${response.status}`);
         return response.text();
       })
       .then((content) => {
-        if (active) setLoadedCode({ src, status: "ready", content });
+        if (active) {
+          const source = { src, status: "ready" as const, content };
+          setLoadedCode(source);
+          onCodeSourceChange(source);
+        }
       })
       .catch(() => {
-        if (active) setLoadedCode({ src, status: "error", content: "" });
+        if (active) {
+          const source = { src, status: "error" as const, content: "" };
+          setLoadedCode(source);
+          onCodeSourceChange(source);
+        }
       });
     return () => {
       active = false;
     };
-  }, [src]);
+  }, [onCodeSourceChange, src]);
 
   const status = loadedCode.src === src ? loadedCode.status : "loading";
 
   return (
     <section className={styles.codeViewer} aria-label={name}>
-      <p>{name}</p>
+      <header className={styles.codeViewerHeader}>
+        <p>{name}</p>
+        <button type="button" onClick={(event) => onExpand("code", event.currentTarget)}>
+          Expand
+        </button>
+      </header>
       {status === "error" ? (
         <p className={styles.mediaUnavailable} role="status">This source file is currently unavailable.</p>
       ) : (
@@ -64,6 +92,7 @@ export function ProjectStage({
   compact = false,
   onMediaError,
   onExpand,
+  onCodeSourceChange,
 }: ProjectStageProps) {
   const galleryItem = project.gallery[mediaIndex] ?? project.gallery[0];
   const nodeItem = project.nodes[mediaIndex] ?? project.nodes[0];
@@ -109,7 +138,7 @@ export function ProjectStage({
             />
             <figcaption>{imageItem.name}</figcaption>
             {activeView === "nodes" && (
-              <button type="button" onClick={() => onExpand(imageItem.src)}>Expand</button>
+              <button type="button" onClick={(event) => onExpand("node", event.currentTarget)}>Expand</button>
             )}
           </figure>
         )}
@@ -127,7 +156,12 @@ export function ProjectStage({
         )}
 
         {activeView === "code" && project.script && (
-          <ProjectCodeViewer src={project.script.src} name={project.script.name} />
+          <ProjectCodeViewer
+            src={project.script.src}
+            name={project.script.name}
+            onExpand={onExpand}
+            onCodeSourceChange={onCodeSourceChange}
+          />
         )}
       </div>
     </section>

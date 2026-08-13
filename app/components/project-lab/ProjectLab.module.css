@@ -200,11 +200,29 @@
   padding: 24px;
 }
 
-.codeViewer > p {
-  margin: 0 0 14px;
+.codeViewerHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.codeViewerHeader p {
+  margin: 0;
   color: rgba(232, 238, 255, 0.68);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
+}
+
+.codeViewerHeader button {
+  min-height: 40px;
+  padding: 8px 12px;
+  color: #f7f9ff;
+  font: inherit;
+  background: rgba(151, 177, 255, 0.08);
+  border: 1px solid rgba(151, 177, 255, 0.2);
+  cursor: pointer;
 }
 
 .codeViewer pre {
@@ -458,4 +476,191 @@
 
 .phaseSentinel {
   height: 1px;
+}
+
+.focusBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  padding: clamp(12px, 3vw, 40px);
+  place-items: center;
+  background: rgba(1, 3, 10, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+.focusDialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(100%, 1600px);
+  height: min(100%, 980px);
+  overflow: hidden;
+  color: #f7f9ff;
+  background: #050817;
+  border: 1px solid rgba(151, 177, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.55);
+  animation: focusDialogEnter 180ms ease-out;
+}
+
+@keyframes focusDialogEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+.focusHeader {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(151, 177, 255, 0.18);
+}
+
+.focusHeader h2 {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+}
+
+.focusHeader button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #fff;
+  font: inherit;
+  font-size: 1.6rem;
+  background: rgba(151, 177, 255, 0.08);
+  border: 1px solid rgba(151, 177, 255, 0.2);
+  cursor: pointer;
+}
+
+.focusContent {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  place-items: center;
+}
+
+.focusNodeImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.focusCode {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: auto;
+  padding: clamp(18px, 3vw, 40px);
+  color: #dce6ff;
+  background: #03050d;
+}
+
+.focusUnavailable {
+  margin: 0;
+  padding: 32px;
+  color: rgba(232, 238, 255, 0.68);
+}
+
+.focusHeader button:focus-visible,
+.focusCode:focus-visible {
+  outline: 2px solid var(--lab-accent, #7c6cff);
+  outline-offset: -3px;
+}
+
+@media (max-width: 760px) {
+  .transitionTrack {
+    min-height: auto;
+  }
+
+  .experience {
+    position: relative;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .stageFrame,
+  .lab[data-lab-phase="compact"] .stageFrame {
+    width: 100%;
+    height: max(48svh, 380px);
+    border-radius: 0;
+  }
+
+  .stage {
+    border-right: 0;
+  }
+
+  .inspector {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    height: auto;
+    max-height: 42svh;
+    overflow: auto;
+    border-top: 1px solid rgba(151, 177, 255, 0.18);
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .toolDock {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: inline mandatory;
+  }
+
+  .toolDock button {
+    min-width: 112px;
+    min-height: 48px;
+    scroll-snap-align: start;
+  }
+
+  .focusBackdrop {
+    padding: 0;
+  }
+
+  .focusDialog {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+@media (pointer: coarse) {
+  .heroParallaxImage {
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .toolDock button,
+  .inspector button,
+  .stage button,
+  .codeViewerHeader button,
+  .focusHeader button {
+    min-height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .workspace,
+  .inspector,
+  .stageContent,
+  .focusDialog {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }

@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./ProjectLab.module.css";
 import { getAvailableViews, type ProjectLabProject, type ProjectLabView } from "./projectLabModel";
+import { ProjectFocusViewer } from "./ProjectFocusViewer";
 import { ProjectInspector } from "./ProjectInspector";
-import { ProjectStage } from "./ProjectStage";
+import { ProjectStage, type ProjectCodeSource } from "./ProjectStage";
 import { ProjectToolDock } from "./ProjectToolDock";
 
 type ProjectLabProps = {
@@ -13,6 +14,8 @@ type ProjectLabProps = {
   onProjectChange: (index: number) => void;
 };
 
+type FocusContent = { kind: "node" | "code"; title: string } | null;
+
 export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: ProjectLabProps) {
   const [displayedProjectIndex, setDisplayedProjectIndex] = useState(activeProjectIndex);
   const [compact, setCompact] = useState(false);
@@ -20,6 +23,9 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   const [activeView, setActiveView] = useState<ProjectLabView>("result");
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [failedMedia, setFailedMedia] = useState<Set<string>>(() => new Set());
+  const [focusContent, setFocusContent] = useState<FocusContent>(null);
+  const [codeSource, setCodeSource] = useState<ProjectCodeSource | null>(null);
+  const [mobileLayout, setMobileLayout] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -27,6 +33,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   const switchTimeoutRef = useRef<number | null>(null);
   const exitFrameRef = useRef<number | null>(null);
   const transitionFrameRef = useRef<number | null>(null);
+  const focusTriggerRef = useRef<HTMLButtonElement | null>(null);
   const displayedProject = projects[displayedProjectIndex] ?? projects[0];
   const availableViews = displayedProject ? getAvailableViews(displayedProject) : [];
   const displayedActiveView = availableViews.includes(activeView) ? activeView : "result";
@@ -54,6 +61,14 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sync = () => setReduceMotion(query.matches);
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 760px)");
+    const sync = () => setMobileLayout(query.matches);
+    sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, []);
@@ -102,6 +117,8 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
     setActiveView("result");
     setActiveMediaIndex(0);
     setFailedMedia(new Set());
+    setFocusContent(null);
+    setCodeSource(null);
   }, [displayedProjectIndex]);
 
   useEffect(() => {
@@ -112,6 +129,14 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
       setActiveMediaIndex(0);
     }
   }, [activeView, displayedProject]);
+
+  const handleCodeSourceChange = useCallback((source: ProjectCodeSource) => {
+    setCodeSource(source);
+  }, []);
+
+  const handleCloseFocus = useCallback(() => {
+    setFocusContent(null);
+  }, []);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -149,9 +174,20 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
     });
   };
 
-  const handleExpand = (src: string) => {
-    window.open(src, "_blank", "noopener,noreferrer");
+  const handleExpand = (kind: "node" | "code", trigger: HTMLButtonElement) => {
+    const title = kind === "node"
+      ? (displayedProject.nodes[activeMediaIndex] ?? displayedProject.nodes[0])?.name
+      : displayedProject.script?.name;
+    if (!title) return;
+
+    focusTriggerRef.current = trigger;
+    setFocusContent({ kind, title });
   };
+
+  const focusedNode = displayedProject.nodes[activeMediaIndex] ?? displayedProject.nodes[0];
+  const focusedCode = displayedProject.script && codeSource?.src === displayedProject.script.src
+    ? codeSource
+    : null;
 
   return (
     <section
@@ -190,6 +226,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
                 compact={compact}
                 onMediaError={handleMediaError}
                 onExpand={handleExpand}
+                onCodeSourceChange={handleCodeSourceChange}
               />
               <ProjectToolDock
                 views={availableViews}
@@ -202,7 +239,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
               project={displayedProject}
               activeView={displayedActiveView}
               mediaIndex={activeMediaIndex}
-              compact={compact}
+              compact={compact || mobileLayout}
               onMediaChange={setActiveMediaIndex}
               onExpand={handleExpand}
             />
@@ -210,6 +247,39 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
         </div>
         <div ref={sentinelRef} className={styles.phaseSentinel} aria-hidden="true" />
       </div>
+      <ProjectFocusViewer
+        open={focusContent !== null}
+        title={focusContent?.title ?? ""}
+        onClose={handleCloseFocus}
+        triggerRef={focusTriggerRef}
+      >
+        {focusContent?.kind === "node" && focusedNode && !failedMedia.has(focusedNode.src) && (
+          // Catalog images are static assets served directly by the Vite runtime.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            className={styles.focusNodeImage}
+            src={focusedNode.src}
+            alt={focusedNode.name}
+            onError={() => handleMediaError(focusedNode.src)}
+          />
+        )}
+        {focusContent?.kind === "node" && (!focusedNode || failedMedia.has(focusedNode.src)) && (
+          <p className={styles.focusUnavailable} role="status">This media is currently unavailable.</p>
+        )}
+        {focusContent?.kind === "code" && focusedCode?.status === "error" && (
+          <p className={styles.focusUnavailable} role="status">This source file is currently unavailable.</p>
+        )}
+        {focusContent?.kind === "code" && focusedCode?.status !== "error" && (
+          <pre
+            className={styles.focusCode}
+            aria-label={displayedProject.script?.name}
+            aria-busy={focusedCode?.status !== "ready"}
+            tabIndex={0}
+          >
+            <code>{focusedCode?.status === "ready" ? focusedCode.content : ""}</code>
+          </pre>
+        )}
+      </ProjectFocusViewer>
       <noscript>
         <div className={styles.noScriptFallback}>
           {projects.map((project) => (

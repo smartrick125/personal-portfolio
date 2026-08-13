@@ -88,6 +88,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
     projectToolDock,
     projectStage,
     projectInspector,
+    projectFocusViewer,
     projectLabCss,
   ] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
@@ -100,6 +101,12 @@ test("keeps all comparison media available in the deployment bundle", async () =
     readFile(new URL("../app/components/project-lab/ProjectToolDock.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectStage.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/components/project-lab/ProjectInspector.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/project-lab/ProjectFocusViewer.tsx", import.meta.url), "utf8").catch(
+      (error) => {
+        if (error && typeof error === "object" && error.code === "ENOENT") return "";
+        throw error;
+      },
+    ),
     readFile(new URL("../app/components/project-lab/ProjectLab.module.css", import.meta.url), "utf8"),
   ]);
 
@@ -158,11 +165,19 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectInspector, /aria-hidden=\{!compact\}/);
   assert.match(projectInspector, /<span className=\{styles\.logicStepText\}>\{step\}<\/span>/);
   assert.doesNotMatch(projectInspector, /<p>\{step\}<\/p>/);
+  assert.match(projectFocusViewer, /role="dialog"/);
+  assert.match(projectFocusViewer, /aria-modal="true"/);
+  assert.match(projectFocusViewer, /Escape/);
+  assert.match(projectFocusViewer, /focusableElements/);
+  assert.match(projectFocusViewer, /triggerRef\.current\?\.focus/);
   assert.match(projectLabHero, /onError=\{\(\) => onMediaError\?\.\(hero\.src\)\}/);
   assert.match(projectLabCss, /\.heroParallaxImage/);
   assert.match(projectLabCss, /object-fit:\s*contain/);
   assert.match(projectLabCss, /--image-parallax-x/);
   assert.match(projectLabCss, /@media\s*\(prefers-reduced-motion:\s*reduce\),\s*\(pointer:\s*coarse\)/);
+  assert.match(projectLabCss, /@media\s*\(max-width:\s*760px\)/);
+  assert.match(projectLabCss, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(projectLabCss, /@media\s*\(pointer:\s*coarse\)/);
   assert.match(projectLab, /<noscript>/);
   assert.match(page, /activeProjectIndex/);
   assert.match(page, /setActiveProjectIndex/);

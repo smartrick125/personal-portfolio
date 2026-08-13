@@ -10,7 +10,7 @@ type ProjectInspectorProps = {
   mediaIndex: number;
   compact: boolean;
   onMediaChange: (index: number) => void;
-  onExpand: (src: string) => void;
+  onExpand: (kind: "node" | "code", trigger: HTMLButtonElement) => void;
 };
 
 function getAdjacentIndex(index: number, length: number, direction: -1 | 1) {
@@ -143,7 +143,11 @@ export function ProjectInspector({
           <h3>{nodeItem.name}</h3>
           <p>{mediaIndex + 1} / {project.nodes.length}</p>
           {renderPager(project.nodes.length)}
-          <button className={styles.expandButton} type="button" onClick={() => onExpand(nodeItem.src)}>
+          <button
+            className={styles.expandButton}
+            type="button"
+            onClick={(event) => onExpand("node", event.currentTarget)}
+          >
             Expand node graph
           </button>
         </div>
@@ -154,6 +158,13 @@ export function ProjectInspector({
           <h3>{project.script.name}</h3>
           <a href={project.script.src} target="_blank" rel="noreferrer">Open source file</a>
           <p>This code controls the active project&apos;s runtime behavior.</p>
+          <button
+            className={styles.expandButton}
+            type="button"
+            onClick={(event) => onExpand("code", event.currentTarget)}
+          >
+            Expand code
+          </button>
         </div>
       )}
     </aside>
