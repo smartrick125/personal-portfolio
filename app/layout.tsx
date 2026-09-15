@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const siteUrl = "https://personal-portfolio-21265.ke4773613.chatgpt.site";
+const siteUrl = "https://smartrick.top";
 
 // Geist is self-hosted from `public/fonts` and declared in `globals.css`;
 // see the note there for why `next/font/google` is not used.
