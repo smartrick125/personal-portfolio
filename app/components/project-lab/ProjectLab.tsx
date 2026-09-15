@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { flushSync } from "react-dom";
 import styles from "./ProjectLab.module.css";
 import { getAvailableViews, type ProjectLabProject, type ProjectLabView } from "./projectLabModel";
 import { ProjectFocusViewer } from "./ProjectFocusViewer";
@@ -159,6 +160,25 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
 
   const handleProjectChange = (index: number) => {
     if (index === activeProjectIndex) return;
+
+    // Where the browser has View Transitions, swap both indices in one
+    // synchronous commit so it can morph the old stage into the new one. The
+    // staged fade below stays for everything else — and the flushSync is the
+    // point of the exercise: without it React would batch the update past the
+    // snapshot the transition captures.
+    const startViewTransition = document.startViewTransition?.bind(document);
+    if (!reduceMotion && startViewTransition) {
+      clearScheduledSwitch();
+      startViewTransition(() => {
+        flushSync(() => {
+          setTransitioning(false);
+          setDisplayedProjectIndex(index);
+          onProjectChange(index);
+        });
+      });
+      return;
+    }
+
     if (!reduceMotion) setTransitioning(true);
     onProjectChange(index);
   };

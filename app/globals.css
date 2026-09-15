@@ -3600,3 +3600,28 @@ body {
     transform: translateY(-62px) scale(0.976);
   }
 }
+
+/* The project stage is the one element that should morph between projects
+   rather than cross-fade; everything else is left to the default root fade. */
+[data-project-stage="true"] {
+  view-transition-name: lab-stage;
+}
+
+::view-transition-group(lab-stage) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+::view-transition-old(lab-stage),
+::view-transition-new(lab-stage) {
+  animation-duration: 340ms;
+  animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
