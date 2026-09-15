@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
+import { copy, type Lang } from "../../copy";
 import styles from "./ProjectLab.module.css";
 
 type ProjectFocusViewerProps = {
+  lang: Lang;
   open: boolean;
   title: string;
   children: ReactNode;
@@ -33,6 +35,7 @@ function restoreFocus(
 }
 
 export function ProjectFocusViewer({
+  lang,
   open,
   title,
   children,
@@ -104,7 +107,7 @@ export function ProjectFocusViewer({
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            aria-label="Close fullscreen viewer"
+            aria-label={copy[lang].lab.closeViewer}
           >
             ×
           </button>

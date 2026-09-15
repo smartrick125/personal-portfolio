@@ -1,180 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { Arrow } from "./components/Arrow";
 import { HeroBackdrop } from "./components/HeroBackdrop";
 import { HeroTitle } from "./components/HeroTitle";
 import { HolographicTiltCard } from "./components/HolographicTiltCard";
+import { MobileNav } from "./components/MobileNav";
 import { PointerFx } from "./components/PointerFx";
 import { ProjectLab } from "./components/project-lab/ProjectLab";
+import { copy, languageSwitch } from "./copy";
 import { projectCatalog } from "./projectCatalog";
 import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
+import { useLang } from "./useLang";
 
-const copy = {
-  en: {
-    nav: ["Profile", "Work", "Approach", "Contact"],
-    available: "Open to internships · campus · full-time roles",
-    role: "Technical Artist",
-    intro:
-      "Exploring how AI, art, and code can shape expressive real-time experiences.",
-    introNote: "Currently building a foundation in Unity, shaders, C#, and real-time rendering.",
-    viewWork: "Explore selected work",
-    focusLabel: "Current focus",
-    focus: ["Unity", "Shaders", "C# Tooling", "AI × TA"],
-    profileEyebrow: "01 / Profile",
-    profileTitle: "Building the bridge between visual ideas and real-time systems.",
-    profileBody:
-      "I’m Smartrick, an emerging Technical Artist building practical knowledge across shader development, Unity tools, and real-time rendering—while exploring where AI can make creative pipelines faster and more expressive.",
-    statusTitle: "Opportunity status",
-    statusBody: "Available for internships, campus recruitment, and full-time opportunities.",
-    learn: "Learning",
-    practice: "Practising",
-    explore: "Exploring",
-    workEyebrow: "02 / Selected practice",
-    workTitle: "See the result first. Then explore how it works.",
-    workBody:
-      "Selected Unity studies presented as clear visual stories: final result, implementation logic, node structure, and code where it exists.",
-    workTracks: ["Node-based VFX", "Rendering Code Lab"],
-    visualTrack: "Shader Graph / Visual VFX",
-    visualTrackBody: "Four complete visual case studies, organized by their original Unity folders.",
-    codeEyebrow: "Handwritten Shaders / URP Pipeline",
-    codeTitle: "Rendering Code Lab",
-    codeBody:
-      "Selected studies from my public Unity-Shader learning archive. These cases show how I connect ShaderLab and HLSL with C#, Renderer Features, RenderGraph, and runtime rendering systems.",
-    codeLearningNote: "Learning archive · implementations and adaptations",
-    mediaPlaceholder: "IMAGE / VIDEO PLACEHOLDER",
-    flowLabel: "Implementation flow",
-    snippetLabel: "Core logic",
-    viewRepo: "View full GitHub repository",
-    archiveEyebrow: "Full learning archive",
-    archiveTitle: "Beyond the four featured cases.",
-    archiveBody:
-      "The repository also records the wider learning path from lighting fundamentals to URP custom rendering. Expand a track to browse every chapter.",
-    openChapter: "Open chapter",
-    placeholder: "Unity practice · Complete",
-    videoLabel: "Result footage",
-    galleryLabel: "Visual details",
-    logicLabel: "Implementation logic",
-    nodesLabel: "Node modules",
-    scriptLabel: "C# source",
-    summaryLabel: "Technical summary",
-    scrollHint: "Scroll through case study",
-    projects: [
-      {
-        title: "Full Skill Effect",
-        subtitle: "Charge · Beam · Hit · Explosion",
-        description:
-          "A complete sci-fi skill sequence driven by C#, coordinating charge-up, beam fade-in, impact pulse, explosion radius, dissolve, and emission timing.",
-        tags: ["Unity 6", "Shader Graph", "C# Sequence"],
-        logic: [
-          "Split the skill into charge, beam, hit, and explosion materials so every stage can be tuned independently.",
-          "Use a C# timeline to trigger each phase and write radius, dissolve, emission, and opacity values into the materials.",
-          "Keep the visual hand-off continuous: the charge releases into the beam, the hit pulse marks contact, and the explosion resolves the sequence.",
-        ],
-        nodes: [
-          ["Charge shader", "Builds the pre-fire energy with an animated emissive mask."],
-          ["Hit shader", "Creates a short contact pulse at the target point."],
-          ["Explosion shader", "Combines expanding radius, dissolve, and emission for the final beat."],
-        ],
-      },
-      {
-        title: "Interactive Energy Shield",
-        subtitle: "Fresnel shell and click-driven ripples",
-        description:
-          "An energy shield combining Fresnel edges, layered patterns, core veins, noise distortion, and two alternating impact slots controlled by raycast input.",
-        tags: ["Shader Graph", "C#", "Raycast"],
-        logic: [
-          "Construct the shield surface from a Fresnel shell, panel pattern, core veins, and controlled distortion.",
-          "Raycast from the pointer into the shield and pass the local hit position plus start time to the material.",
-          "Alternate between two impact slots so a second ripple can begin before the previous one has fully faded.",
-        ],
-        nodes: [
-          ["Graph overview", "The complete shield graph and its layered material flow."],
-          ["Fresnel shell", "Separates the bright outer rim from the softer inner core."],
-          ["Ripple distortion", "Breaks up the circular impact wave with animated noise."],
-        ],
-      },
-      {
-        title: "Energy Beam",
-        subtitle: "Flow, distortion, clipping, and glow",
-        description:
-          "A real-time beam effect built from animated UV flow, distortion, core and glow layers, start/end clipping, and hit-point highlighting.",
-        tags: ["Shader Graph", "UV Flow", "VFX"],
-        logic: [
-          "Scroll and distort the beam UVs to create directional energy instead of a static texture.",
-          "Separate the concentrated core from the wider glow so brightness and softness can be authored independently.",
-          "Clip the beam at both ends, then add start and hit highlights to visually anchor it in the scene.",
-        ],
-        nodes: [
-          ["Graph overview", "Shows the complete data flow from animated UVs to final alpha and emission."],
-          ["Flow and distortion", "Combines panning UVs and noise to generate directional motion."],
-          ["Clipping and falloff", "Controls beam length and softens its vertical silhouette."],
-        ],
-      },
-      {
-        title: "Stylized Dissolve Fire",
-        subtitle: "Procedural edge emission",
-        description:
-          "A stylized fire and dissolve study using UV-based masks, animated breakup, layered base color, and emissive edge treatment.",
-        tags: ["Dissolve", "Emission", "Material"],
-        logic: [
-          "Build a stable UV-space mask, then introduce animated breakup so the dissolve edge feels organic.",
-          "Use the dissolve threshold to separate visible surface, transition band, and removed pixels.",
-          "Layer base color with a narrow emissive edge so the material reads as burning rather than simply disappearing.",
-        ],
-        nodes: [
-          ["Graph overview", "The complete dissolve graph from UV preparation to surface output."],
-          ["UV module", "Prepares the coordinates used by the animated breakup masks."],
-          ["Emission edge", "Extracts the transition band and turns it into the bright fire rim."],
-        ],
-      },
-    ],
-    approachEyebrow: "03 / Approach",
-    approachTitle: "Art sets the intent. Code makes it real. AI expands the search space.",
-    approachBody:
-      "I’m early in the journey, so the portfolio focuses on process: what I tried, what broke, what I learned, and how I would improve the result.",
-    pillars: [
-      ["ART", "Observe form, color, motion, and visual hierarchy."],
-      ["CODE", "Turn an idea into a repeatable real-time system."],
-      ["AI", "Use new tools to explore faster—without hiding the craft."],
-    ],
-    contactEyebrow: "04 / Contact",
-    contactTitle: "Let’s build the next frame.",
-    contactBody:
-      "Open to opportunities in Technical Art and real-time graphics.",
-    github: "github.com/smartrick125",
-    resume: "Résumé · coming soon",
-    contact: "ke4773613@gmail.com",
-    footer: "Designed as a portfolio in progress",
-    stage: "Phase 02 — Case studies",
-  },
-} as const;
-
-const statusLabels = {
-  en: ["Learning", "Practising", "Exploring"],
-} as const;
-
-const projectHighlights = [
-  {
-    promise: "One timeline. Four visual beats.",
-    metric: "04",
-    metricLabel: "VFX stages",
-  },
-  {
-    promise: "A shield that remembers every hit.",
-    metric: "02",
-    metricLabel: "Ripple slots",
-  },
-  {
-    promise: "Flow, distortion, and glow in one beam.",
-    metric: "10",
-    metricLabel: "Node studies",
-  },
-  {
-    promise: "A dissolve edge that reads as fire.",
-    metric: "04",
-    metricLabel: "Core modules",
-  },
-] as const;
+const archiveTrackLinks = ["#visual-vfx", "#rendering-code", "#learning-archive"];
 
 const projectHighlightAccents = [
   { name: "skill", color: "#7c6cff" },
@@ -184,7 +23,9 @@ const projectHighlightAccents = [
 ] as const;
 
 export default function Home() {
-  const text = copy.en;
+  const [lang, setLang] = useLang();
+  const text = copy[lang];
+  const switcher = languageSwitch[lang];
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const labProjects = text.projects.map((project, index) => ({
     ...projectCatalog[index],
@@ -192,9 +33,9 @@ export default function Home() {
     description: project.description,
     tags: project.tags,
     logic: project.logic,
-    promise: projectHighlights[index].promise,
-    metric: projectHighlights[index].metric,
-    metricLabel: projectHighlights[index].metricLabel,
+    promise: text.highlights[index].promise,
+    metric: text.highlights[index].metric,
+    metricLabel: text.highlights[index].metricLabel,
     accentName: projectHighlightAccents[index].name,
     accentColor: projectHighlightAccents[index].color,
   }));
@@ -243,35 +84,45 @@ export default function Home() {
   return (
     <main className="site">
       <PointerFx />
-      <nav className="topbar" aria-label="Primary navigation">
+      <nav className="topbar" aria-label={text.navAria}>
         <div className="nav-center">
-          <a href="#profile">Profile</a>
-          <a href="#work">Work</a>
+          <a href="#profile">{text.nav[0]}</a>
+          <a href="#work">{text.nav[1]}</a>
           <details className="archive-menu">
-            <summary>Archive <span aria-hidden="true">⌄</span></summary>
+            <summary>{text.archiveMenu} <span aria-hidden="true">⌄</span></summary>
             <div className="archive-mega">
               <div className="archive-mega-intro">
-                <small>2026 — ONGOING</small>
-                <strong>A growing technical-art archive.</strong>
-                <p>One expandable home for the work, notes, and experiments I will keep building over the next year.</p>
-                <a href="#learning-archive">See the current archive</a>
+                <small>{text.archive.meta}</small>
+                <strong>{text.archive.title}</strong>
+                <p>{text.archive.body}</p>
+                <a href="#learning-archive">{text.archive.link}</a>
               </div>
               <div className="archive-mega-column">
-                <small>ACTIVE TRACKS</small>
-                <a href="#visual-vfx"><span>01</span><strong>Shader Graph / VFX</strong><b>4 cases</b></a>
-                <a href="#rendering-code"><span>02</span><strong>Rendering Code Lab</strong><b>4 studies</b></a>
-                <a href="#learning-archive"><span>03</span><strong>Learning Archive</strong><b>3 tracks</b></a>
+                <small>{text.archive.activeLabel}</small>
+                {text.archive.active.map(([label, meta], index) => (
+                  <a href={archiveTrackLinks[index]} key={label}>
+                    <span>0{index + 1}</span><strong>{label}</strong><b>{meta}</b>
+                  </a>
+                ))}
               </div>
               <div className="archive-mega-column archive-mega-future">
-                <small>NEXT TO GROW</small>
-                <div><span>04</span><strong>Tools & Pipeline</strong><b>Planned</b></div>
-                <div><span>05</span><strong>AI × TA Experiments</strong><b>Planned</b></div>
-                <div><span>06</span><strong>Breakdown Notes</strong><b>Planned</b></div>
+                <small>{text.archive.nextLabel}</small>
+                {text.archive.next.map(([label, meta], index) => (
+                  <div key={label}><span>0{index + 4}</span><strong>{label}</strong><b>{meta}</b></div>
+                ))}
               </div>
             </div>
           </details>
-          <a href="#approach">Approach</a>
-          <a href="#contact">Contact</a>
+          <a href="#approach">{text.nav[2]}</a>
+          <a href="#contact">{text.nav[3]}</a>
+          <button
+            type="button"
+            className="lang-switch"
+            onClick={() => setLang(switcher.to)}
+            aria-label={switcher.aria}
+          >
+            {switcher.label}
+          </button>
         </div>
       </nav>
 
@@ -298,7 +149,7 @@ export default function Home() {
             <div className="hero-role-row">
               <span>{text.role}</span>
               <span className="role-line" />
-              <span>REAL-TIME GRAPHICS</span>
+              <span>{text.heroDiscipline}</span>
             </div>
           </div>
 
@@ -309,7 +160,7 @@ export default function Home() {
             </div>
             <a className="primary-cta" href="#work" data-magnetic>
               <span>{text.viewWork}</span>
-              <b aria-hidden="true">↘</b>
+              <b aria-hidden="true"><Arrow direction="down-right" /></b>
             </a>
           </div>
         </div>
@@ -332,13 +183,13 @@ export default function Home() {
       <section className="profile section shell" id="profile">
         <div className="section-heading" data-reveal>
           <p>{text.profileEyebrow}</p>
-          <span>ABOUT</span>
+          <span>{text.sectionLabels.about}</span>
         </div>
         <div className="profile-grid">
           <figure className="profile-portrait portrait-photo" data-reveal>
             <img
               src="/profile/smartrick-portrait.jpg"
-              alt="Portrait of Smartrick"
+              alt={text.portraitAlt}
               width={800}
               height={1422}
               decoding="async"
@@ -347,7 +198,7 @@ export default function Home() {
             />
             <figcaption>
               <span>SMARTRICK / 2026</span>
-              <small>TECHNICAL ART</small>
+              <small>{text.portraitRole}</small>
             </figcaption>
           </figure>
           <div className="profile-copy" data-reveal>
@@ -367,7 +218,7 @@ export default function Home() {
               <span>0{index + 1}</span>
               <strong>{item}</strong>
               <div className="skill-line"><i style={{ width: `${42 + index * 11}%` }} /></div>
-              <small>{statusLabels.en[index % 3]}</small>
+              <small>{text.statusLabels[index % 3]}</small>
             </div>
           ))}
         </div>
@@ -377,7 +228,7 @@ export default function Home() {
         <div className="shell">
           <div className="section-heading section-heading-light" data-reveal>
             <p>{text.workEyebrow}</p>
-            <span>WORK</span>
+            <span>{text.sectionLabels.work}</span>
           </div>
           <div className="work-intro" data-reveal>
             <h2>{text.workTitle}</h2>
@@ -386,22 +237,22 @@ export default function Home() {
           <section className="project-highlights" aria-labelledby="project-highlights-title" data-reveal>
             <header className="highlights-heading">
               <div>
-                <p>GET THE HIGHLIGHTS</p>
-                <h3 id="project-highlights-title">Selected visual systems.</h3>
+                <p>{text.highlightsEyebrow}</p>
+                <h3 id="project-highlights-title">{text.highlightsTitle}</h3>
               </div>
-              <span>Choose a case to explore the full breakdown.</span>
+              <span>{text.highlightsHint}</span>
             </header>
             <div className="highlight-scroll">
               {text.projects.map((project, index) => {
                 const assets = projectCatalog[index];
-                const highlight = projectHighlights[index];
+                const highlight = text.highlights[index];
                 const accent = projectHighlightAccents[index];
                 return (
                   <HolographicTiltCard
                     href="#project-lab"
                     accent={accent.color}
                     accentName={accent.name}
-                    key={project.title}
+                    key={assets.id}
                     onClick={(event) => {
                       event.preventDefault();
                       activateProject(index);
@@ -426,32 +277,33 @@ export default function Home() {
                       <strong>{highlight.metric}</strong>
                       <span>{highlight.metricLabel}</span>
                     </div>
-                    <b aria-hidden="true">↘</b>
+                    <b aria-hidden="true"><Arrow direction="down-right" /></b>
                   </HolographicTiltCard>
                 );
               })}
             </div>
           </section>
-          <nav className="work-track-nav" aria-label="Work type navigation" data-reveal>
+          <nav className="work-track-nav" aria-label={text.workTrackNavAria} data-reveal>
             <a href="#visual-vfx">
               <span>01</span>
               <strong>{text.workTracks[0]}</strong>
-              <small>SHADER GRAPH</small>
+              <small>{text.trackNavMeta[0]}</small>
             </a>
             <a href="#rendering-code">
               <span>02</span>
               <strong>{text.workTracks[1]}</strong>
-              <small>HLSL + C# + URP</small>
+              <small>{text.trackNavMeta[1]}</small>
             </a>
           </nav>
           <div className="track-heading" id="visual-vfx" data-reveal>
-            <p>TRACK 01 / NODE-BASED VFX</p>
+            <p>{text.trackHeading}</p>
             <div>
               <h3>{text.visualTrack}</h3>
               <span>{text.visualTrackBody}</span>
             </div>
           </div>
           <ProjectLab
+            lang={lang}
             projects={labProjects}
             activeProjectIndex={activeProjectIndex}
             onProjectChange={setActiveProjectIndex}
@@ -468,7 +320,7 @@ export default function Home() {
                 <p>{text.codeBody}</p>
                 <span>{text.codeLearningNote}</span>
                 <a href={renderingRepo} target="_blank" rel="noreferrer">
-                  {text.viewRepo} ↗
+                  {text.viewRepo} <Arrow direction="up-right" />
                 </a>
               </div>
             </header>
@@ -480,31 +332,31 @@ export default function Home() {
                   <header className="code-study-header" data-reveal>
                     <span>0{index + 1}</span>
                     <div>
-                      <p>{study.category.en}</p>
-                      <h3>{study.title.en}</h3>
+                      <p>{study.category[lang]}</p>
+                      <h3>{study.title[lang]}</h3>
                     </div>
-                    <p>{study.description.en}</p>
+                    <p>{study.description[lang]}</p>
                   </header>
 
                   {study.comparison ? (
                     <figure className="code-comparison" data-reveal>
                       <div className="comparison-frame">
-                        <img src={study.comparison.before.src} alt={study.comparison.before.alt.en} loading="lazy" decoding="async" />
-                        <span>{study.comparison.before.label.en}</span>
+                        <img src={study.comparison.before.src} alt={study.comparison.before.alt[lang]} loading="lazy" decoding="async" />
+                        <span>{study.comparison.before.label[lang]}</span>
                       </div>
                       <div className="comparison-frame">
-                        <img src={study.comparison.after.src} alt={study.comparison.after.alt.en} loading="lazy" decoding="async" />
-                        <span>{study.comparison.after.label.en}</span>
+                        <img src={study.comparison.after.src} alt={study.comparison.after.alt[lang]} loading="lazy" decoding="async" />
+                        <span>{study.comparison.after.label[lang]}</span>
                       </div>
                       <figcaption>
-                        <p>{study.mediaNote.en}</p>
+                        <p>{study.mediaNote[lang]}</p>
                       </figcaption>
                     </figure>
                   ) : (
                     <figure className="code-media" data-reveal>
-                      <img src={study.media.src} alt={study.media.alt.en} loading="lazy" decoding="async" />
+                      <img src={study.media.src} alt={study.media.alt[lang]} loading="lazy" decoding="async" />
                       <figcaption>
-                        <p>{study.mediaNote.en}</p>
+                        <p>{study.mediaNote[lang]}</p>
                       </figcaption>
                     </figure>
                   )}
@@ -516,9 +368,9 @@ export default function Home() {
                       </div>
                       <ol>
                         {study.flow.map((step, stepIndex) => (
-                          <li key={step.en}>
+                          <li key={stepIndex}>
                             <span>{String(stepIndex + 1).padStart(2, "0")}</span>
-                            <p>{step.en}</p>
+                            <p>{step[lang]}</p>
                           </li>
                         ))}
                       </ol>
@@ -533,14 +385,14 @@ export default function Home() {
 
                     <section className="code-sources" data-reveal>
                       <div className="code-block-label">
-                        <span>View code</span>
+                        <span>{text.viewCode}</span>
                       </div>
                       <div className="source-links">
                         {study.files.map((file) => (
                           <a href={file.url} target="_blank" rel="noreferrer" key={file.url}>
                             <span>{file.kind}</span>
                             <strong>{file.name}</strong>
-                            <b>↗</b>
+                            <b><Arrow direction="up-right" /></b>
                           </a>
                         ))}
                       </div>
@@ -563,12 +415,12 @@ export default function Home() {
               </header>
               <div className="archive-tracks">
                 {archiveTracks.map((track, index) => (
-                  <details key={track.title.en} open={index === 0}>
+                  <details key={index} open={index === 0}>
                     <summary>
                       <span>0{index + 1}</span>
                       <div>
-                        <strong>{track.title.en}</strong>
-                        <small>{track.subtitle.en}</small>
+                        <strong>{track.title[lang]}</strong>
+                        <small>{track.subtitle[lang]}</small>
                       </div>
                       <b aria-hidden="true">+</b>
                     </summary>
@@ -577,9 +429,9 @@ export default function Home() {
                         <a href={chapter.url} target="_blank" rel="noreferrer" key={chapter.name}>
                           <div>
                             <strong>{chapter.name}</strong>
-                            <p>{chapter.topics.en}</p>
+                            <p>{chapter.topics[lang]}</p>
                           </div>
-                          <span>{text.openChapter} ↗</span>
+                          <span>{text.openChapter} <Arrow direction="up-right" /></span>
                         </a>
                       ))}
                     </div>
@@ -594,7 +446,7 @@ export default function Home() {
       <section className="approach section shell" id="approach">
         <div className="section-heading" data-reveal>
           <p>{text.approachEyebrow}</p>
-          <span>PROCESS</span>
+          <span>{text.sectionLabels.process}</span>
         </div>
         <div className="approach-intro" data-reveal>
           <h2>{text.approachTitle}</h2>
@@ -617,7 +469,7 @@ export default function Home() {
         <div className="shell">
           <div className="section-heading section-heading-light" data-reveal>
             <p>{text.contactEyebrow}</p>
-            <span>CONTACT</span>
+            <span>{text.sectionLabels.contact}</span>
           </div>
           <div className="contact-content" data-reveal>
             <p>{text.contactBody}</p>
@@ -625,38 +477,40 @@ export default function Home() {
           </div>
           <div className="contact-links" data-reveal>
             <a href="mailto:ke4773613@gmail.com">
-              <small>DIRECT CONTACT</small>
-              <strong>Email</strong>
-              <span>ke4773613@gmail.com</span>
-              <b>↗</b>
+              <small>{text.contactCards[0][0]}</small>
+              <strong>{text.contactCards[0][1]}</strong>
+              <span>{text.contactCards[0][2]}</span>
+              <b><Arrow direction="up-right" /></b>
             </a>
             <a href="https://github.com/smartrick125" target="_blank" rel="noreferrer">
-              <small>TECHNICAL PROFILE</small>
-              <strong>GitHub</strong>
-              <span>@smartrick125</span>
-              <b>↗</b>
+              <small>{text.contactCards[1][0]}</small>
+              <strong>{text.contactCards[1][1]}</strong>
+              <span>{text.contactCards[1][2]}</span>
+              <b><Arrow direction="up-right" /></b>
             </a>
             <span className="social-placeholder">
-              <small>PERSONAL LIFE ACCOUNT</small>
-              <strong>Douyin</strong>
-              <span>@ww2024260424</span>
+              <small>{text.contactCards[2][0]}</small>
+              <strong>{text.contactCards[2][1]}</strong>
+              <span>{text.contactCards[2][2]}</span>
               <b>—</b>
             </span>
             <span>
-              <small>CAREER DOCUMENT</small>
-              <strong>Résumé</strong>
-              <span>Coming soon</span>
+              <small>{text.contactCards[3][0]}</small>
+              <strong>{text.contactCards[3][1]}</strong>
+              <span>{text.contactCards[3][2]}</span>
               <b>—</b>
             </span>
           </div>
         </div>
       </section>
 
+      <MobileNav lang={lang} />
+
       <footer className="footer shell">
         <span>© 2026 SMARTRICK</span>
         <span>{text.footer}</span>
         <span>{text.stage}</span>
-        <a href="#top">TOP ↑</a>
+        <a href="#top">{text.backToTop} <Arrow direction="up" /></a>
       </footer>
     </main>
   );

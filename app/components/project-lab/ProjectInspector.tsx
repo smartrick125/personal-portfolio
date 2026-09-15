@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { copy, type Lang } from "../../copy";
 import styles from "./ProjectLab.module.css";
 import type { ProjectLabProject, ProjectLabView } from "./projectLabModel";
 
 type ProjectInspectorProps = {
+  lang: Lang;
   project: ProjectLabProject;
   activeView: ProjectLabView;
   mediaIndex: number;
@@ -19,6 +21,7 @@ function getAdjacentIndex(index: number, length: number, direction: -1 | 1) {
 }
 
 export function ProjectInspector({
+  lang,
   project,
   activeView,
   mediaIndex,
@@ -26,6 +29,7 @@ export function ProjectInspector({
   onMediaChange,
   onExpand,
 }: ProjectInspectorProps) {
+  const labels = copy[lang].lab;
   const [activeLogicIndex, setActiveLogicIndex] = useState(0);
   const galleryItem = project.gallery[mediaIndex] ?? project.gallery[0];
   const nodeItem = project.nodes[mediaIndex] ?? project.nodes[0];
@@ -53,7 +57,7 @@ export function ProjectInspector({
     <aside
       className={styles.inspector}
       data-project-inspector="true"
-      aria-label="Project inspector"
+      aria-label={labels.inspectorAria}
       aria-hidden={!compact}
       inert={!compact ? true : undefined}
     >
@@ -69,11 +73,11 @@ export function ProjectInspector({
             <span>{project.metricLabel}</span>
           </p>
           {project.videos.length > 0 && (
-            <div className={styles.resultMediaPicker} aria-label="Result videos">
+            <div className={styles.resultMediaPicker} aria-label={labels.resultVideosAria}>
               {project.videos.map((item, index) => (
                 <button
                   type="button"
-                  aria-label={`Show result video ${item.name}`}
+                  aria-label={`${labels.showVideoPrefix} ${item.name}`}
                   aria-current={index === mediaIndex ? "true" : undefined}
                   onClick={() => onMediaChange(index)}
                   key={item.src}
@@ -85,7 +89,7 @@ export function ProjectInspector({
             </div>
           )}
           <details className={styles.technicalNotes}>
-            <summary>Read technical notes</summary>
+            <summary>{labels.readNotes}</summary>
             <a href={project.technicalSummary.src} target="_blank" rel="noreferrer">
               {project.technicalSummary.name}
             </a>
@@ -120,10 +124,10 @@ export function ProjectInspector({
 
       {activeView === "logic" && (
         <div className={styles.inspectorSection}>
-          <h3>Implementation logic</h3>
+          <h3>{labels.implLogic}</h3>
           <ol className={styles.logicSteps}>
             {project.logic.map((step, index) => (
-              <li key={step}>
+              <li key={index}>
                 <button
                   type="button"
                   aria-pressed={index === activeLogicIndex}
@@ -148,7 +152,7 @@ export function ProjectInspector({
             type="button"
             onClick={(event) => onExpand("node", event.currentTarget)}
           >
-            Expand node graph
+            {labels.expandNode}
           </button>
         </div>
       )}
@@ -156,14 +160,14 @@ export function ProjectInspector({
       {activeView === "code" && project.script && (
         <div className={styles.inspectorSection}>
           <h3>{project.script.name}</h3>
-          <a href={project.script.src} target="_blank" rel="noreferrer">Open source file</a>
-          <p>This code controls the active project&apos;s runtime behavior.</p>
+          <a href={project.script.src} target="_blank" rel="noreferrer">{labels.openSource}</a>
+          <p>{labels.scriptNote}</p>
           <button
             className={styles.expandButton}
             type="button"
             onClick={(event) => onExpand("code", event.currentTarget)}
           >
-            Expand code
+            {labels.expandCode}
           </button>
         </div>
       )}

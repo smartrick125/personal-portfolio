@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { flushSync } from "react-dom";
+import { copy, type Lang } from "../../copy";
 import styles from "./ProjectLab.module.css";
 import { getAvailableViews, type ProjectLabProject, type ProjectLabView } from "./projectLabModel";
 import { ProjectFocusViewer } from "./ProjectFocusViewer";
@@ -10,6 +11,7 @@ import { ProjectStage, type ProjectCodeSource } from "./ProjectStage";
 import { ProjectToolDock } from "./ProjectToolDock";
 
 type ProjectLabProps = {
+  lang: Lang;
   projects: ProjectLabProject[];
   activeProjectIndex: number;
   onProjectChange: (index: number) => void;
@@ -17,7 +19,8 @@ type ProjectLabProps = {
 
 type FocusContent = { kind: "node" | "code"; title: string } | null;
 
-export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: ProjectLabProps) {
+export function ProjectLab({ lang, projects, activeProjectIndex, onProjectChange }: ProjectLabProps) {
+  const labels = copy[lang].lab;
   const [displayedProjectIndex, setDisplayedProjectIndex] = useState(activeProjectIndex);
   const [compact, setCompact] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
@@ -223,8 +226,8 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
         <div className={styles.experience}>
           <div className={`${styles.projectContent}${transitioning ? ` ${styles.projectContentTransitioning}` : ""}`}>
             <header className={styles.header}>
-              <p>PROJECT LAB / ACTIVE SYSTEM</p>
-              <nav aria-label="Select project">
+              <p>{labels.header}</p>
+              <nav aria-label={labels.selectAria}>
                 {projects.map((project, index) => (
                   <button
                     type="button"
@@ -241,6 +244,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
             </header>
             <div className={styles.stageFrame}>
               <ProjectStage
+                lang={lang}
                 project={displayedProject}
                 activeView={displayedActiveView}
                 mediaIndex={activeMediaIndex}
@@ -256,12 +260,14 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
                 aria-hidden="true"
               />
               <ProjectToolDock
+                lang={lang}
                 views={availableViews}
                 activeView={displayedActiveView}
                 onViewChange={handleViewChange}
               />
             </div>
             <ProjectInspector
+              lang={lang}
               key={displayedProject.id}
               project={displayedProject}
               activeView={displayedActiveView}
@@ -279,6 +285,7 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
         />
       </div>
       <ProjectFocusViewer
+        lang={lang}
         open={focusContent !== null}
         title={focusContent?.title ?? ""}
         onClose={handleCloseFocus}
@@ -295,10 +302,10 @@ export function ProjectLab({ projects, activeProjectIndex, onProjectChange }: Pr
           />
         )}
         {focusContent?.kind === "node" && (!focusedNode || failedMedia.has(focusedNode.src)) && (
-          <p className={styles.focusUnavailable} role="status">This media is currently unavailable.</p>
+          <p className={styles.focusUnavailable} role="status">{labels.unavailable}</p>
         )}
         {focusContent?.kind === "code" && focusedCode?.status === "error" && (
-          <p className={styles.focusUnavailable} role="status">This source file is currently unavailable.</p>
+          <p className={styles.focusUnavailable} role="status">{labels.unavailableSource}</p>
         )}
         {focusContent?.kind === "code" && focusedCode?.status !== "error" && (
           <pre

@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { copy, type Lang } from "../../copy";
 import styles from "./ProjectLab.module.css";
 import { ProjectLabHero } from "./ProjectLabHero";
 import type { ProjectLabMedia, ProjectLabProject, ProjectLabView } from "./projectLabModel";
 
 type ProjectStageProps = {
+  lang: Lang;
   project: ProjectLabProject;
   activeView: ProjectLabView;
   mediaIndex: number;
@@ -23,13 +25,15 @@ export type ProjectCodeSource = {
 };
 
 type ProjectCodeViewerProps = {
+  lang: Lang;
   src: string;
   name: string;
   onExpand: ProjectStageProps["onExpand"];
   onCodeSourceChange: ProjectStageProps["onCodeSourceChange"];
 };
 
-function ProjectCodeViewer({ src, name, onExpand, onCodeSourceChange }: ProjectCodeViewerProps) {
+function ProjectCodeViewer({ lang, src, name, onExpand, onCodeSourceChange }: ProjectCodeViewerProps) {
+  const labels = copy[lang].lab;
   const [loadedCode, setLoadedCode] = useState<{
     src: string;
     status: "ready" | "error";
@@ -70,11 +74,11 @@ function ProjectCodeViewer({ src, name, onExpand, onCodeSourceChange }: ProjectC
       <header className={styles.codeViewerHeader}>
         <p>{name}</p>
         <button type="button" onClick={(event) => onExpand("code", event.currentTarget)}>
-          Expand
+          {labels.expand}
         </button>
       </header>
       {status === "error" ? (
-        <p className={styles.mediaUnavailable} role="status">This source file is currently unavailable.</p>
+        <p className={styles.mediaUnavailable} role="status">{labels.unavailableSource}</p>
       ) : (
         <pre aria-label={name} aria-busy={status === "loading"} tabIndex={0}>
           <code>{status === "ready" ? loadedCode.content : ""}</code>
@@ -85,6 +89,7 @@ function ProjectCodeViewer({ src, name, onExpand, onCodeSourceChange }: ProjectC
 }
 
 export function ProjectStage({
+  lang,
   project,
   activeView,
   mediaIndex,
@@ -94,6 +99,7 @@ export function ProjectStage({
   onExpand,
   onCodeSourceChange,
 }: ProjectStageProps) {
+  const labels = copy[lang].lab;
   const galleryItem = project.gallery[mediaIndex] ?? project.gallery[0];
   const nodeItem = project.nodes[mediaIndex] ?? project.nodes[0];
   const resultVideo = project.videos[mediaIndex] ?? project.videos[0];
@@ -138,25 +144,26 @@ export function ProjectStage({
             />
             <figcaption>{imageItem.name}</figcaption>
             {activeView === "nodes" && (
-              <button type="button" onClick={(event) => onExpand("node", event.currentTarget)}>Expand</button>
+              <button type="button" onClick={(event) => onExpand("node", event.currentTarget)}>{labels.expand}</button>
             )}
           </figure>
         )}
 
         {(activeView === "gallery" || activeView === "nodes") && imageItem && imageUnavailable && (
           <div className={styles.mediaUnavailable} role="status">
-            <p>This media is currently unavailable.</p>
+            <p>{labels.unavailable}</p>
           </div>
         )}
 
         {(activeView === "gallery" || activeView === "nodes") && !imageItem && (
           <div className={styles.mediaUnavailable} role="status">
-            <p>This media is currently unavailable.</p>
+            <p>{labels.unavailable}</p>
           </div>
         )}
 
         {activeView === "code" && project.script && (
           <ProjectCodeViewer
+            lang={lang}
             src={project.script.src}
             name={project.script.name}
             onExpand={onExpand}

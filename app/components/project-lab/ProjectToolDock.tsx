@@ -1,24 +1,19 @@
 "use client";
 
 import { useRef, type KeyboardEvent } from "react";
+import { copy, type Lang } from "../../copy";
 import styles from "./ProjectLab.module.css";
 import type { ProjectLabView } from "./projectLabModel";
 
 type ProjectToolDockProps = {
+  lang: Lang;
   views: ProjectLabView[];
   activeView: ProjectLabView;
   onViewChange: (view: ProjectLabView) => void;
 };
 
-const viewLabels: Record<ProjectLabView, string> = {
-  result: "Result",
-  gallery: "Gallery",
-  logic: "Logic",
-  nodes: "Nodes",
-  code: "Code",
-};
-
-export function ProjectToolDock({ views, activeView, onViewChange }: ProjectToolDockProps) {
+export function ProjectToolDock({ lang, views, activeView, onViewChange }: ProjectToolDockProps) {
+  const labels = copy[lang].lab;
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -39,7 +34,7 @@ export function ProjectToolDock({ views, activeView, onViewChange }: ProjectTool
   };
 
   return (
-    <div className={styles.toolDock} role="tablist" aria-label="Project lab tools">
+    <div className={styles.toolDock} role="tablist" aria-label={labels.toolsAria}>
       {views.map((view, index) => (
         <button
           id={`lab-tab-${view}`}
@@ -55,7 +50,7 @@ export function ProjectToolDock({ views, activeView, onViewChange }: ProjectTool
           }}
           key={view}
         >
-          {viewLabels[view]}
+          {labels.views[view]}
         </button>
       ))}
     </div>

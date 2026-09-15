@@ -62,6 +62,8 @@
   --line: rgba(199, 213, 255, 0.18);
   --mx: 0;
   --my: 0;
+  /* Height reserved at the bottom of the page for the mobile tab bar. */
+  --mobile-nav-h: 0px;
 }
 
 * {
@@ -122,6 +124,14 @@ a {
   text-decoration: none;
 }
 
+/* Inline SVG arrows (see components/Arrow.tsx). Sized in em so every existing
+   font-size rule on the wrapper keeps controlling them. */
+.arrow-icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.1em;
+}
+
 button {
   border: 0;
 }
@@ -134,6 +144,51 @@ button {
 .site {
   min-height: 100vh;
   overflow: clip;
+  padding-bottom: var(--mobile-nav-h);
+}
+
+/* Bottom tab bar (see components/MobileNav.tsx). Hidden until the top bar
+   drops its section links at 960px. */
+.mobile-nav {
+  position: fixed;
+  z-index: 90;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: rgba(7, 11, 27, 0.93);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(199, 213, 255, 0.16);
+}
+
+.mobile-nav a {
+  min-height: 56px;
+  padding: 9px 4px;
+  display: grid;
+  gap: 5px;
+  place-items: center;
+  align-content: center;
+  color: rgba(232, 238, 255, 0.58);
+  font: 600 11px/1 var(--font-geist-mono), var(--font-geist-sans), sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 180ms ease;
+}
+
+.mobile-nav a svg {
+  width: 21px;
+  height: 21px;
+}
+
+.mobile-nav a[aria-current="true"] {
+  color: var(--cyan);
+}
+
+.mobile-nav a:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
 }
 
 .shell {
@@ -201,6 +256,38 @@ button {
 .nav-center > a:hover::after,
 .nav-center > a:focus-visible::after {
   right: 0;
+}
+
+.lang-switch {
+  padding: 6px 12px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(199, 213, 255, 0.24);
+  border-radius: 999px;
+  font: 700 10px/1 var(--font-geist-mono), monospace;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.lang-switch:hover {
+  color: #fff;
+  border-color: var(--cyan);
+  background: rgba(119, 243, 255, 0.16);
+}
+
+.lang-switch:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+@media (pointer: coarse) {
+  /* Below 960px the section links are hidden, so this is the only control in
+     the bar: give it a full-size tap target. */
+  .lang-switch {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .archive-menu {
@@ -2539,6 +2626,14 @@ body {
 
   .nav-center > a {
     display: none;
+  }
+
+  :root {
+    --mobile-nav-h: 57px;
+  }
+
+  .mobile-nav {
+    display: grid;
   }
 
   .archive-mega {

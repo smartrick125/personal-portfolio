@@ -118,7 +118,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
     readFile(new URL("../app/components/project-lab/ProjectLab.module.css", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /function StarfieldCanvas/);
+  assert.match(page, /<HeroBackdrop \/>/);
   assert.match(page, /HolographicTiltCard/);
   assert.match(holographicCard, /requestAnimationFrame/);
   assert.match(holographicCard, /cancelAnimationFrame/);
@@ -159,7 +159,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectLab, /window\.cancelAnimationFrame\(exitFrameRef\.current\)/);
   assert.match(projectLab, /window\.cancelAnimationFrame\(transitionFrameRef\.current\)/);
   assert.match(projectLab, /if \(activeProjectIndex === displayedProjectIndex\) \{[\s\S]*finishProjectSwitch/);
-  assert.match(projectToolDock, /viewLabels/);
+  assert.match(projectToolDock, /labels\.views\[view\]/);
   assert.match(projectToolDock, /role="tablist"/);
   assert.match(projectToolDock, /aria-controls="lab-panel-active"/);
   assert.match(projectStage, /data-project-stage="true"/);
@@ -168,7 +168,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
   assert.match(projectStage, /failedMedia\?\.has\(resultVideo\.src\)/);
   assert.match(projectStage, /!response\.ok/);
   assert.match(projectStage, /\.catch\(/);
-  assert.match(projectStage, /This source file is currently unavailable\./);
+  assert.match(projectStage, /labels\.unavailableSource/);
   assert.match(projectStage, /id="lab-panel-active"/);
   assert.match(projectInspector, /technicalSummary/);
   assert.match(projectInspector, /project\.videos\.map/);
