@@ -625,28 +625,18 @@ button {
   line-height: 0.82;
   letter-spacing: -0.08em;
   font-weight: 800;
-  background: linear-gradient(92deg, #ffffff 12%, #d6e5ff 56%, #91aaff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* Deliberately not background-clip: text. The letters are separate elements
+     now, so the clip target would be nine atomic boxes rather than glyphs, and
+     the drop-shadow on this element breaks text clipping in descendants in
+     Chromium. Each letter carries its own colour from the ramp instead, set in
+     HeroTitle.tsx; this is the fallback before that runs. */
+  color: #f2f6ff;
   filter: drop-shadow(0 16px 45px rgba(70, 78, 180, 0.3));
-}
-
-.hero h1 {
-  position: relative;
   perspective: 900px;
 }
 
-/* Each letter repaints the title-wide gradient shifted by its own offset
-   (measured in HeroTitle.tsx), so nine boxes still read as one ramp. */
 .hero h1 [data-letter] {
   display: inline-block;
-  background: inherit;
-  background-size: var(--title-width, 100%) 100%;
-  background-position: calc(-1 * var(--letter-offset, 0px)) 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -656,23 +646,18 @@ button {
   }
 }
 
-/* No filter here on purpose. Chromium paints the whole background box instead
-   of the glyphs when a filter meets -webkit-background-clip: text, which turned
-   the first letter — whose gradient slice is the white end of the ramp — into a
-   solid white rectangle mid-animation.
-
-   The flash is the gradient itself instead: every letter starts on the white
-   end of the ramp and slides back to its own slice as it lands. */
+/* Each letter arrives white-hot and cools into its own colour from the ramp.
+   No filter and no background-clip anywhere in this path: both of those break
+   glyph rendering in Chromium once the letters are separate animated boxes. */
 @keyframes hero-letter {
   from {
     opacity: 0;
     transform: translate3d(0, 0.44em, 0) rotateX(-58deg) scale(0.94);
-    background-position: 0 0;
+    color: #ffffff;
   }
   to {
     opacity: 1;
     transform: none;
-    background-position: calc(-1 * var(--letter-offset, 0px)) 0;
   }
 }
 
