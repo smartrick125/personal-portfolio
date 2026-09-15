@@ -45,6 +45,10 @@ uniform vec2 uPointer;
 uniform float uPointerOn;
 // xy = origin in uv, z = start time in seconds; z < 0.0 means the slot is free.
 uniform vec3 uRipples[3];
+// 0 while no ripple is alive. A uniform branch is the same for every pixel in
+// the draw, so skipping the whole block costs nothing and saves three exp() a
+// pixel on the overwhelmingly common idle frame.
+uniform float uRippleOn;
 
 const vec3 SKY = vec3(0.41, 0.84, 1.0);
 const vec3 VIOLET = vec3(0.44, 0.35, 1.0);
@@ -129,16 +133,17 @@ float meteor(vec2 uv, float aspect, float t) {
 vec2 rippleShift(vec2 uv, float aspect, float t, out float glow) {
   vec2 shift = vec2(0.0);
   glow = 0.0;
+  if (uRippleOn < 0.5) return shift;
   for (int i = 0; i < 3; i++) {
     float start = uRipples[i].z;
     float age = t - start;
-    float alive = step(0.0, start) * step(0.0, age) * step(age, 2.6);
+    float alive = step(0.0, start) * step(0.0, age) * step(age, 1.8);
     vec2 toward = (uv - uRipples[i].xy) * vec2(aspect, 1.0);
     float d = length(toward);
-    float radius = age * 0.46;
-    float edge = (d - radius) * 16.0;
-    float band = exp(-edge * edge) * exp(-age * 1.35) * alive;
-    shift += (toward / max(d, 0.0008)) * band * 0.035;
+    float radius = age * 0.38;
+    float edge = (d - radius) * 11.0;
+    float band = exp(-edge * edge) * exp(-age * 1.7) * alive;
+    shift += (toward / max(d, 0.0008)) * band * 0.026;
     glow += band;
   }
   return shift;
@@ -188,7 +193,7 @@ void main() {
   light += SKY * influence * 0.26;
   light += VIOLET * influence * influence * 0.34;
   light += mix(SKY, vec3(1.0), 0.35) * core * uPointerOn * 0.55;
-  light += mix(SKY, VIOLET, 0.45) * rippleGlow * 0.9;
+  light += mix(SKY, VIOLET, 0.5) * rippleGlow * 0.5;
 
   // Dither, or the large soft gradients band on 8-bit displays.
   light += (hash21(gl_FragCoord.xy) - 0.5) * 0.015;
@@ -248,6 +253,7 @@ function createNebula(canvas: HTMLCanvasElement): Renderer | null {
   const uPointer = gl.getUniformLocation(program, "uPointer");
   const uPointerOn = gl.getUniformLocation(program, "uPointerOn");
   const uRipples = gl.getUniformLocation(program, "uRipples");
+  const uRippleOn = gl.getUniformLocation(program, "uRippleOn");
 
   let width = 1;
   let height = 1;
@@ -291,7 +297,15 @@ function createNebula(canvas: HTMLCanvasElement): Renderer | null {
       gl.uniform1f(uTime, elapsed);
       gl.uniform2f(uPointer, smoothX, smoothY);
       gl.uniform1f(uPointerOn, smoothOn);
+      // Retire finished slots so the shader can skip the block entirely.
+      let active = 0;
+      for (let slot = 2; slot < ripples.length; slot += 3) {
+        if (ripples[slot] < 0) continue;
+        if (elapsed - ripples[slot] > 1.8) ripples[slot] = -1;
+        else active += 1;
+      }
       gl.uniform3fv(uRipples, ripples);
+      gl.uniform1f(uRippleOn, active ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     },
     impulse(x, y, elapsed) {
@@ -429,7 +443,7 @@ export function HeroBackdrop() {
     let pageVisible = !document.hidden;
     let quality = 1;
     let degradations = 0;
-    let stalled = false;
+    let frameInterval = 0;
     let lastFrame = 0;
     let sampled = 0;
     let sampleTotal = 0;
@@ -455,10 +469,16 @@ export function HeroBackdrop() {
     };
 
     // Nothing here knows what GPU it landed on, so measure: if the backdrop
-    // cannot hold a frame budget it drops resolution, and if that is still not
-    // enough it freezes on the last frame rather than dragging the page down.
+    // cannot hold a frame budget it drops resolution twice, then halves its
+    // frame rate. It never stops outright — freezing mid-ripple would leave a
+    // static ring painted across the hero, which reads far worse than a slower
+    // one.
     const draw = () => {
       const now = performance.now();
+      if (frameInterval && lastFrame && now - lastFrame < frameInterval) {
+        animationFrame = window.requestAnimationFrame(draw);
+        return;
+      }
       if (lastFrame) {
         sampled += 1;
         sampleTotal += now - lastFrame;
@@ -471,10 +491,7 @@ export function HeroBackdrop() {
             quality *= 0.72;
             resize();
           } else if (average > 20) {
-            stalled = true;
-            running = false;
-            lastFrame = 0;
-            return;
+            frameInterval = 32;
           }
         }
       }
@@ -487,7 +504,7 @@ export function HeroBackdrop() {
     // The backdrop is one screen tall on a very long page: stop burning frames
     // once it scrolls away or the tab goes to the background.
     const sync = () => {
-      const shouldRun = !reduceMotion && !stalled && onScreen && pageVisible;
+      const shouldRun = !reduceMotion && onScreen && pageVisible;
       if (shouldRun === running) return;
       running = shouldRun;
       if (shouldRun) {
@@ -523,6 +540,9 @@ export function HeroBackdrop() {
 
     const onPointerDown = (event: PointerEvent) => {
       if (!renderer.impulse) return;
+      // A click on a link or control is already paying for navigation or a
+      // smooth scroll; do not stack a full-screen effect on top of it.
+      if ((event.target as Element | null)?.closest?.("a, button, details, input, video")) return;
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
