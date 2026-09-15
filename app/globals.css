@@ -1936,6 +1936,14 @@ button {
   gap: 30px;
 }
 
+/* Grid items default to min-width: auto, so the widest unbreakable line in the
+   code block became the track's minimum. On a phone that pushed a 480px track
+   into a 277px column and the overflow was clipped with no way to scroll to it,
+   which is why the study read as cut off. */
+.code-study-details > * {
+  min-width: 0;
+}
+
 .code-sources {
   grid-column: 1 / -1;
 }
@@ -2309,6 +2317,15 @@ body {
 .source-links {
   overflow: hidden;
   border-color: rgba(154, 187, 255, 0.22);
+}
+
+/* That clip is there for the rounded corners, but on the code block it also
+   removes the horizontal scroll a long line needs: on a phone the line was
+   simply gone with no way to reach it. */
+.code-snippet pre {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
 }
 
 .rendering-lab {
