@@ -83,26 +83,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.pointer-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 300;
-  width: 26px;
-  height: 26px;
-  border: 1px solid color-mix(in srgb, var(--ring-accent, #69d6ff) 70%, transparent);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--ring-accent, #69d6ff) 10%, transparent);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 220ms ease, border-color 220ms ease, background 220ms ease;
-  will-change: transform;
-}
-
-.pointer-ring[data-visible="true"] {
-  opacity: 0.85;
-}
-
 /* The pull is a variable rather than a transform so a target that already
    transforms on hover can compose the two instead of overwriting one. */
 [data-magnetic] {
@@ -669,27 +649,10 @@ button {
   color: transparent;
 }
 
-.hero h1::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(104deg, transparent 38%, rgba(255, 255, 255, 0.92) 50%, transparent 62%);
-  background-size: 260% 100%;
-  background-position: 170% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  pointer-events: none;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .hero h1 [data-letter] {
     animation: hero-letter 760ms cubic-bezier(.2, .85, .25, 1) both;
     animation-delay: calc(var(--letter-index) * 52ms + 140ms);
-  }
-
-  .hero h1::after {
-    animation: hero-shine 4.2s ease-in-out 1.9s 2;
   }
 }
 
@@ -697,18 +660,16 @@ button {
   from {
     opacity: 0;
     transform: translate3d(0, 0.44em, 0) rotateX(-58deg) scale(0.94);
-    filter: blur(9px);
+    filter: blur(9px) brightness(2.4);
+  }
+  70% {
+    filter: blur(0) brightness(1.5);
   }
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+    filter: blur(0) brightness(1);
   }
-}
-
-@keyframes hero-shine {
-  0% { background-position: -70% 0; }
-  34%, 100% { background-position: 170% 0; }
 }
 
 .hero-role-row {

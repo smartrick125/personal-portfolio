@@ -34,10 +34,9 @@ export function HeroTitle({ text }: { text: string }) {
   }, [text]);
 
   return (
-    // The shine sweep is a ::after carrying content: attr(data-text), and
-    // Chrome exposes that generated text, so the name is pinned with aria-label
-    // instead of being computed from the letter spans plus the sweep.
-    <h1 ref={titleRef} className="hero-title" data-text={text} aria-label={text}>
+    // Every letter is aria-hidden so the word is not spelled out one span at a
+    // time; the name comes from aria-label instead.
+    <h1 ref={titleRef} className="hero-title" aria-label={text}>
       {Array.from(text).map((letter, index) => (
         <span
           key={`${letter}-${index}`}

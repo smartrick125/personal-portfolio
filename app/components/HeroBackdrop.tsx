@@ -9,6 +9,8 @@ type Renderer = {
   maxPixelRatio: number;
   resize: (width: number, height: number, dpr: number) => void;
   frame: (elapsed: number, pointer: Pointer) => void;
+  /** A click at this point, if the renderer has something to say about it. */
+  impulse?: (x: number, y: number, elapsed: number) => void;
   dispose: () => void;
 };
 
@@ -41,6 +43,8 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform vec2 uPointer;
 uniform float uPointerOn;
+// xy = origin in uv, z = start time in seconds; z < 0.0 means the slot is free.
+uniform vec3 uRipples[3];
 
 const vec3 SKY = vec3(0.41, 0.84, 1.0);
 const vec3 VIOLET = vec3(0.44, 0.35, 1.0);
@@ -120,6 +124,26 @@ float meteor(vec2 uv, float aspect, float t) {
   return (trail + spark) * life;
 }
 
+// A click pushes a ring outward through the gas: the band both lights up and
+// displaces the sample position, so the cloud visibly bulges as it passes.
+vec2 rippleShift(vec2 uv, float aspect, float t, out float glow) {
+  vec2 shift = vec2(0.0);
+  glow = 0.0;
+  for (int i = 0; i < 3; i++) {
+    float start = uRipples[i].z;
+    float age = t - start;
+    float alive = step(0.0, start) * step(0.0, age) * step(age, 2.6);
+    vec2 toward = (uv - uRipples[i].xy) * vec2(aspect, 1.0);
+    float d = length(toward);
+    float radius = age * 0.46;
+    float edge = (d - radius) * 16.0;
+    float band = exp(-edge * edge) * exp(-age * 1.35) * alive;
+    shift += (toward / max(d, 0.0008)) * band * 0.035;
+    glow += band;
+  }
+  return shift;
+}
+
 void main() {
   vec2 uv = gl_FragCoord.xy / uRes;
   float aspect = uRes.x / uRes.y;
@@ -132,6 +156,9 @@ void main() {
   float angle = influence * 1.15;
   mat2 swirl = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
   vec2 warped = uPointer + (swirl * toPointer) / vec2(aspect, 1.0) * (1.0 - influence * 0.16);
+
+  float rippleGlow;
+  warped += rippleShift(uv, aspect, uTime, rippleGlow) / vec2(aspect, 1.0);
 
   vec2 p = warped * vec2(aspect, 1.0) * 2.4;
   float t = uTime * 0.045;
@@ -154,8 +181,14 @@ void main() {
   light += SKY * starLayer(sv + vec2(uTime * 0.016, 0.0), 8.0, 19.1, uTime) * 1.05;
 
   light += mix(SKY, VIOLET, 0.35) * meteor(uv, aspect, uTime) * 1.4;
-  light += SKY * influence * 0.22;
-  light += VIOLET * influence * influence * 0.30;
+
+  // The cursor reads as a bright core sitting in the gas rather than an overlay
+  // drawn on top of it: same palette, same swirl, lit from the same pass.
+  float core = exp(-pd * pd * 900.0);
+  light += SKY * influence * 0.26;
+  light += VIOLET * influence * influence * 0.34;
+  light += mix(SKY, vec3(1.0), 0.35) * core * uPointerOn * 0.55;
+  light += mix(SKY, VIOLET, 0.45) * rippleGlow * 0.9;
 
   // Dither, or the large soft gradients band on 8-bit displays.
   light += (hash21(gl_FragCoord.xy) - 0.5) * 0.015;
@@ -214,6 +247,7 @@ function createNebula(canvas: HTMLCanvasElement): Renderer | null {
   const uTime = gl.getUniformLocation(program, "uTime");
   const uPointer = gl.getUniformLocation(program, "uPointer");
   const uPointerOn = gl.getUniformLocation(program, "uPointerOn");
+  const uRipples = gl.getUniformLocation(program, "uRipples");
 
   let width = 1;
   let height = 1;
@@ -221,6 +255,10 @@ function createNebula(canvas: HTMLCanvasElement): Renderer | null {
   let smoothY = 0.5;
   let smoothOn = 0;
   let contextLost = false;
+  // Three slots, reused oldest-first: a visitor clicking repeatedly gets
+  // overlapping rings rather than a queue.
+  const ripples = new Float32Array([0, 0, -1, 0, 0, -1, 0, 0, -1]);
+  let nextRipple = 0;
 
   const onContextLost = (event: Event) => {
     event.preventDefault();
@@ -253,7 +291,15 @@ function createNebula(canvas: HTMLCanvasElement): Renderer | null {
       gl.uniform1f(uTime, elapsed);
       gl.uniform2f(uPointer, smoothX, smoothY);
       gl.uniform1f(uPointerOn, smoothOn);
+      gl.uniform3fv(uRipples, ripples);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+    },
+    impulse(x, y, elapsed) {
+      const slot = nextRipple * 3;
+      ripples[slot] = x / width;
+      ripples[slot + 1] = 1 - y / height;
+      ripples[slot + 2] = elapsed;
+      nextRipple = (nextRipple + 1) % 3;
     },
     dispose() {
       canvas.removeEventListener("webglcontextlost", onContextLost);
@@ -475,11 +521,22 @@ export function HeroBackdrop() {
       pointer.active = false;
     };
 
+    const onPointerDown = (event: PointerEvent) => {
+      if (!renderer.impulse) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
+      renderer.impulse(x, y, (performance.now() - started) / 1000);
+      if (!running) render();
+    };
+
     resize();
     visibility.observe(canvas);
     sync();
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
     document.addEventListener("pointerleave", onPointerLeave);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
@@ -489,6 +546,7 @@ export function HeroBackdrop() {
       visibility.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       renderer.dispose();

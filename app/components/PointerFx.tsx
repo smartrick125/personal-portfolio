@@ -2,13 +2,13 @@
 
 import { useEffect } from "react";
 
-const INTERACTIVE = "a, button, [data-magnetic]";
-
 /**
- * A trailing cursor ring plus a magnetic pull on opted-in targets. Mouse only:
- * a ring chasing a finger is noise on touch, and the whole thing is motion, so
- * reduced-motion users get nothing at all. The native cursor stays visible —
- * replacing it costs more in usability than the effect is worth.
+ * Magnetic pull for opted-in targets: while the cursor is over one, the element
+ * leans toward it. Mouse only, and nothing at all under reduced motion.
+ *
+ * The cursor's own feedback is drawn inside the hero shader (see HeroBackdrop),
+ * not by a DOM ring floating above the page — a ring that the nebula cannot
+ * react to reads as a sticker on top of the scene.
  */
 export function PointerFx() {
   useEffect(() => {
@@ -16,23 +16,12 @@ export function PointerFx() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (!fine.matches || reduced.matches) return;
 
-    const ring = document.createElement("div");
-    ring.className = "pointer-ring";
-    ring.setAttribute("aria-hidden", "true");
-    document.body.append(ring);
-
-    let pointerX = window.innerWidth / 2;
-    let pointerY = window.innerHeight / 2;
-    let ringX = pointerX;
-    let ringY = pointerY;
-    let scale = 1;
-    let targetScale = 1;
-    let animationFrame = 0;
     let magnet: HTMLElement | null = null;
     let magnetRect: DOMRect | null = null;
-    let hovered: HTMLElement | null = null;
+    let hovered: Element | null = null;
+    let animationFrame = 0;
 
-    const clearMagnet = () => {
+    const release = () => {
       if (!magnet) return;
       magnet.style.setProperty("--magnet-x", "0px");
       magnet.style.setProperty("--magnet-y", "0px");
@@ -40,68 +29,38 @@ export function PointerFx() {
       magnetRect = null;
     };
 
-    // The rect is cached rather than read per frame: getBoundingClientRect in
-    // the draw loop forces layout on every single frame the mouse is moving.
-    const pullMagnet = () => {
+    const pull = (pointerX: number, pointerY: number) => {
       if (!magnet || !magnetRect) return;
-      const rect = magnetRect;
-      const dx = pointerX - (rect.left + rect.width / 2);
-      const dy = pointerY - (rect.top + rect.height / 2);
-      // Pull is a fraction of the offset and capped, so a wide target does not
-      // fly across the layout when the cursor sits near its edge.
+      const dx = pointerX - (magnetRect.left + magnetRect.width / 2);
+      const dy = pointerY - (magnetRect.top + magnetRect.height / 2);
+      // Capped so a wide target does not slide across the layout when the
+      // cursor sits out near its edge.
       const limit = 16;
       magnet.style.setProperty("--magnet-x", `${Math.max(-limit, Math.min(limit, dx * 0.22))}px`);
       magnet.style.setProperty("--magnet-y", `${Math.max(-limit, Math.min(limit, dy * 0.28))}px`);
     };
 
-    const draw = () => {
-      ringX += (pointerX - ringX) * 0.18;
-      ringY += (pointerY - ringY) * 0.18;
-      scale += (targetScale - scale) * 0.16;
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
-      pullMagnet();
-
-      const settled =
-        Math.abs(pointerX - ringX) < 0.2 &&
-        Math.abs(pointerY - ringY) < 0.2 &&
-        Math.abs(targetScale - scale) < 0.002;
-      animationFrame = settled ? 0 : window.requestAnimationFrame(draw);
-    };
-
-    const wake = () => {
-      if (!animationFrame) animationFrame = window.requestAnimationFrame(draw);
-    };
-
     const onPointerMove = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      ring.dataset.visible = "true";
 
-      const target = (event.target as Element | null)?.closest?.(INTERACTIVE) as HTMLElement | null;
-
-      // Style and layout reads happen only when the hovered target actually
-      // changes; pointermove fires far too often to pay for them every time.
+      // Layout reads happen only when the hovered element changes: pointermove
+      // fires far too often to afford getBoundingClientRect on every one.
+      const target = (event.target as Element | null)?.closest?.("[data-magnetic]") ?? null;
       if (target !== hovered) {
         hovered = target;
-        clearMagnet();
-        if (target?.matches("[data-magnetic]")) {
+        release();
+        if (target instanceof HTMLElement) {
           magnet = target;
           magnetRect = target.getBoundingClientRect();
         }
-        targetScale = target ? 2.1 : 1;
-        const accent = target ? getComputedStyle(target).getPropertyValue("--card-accent").trim() : "";
-        ring.style.setProperty("--ring-accent", accent || "var(--cyan)");
       }
 
-      wake();
-    };
-
-    const onPointerLeave = () => {
-      ring.dataset.visible = "false";
-      targetScale = 1;
-      clearMagnet();
-      wake();
+      if (!magnet || animationFrame) return;
+      const { clientX, clientY } = event;
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+        pull(clientX, clientY);
+      });
     };
 
     const onLayoutChange = () => {
@@ -109,20 +68,17 @@ export function PointerFx() {
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.addEventListener("pointerleave", onPointerLeave);
-    window.addEventListener("blur", onPointerLeave);
     window.addEventListener("scroll", onLayoutChange, { passive: true });
     window.addEventListener("resize", onLayoutChange);
+    window.addEventListener("blur", release);
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       window.removeEventListener("pointermove", onPointerMove);
-      document.removeEventListener("pointerleave", onPointerLeave);
-      window.removeEventListener("blur", onPointerLeave);
       window.removeEventListener("scroll", onLayoutChange);
       window.removeEventListener("resize", onLayoutChange);
-      clearMagnet();
-      ring.remove();
+      window.removeEventListener("blur", release);
+      release();
     };
   }, []);
 
