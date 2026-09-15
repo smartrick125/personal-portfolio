@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { HeroBackdrop } from "./components/HeroBackdrop";
 import { HolographicTiltCard } from "./components/HolographicTiltCard";
 import { ProjectLab } from "./components/project-lab/ProjectLab";
 import { projectCatalog } from "./projectCatalog";
@@ -180,187 +181,6 @@ const projectHighlightAccents = [
   { name: "fire", color: "#ff7b9d" },
 ] as const;
 
-type Star = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  alpha: number;
-  phase: number;
-  hue: number;
-};
-
-function StarfieldCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const pointer = { x: -1000, y: -1000, active: false };
-    let stars: Star[] = [];
-    let width = 0;
-    let height = 0;
-    let frame = 0;
-    let animationFrame = 0;
-    let running = false;
-    let onScreen = true;
-    let pageVisible = !document.hidden;
-
-    const seedStars = () => {
-      const count = Math.max(90, Math.min(260, Math.round((width * height) / 6200)));
-      stars = Array.from({ length: count }, (_, index) => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.12,
-        radius: index % 17 === 0 ? 1.8 + Math.random() * 1.2 : 0.45 + Math.random() * 1.15,
-        alpha: 0.3 + Math.random() * 0.7,
-        phase: Math.random() * Math.PI * 2,
-        hue: Math.random() > 0.74 ? 275 : 198 + Math.random() * 24,
-      }));
-    };
-
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = rect.width;
-      height = rect.height;
-      canvas.width = Math.max(1, Math.round(width * dpr));
-      canvas.height = Math.max(1, Math.round(height * dpr));
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      seedStars();
-      if (!running) draw();
-    };
-
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-      if (pointer.active) {
-        const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 260);
-        glow.addColorStop(0, "rgba(105, 214, 255, 0.12)");
-        glow.addColorStop(0.45, "rgba(112, 90, 255, 0.055)");
-        glow.addColorStop(1, "rgba(10, 12, 34, 0)");
-        context.fillStyle = glow;
-        context.fillRect(0, 0, width, height);
-      }
-
-      for (const star of stars) {
-        if (!reduceMotion) {
-          star.x += star.vx;
-          star.y += star.vy;
-
-          if (pointer.active) {
-            const dx = star.x - pointer.x;
-            const dy = star.y - pointer.y;
-            const distance = Math.hypot(dx, dy);
-            if (distance > 1 && distance < 230) {
-              const force = (1 - distance / 230) * 0.7;
-              star.x += (dx / distance) * force;
-              star.y += (dy / distance) * force;
-              star.x += (-dy / distance) * force * 0.34;
-              star.y += (dx / distance) * force * 0.34;
-            }
-          }
-
-          if (star.x < -8) star.x = width + 8;
-          if (star.x > width + 8) star.x = -8;
-          if (star.y < -8) star.y = height + 8;
-          if (star.y > height + 8) star.y = -8;
-        }
-
-        const twinkle = 0.62 + Math.sin(frame * 0.018 + star.phase) * 0.38;
-        const distance = pointer.active ? Math.hypot(star.x - pointer.x, star.y - pointer.y) : 999;
-        const proximity = Math.max(0, 1 - distance / 210);
-        const radius = star.radius + proximity * 1.3;
-        const alpha = Math.min(1, star.alpha * twinkle + proximity * 0.45);
-
-        if (proximity > 0.33) {
-          context.beginPath();
-          context.moveTo(star.x, star.y);
-          context.lineTo(pointer.x, pointer.y);
-          context.strokeStyle = `hsla(${star.hue}, 92%, 76%, ${proximity * 0.13})`;
-          context.lineWidth = 0.45;
-          context.stroke();
-        }
-
-        context.beginPath();
-        context.arc(star.x, star.y, radius, 0, Math.PI * 2);
-        context.fillStyle = `hsla(${star.hue}, 96%, 82%, ${alpha})`;
-        context.shadowColor = `hsla(${star.hue}, 100%, 72%, ${0.72 + proximity * 0.28})`;
-        context.shadowBlur = radius > 1.5 ? 12 + proximity * 18 : 4 + proximity * 10;
-        context.fill();
-      }
-
-      context.shadowBlur = 0;
-      if (running) {
-        frame += 1;
-        animationFrame = window.requestAnimationFrame(draw);
-      }
-    };
-
-    // The hero canvas is one screen tall on a very long page: stop burning frames
-    // once it scrolls away or the tab goes to the background.
-    const sync = () => {
-      const shouldRun = !reduceMotion && onScreen && pageVisible;
-      if (shouldRun === running) return;
-      running = shouldRun;
-      if (shouldRun) {
-        animationFrame = window.requestAnimationFrame(draw);
-      } else {
-        window.cancelAnimationFrame(animationFrame);
-      }
-    };
-
-    const onVisibilityChange = () => {
-      pageVisible = !document.hidden;
-      sync();
-    };
-
-    const visibility = new IntersectionObserver(
-      ([entry]) => {
-        onScreen = entry.isIntersecting;
-        sync();
-      },
-      { threshold: 0 },
-    );
-
-    const onPointerMove = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      pointer.x = event.clientX - rect.left;
-      pointer.y = event.clientY - rect.top;
-      pointer.active = pointer.x >= 0 && pointer.y >= 0 && pointer.x <= rect.width && pointer.y <= rect.height;
-    };
-    const onPointerLeave = () => {
-      pointer.active = false;
-    };
-
-    resize();
-    visibility.observe(canvas);
-    sync();
-    window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.addEventListener("pointerleave", onPointerLeave);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    return () => {
-      running = false;
-      window.cancelAnimationFrame(animationFrame);
-      visibility.disconnect();
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("pointermove", onPointerMove);
-      document.removeEventListener("pointerleave", onPointerLeave);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="starfield-canvas" aria-hidden="true" />;
-}
-
 export default function Home() {
   const text = copy.en;
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
@@ -457,7 +277,7 @@ export default function Home() {
           <div className="sky-aurora sky-aurora-one" />
           <div className="sky-aurora sky-aurora-two" />
           <div className="star-field" />
-          <StarfieldCanvas />
+          <HeroBackdrop />
           <div className="stellar-cloud stellar-cloud-one" />
           <div className="stellar-cloud stellar-cloud-two" />
           <div className="horizon-grid" />
