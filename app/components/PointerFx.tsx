@@ -29,17 +29,22 @@ export function PointerFx() {
     let targetScale = 1;
     let animationFrame = 0;
     let magnet: HTMLElement | null = null;
+    let magnetRect: DOMRect | null = null;
+    let hovered: HTMLElement | null = null;
 
     const clearMagnet = () => {
       if (!magnet) return;
       magnet.style.setProperty("--magnet-x", "0px");
       magnet.style.setProperty("--magnet-y", "0px");
       magnet = null;
+      magnetRect = null;
     };
 
+    // The rect is cached rather than read per frame: getBoundingClientRect in
+    // the draw loop forces layout on every single frame the mouse is moving.
     const pullMagnet = () => {
-      if (!magnet) return;
-      const rect = magnet.getBoundingClientRect();
+      if (!magnet || !magnetRect) return;
+      const rect = magnetRect;
       const dx = pointerX - (rect.left + rect.width / 2);
       const dy = pointerY - (rect.top + rect.height / 2);
       // Pull is a fraction of the offset and capped, so a wide target does not
@@ -74,14 +79,21 @@ export function PointerFx() {
       ring.dataset.visible = "true";
 
       const target = (event.target as Element | null)?.closest?.(INTERACTIVE) as HTMLElement | null;
-      if (target !== magnet) {
+
+      // Style and layout reads happen only when the hovered target actually
+      // changes; pointermove fires far too often to pay for them every time.
+      if (target !== hovered) {
+        hovered = target;
         clearMagnet();
-        if (target?.matches("[data-magnetic]")) magnet = target;
+        if (target?.matches("[data-magnetic]")) {
+          magnet = target;
+          magnetRect = target.getBoundingClientRect();
+        }
+        targetScale = target ? 2.1 : 1;
+        const accent = target ? getComputedStyle(target).getPropertyValue("--card-accent").trim() : "";
+        ring.style.setProperty("--ring-accent", accent || "var(--cyan)");
       }
 
-      targetScale = target ? 2.1 : 1;
-      const accent = target ? getComputedStyle(target).getPropertyValue("--card-accent").trim() : "";
-      ring.style.setProperty("--ring-accent", accent || "var(--cyan)");
       wake();
     };
 
@@ -92,15 +104,23 @@ export function PointerFx() {
       wake();
     };
 
+    const onLayoutChange = () => {
+      if (magnet) magnetRect = magnet.getBoundingClientRect();
+    };
+
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("pointerleave", onPointerLeave);
     window.addEventListener("blur", onPointerLeave);
+    window.addEventListener("scroll", onLayoutChange, { passive: true });
+    window.addEventListener("resize", onLayoutChange);
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerleave", onPointerLeave);
       window.removeEventListener("blur", onPointerLeave);
+      window.removeEventListener("scroll", onLayoutChange);
+      window.removeEventListener("resize", onLayoutChange);
       clearMagnet();
       ring.remove();
     };

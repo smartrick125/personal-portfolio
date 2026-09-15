@@ -229,10 +229,11 @@ function createNebula(canvas: HTMLCanvasElement): Renderer | null {
   canvas.addEventListener("webglcontextlost", onContextLost);
 
   return {
-    // Fill-rate bound: measured at 1.7ms per full-screen pass for 0.64Mpx on
-    // Intel UHD. 1:1 is comfortable on desktop, but a 3x phone would be nine
-    // times that, so cap the backing store instead of following the device.
-    maxPixelRatio: 1.25,
+    // Fill-rate bound: ~2.6ms per full-screen pass at 1.0Mpx on Intel UHD, and
+    // it scales linearly with pixel count, so a large or high-DPI display would
+    // blow the frame budget at the device ratio. Never render above 1:1, and
+    // the driver caps total pixels on top of this.
+    maxPixelRatio: 1,
     resize(nextWidth, nextHeight) {
       width = Math.max(1, nextWidth);
       height = Math.max(1, nextHeight);
@@ -380,21 +381,59 @@ export function HeroBackdrop() {
     let running = false;
     let onScreen = true;
     let pageVisible = !document.hidden;
+    let quality = 1;
+    let degradations = 0;
+    let stalled = false;
+    let lastFrame = 0;
+    let sampled = 0;
+    let sampleTotal = 0;
 
     const render = () => renderer.frame((performance.now() - started) / 1000, pointer);
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.75, renderer.maxPixelRatio);
       width = rect.width;
       height = rect.height;
+
+      let dpr = Math.min(window.devicePixelRatio || 1, 1.75, renderer.maxPixelRatio) * quality;
+      // A 4K or scaled-up display would otherwise ask for four times the pixels
+      // a 1080p one does at the same ratio.
+      const budget = 1_300_000;
+      const requested = width * height * dpr * dpr;
+      if (requested > budget) dpr *= Math.sqrt(budget / requested);
+
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = Math.max(1, Math.round(height * dpr));
       renderer.resize(width, height, dpr);
       if (!running) render();
     };
 
+    // Nothing here knows what GPU it landed on, so measure: if the backdrop
+    // cannot hold a frame budget it drops resolution, and if that is still not
+    // enough it freezes on the last frame rather than dragging the page down.
     const draw = () => {
+      const now = performance.now();
+      if (lastFrame) {
+        sampled += 1;
+        sampleTotal += now - lastFrame;
+        if (sampled >= 45) {
+          const average = sampleTotal / sampled;
+          sampled = 0;
+          sampleTotal = 0;
+          if (average > 20 && degradations < 2) {
+            degradations += 1;
+            quality *= 0.72;
+            resize();
+          } else if (average > 20) {
+            stalled = true;
+            running = false;
+            lastFrame = 0;
+            return;
+          }
+        }
+      }
+      lastFrame = now;
+
       render();
       if (running) animationFrame = window.requestAnimationFrame(draw);
     };
@@ -402,10 +441,11 @@ export function HeroBackdrop() {
     // The backdrop is one screen tall on a very long page: stop burning frames
     // once it scrolls away or the tab goes to the background.
     const sync = () => {
-      const shouldRun = !reduceMotion && onScreen && pageVisible;
+      const shouldRun = !reduceMotion && !stalled && onScreen && pageVisible;
       if (shouldRun === running) return;
       running = shouldRun;
       if (shouldRun) {
+        lastFrame = 0;
         animationFrame = window.requestAnimationFrame(draw);
       } else {
         window.cancelAnimationFrame(animationFrame);

@@ -95,7 +95,6 @@ body {
   background: color-mix(in srgb, var(--ring-accent, #69d6ff) 10%, transparent);
   opacity: 0;
   pointer-events: none;
-  mix-blend-mode: screen;
   transition: opacity 220ms ease, border-color 220ms ease, background 220ms ease;
   will-change: transform;
 }
@@ -690,7 +689,7 @@ button {
   }
 
   .hero h1::after {
-    animation: hero-shine 7s ease-in-out 1.9s infinite;
+    animation: hero-shine 4.2s ease-in-out 1.9s 2;
   }
 }
 
