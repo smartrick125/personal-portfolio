@@ -621,6 +621,9 @@ button {
   margin: 0;
   width: max-content;
   max-width: 100%;
+  /* One word split into nine inline-blocks is nine break opportunities, so a
+     narrow phone wrapped the final K onto its own line. */
+  white-space: nowrap;
   font-size: clamp(76px, 12.3vw, 184px);
   line-height: 0.82;
   letter-spacing: -0.08em;
