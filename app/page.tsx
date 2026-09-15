@@ -144,149 +144,10 @@ const copy = {
     footer: "Designed as a portfolio in progress",
     stage: "Phase 02 — Case studies",
   },
-  zh: {
-    nav: ["简介", "作品", "方法", "联系"],
-    available: "接受实习 · 校招 · 社招机会",
-    role: "技术美术 / TA",
-    intro: "探索 AI、艺术与代码如何共同塑造更有表现力的实时体验。",
-    introNote: "目前正在积累 Unity、Shader、C# 与实时渲染的实践经验。",
-    viewWork: "查看实践项目",
-    focusLabel: "当前方向",
-    focus: ["Unity", "Shader", "C# 工具", "AI × TA"],
-    profileEyebrow: "01 / 个人简介",
-    profileTitle: "连接视觉想法与实时系统。",
-    profileBody:
-      "我是 Smartrick，一名正在成长中的技术美术学习者。我正在积累 Shader 开发、Unity 工具和实时渲染的实践经验，同时探索 AI 如何让创作流程更高效、更具表现力。",
-    statusTitle: "求职状态",
-    statusBody: "接受实习、校招和社招机会。",
-    learn: "学习中",
-    practice: "实践中",
-    explore: "探索中",
-    workEyebrow: "02 / 实践项目",
-    workTitle: "四个项目，一次连续的案例浏览。",
-    workBody:
-      "完整展示四个 Unity 实践文件夹：所有视频、Gallery 截图、Shader Graph 节点图，以及已有的 Script 与 Technical_Summary 内容都按原文件夹分类呈现。",
-    workTracks: ["节点式视觉特效", "渲染代码实验室"],
-    visualTrack: "Shader Graph / 视觉特效",
-    visualTrackBody: "四个完整视觉案例，按原始 Unity 文件夹分类展示。",
-    codeEyebrow: "手写 Shader / URP 渲染管线",
-    codeTitle: "渲染代码实验室",
-    codeBody:
-      "从公开 Unity-Shader 学习仓库中选出的代表案例，展示我如何把 ShaderLab、HLSL 与 C#、Renderer Feature、RenderGraph 和运行时渲染系统连接起来。",
-    codeLearningNote: "学习归档 · 实现与改编练习",
-    mediaPlaceholder: "图片 / 视频展示位",
-    flowLabel: "实现流程",
-    sourceLabel: "源码文件",
-    snippetLabel: "核心逻辑",
-    viewRepo: "查看完整 GitHub 仓库",
-    archiveEyebrow: "完整学习归档",
-    archiveTitle: "四个精选案例之外。",
-    archiveBody:
-      "仓库还记录了从基础光照到 URP 自定义渲染的完整学习路径。展开分类即可浏览每个章节。",
-    openChapter: "打开章节",
-    placeholder: "Unity 实践 · 已完成",
-    videoLabel: "效果录屏",
-    galleryLabel: "效果细节",
-    logicLabel: "实现逻辑",
-    nodesLabel: "节点模块",
-    scriptLabel: "C# 源码",
-    summaryLabel: "技术总结",
-    originalFile: "打开原始文件",
-    noScript: "该项目没有单独的 Script 文件夹。",
-    scrollHint: "继续滚动查看案例",
-    projects: [
-      {
-        title: "完整技能特效",
-        subtitle: "蓄力 · 光束 · 命中 · 爆炸",
-        description:
-          "通过 C# 统一编排科幻技能序列，控制蓄力、光束渐入、命中脉冲、爆炸半径、溶解与自发光时间。",
-        tags: ["Unity 6", "Shader Graph", "C# 时序"],
-        logic: [
-          "把技能拆分为蓄力、光束、命中和爆炸四套材质，让每个阶段都能独立调节。",
-          "使用 C# 时间序列触发各阶段，并持续写入半径、溶解、自发光和透明度参数。",
-          "保证视觉衔接连续：蓄力释放为光束，命中脉冲标记接触点，最后由爆炸完成收束。",
-        ],
-        nodes: [
-          ["蓄力 Shader", "通过动态自发光遮罩构建发射前的能量积累。"],
-          ["命中 Shader", "在目标点生成短促清晰的接触脉冲。"],
-          ["爆炸 Shader", "组合扩张半径、溶解与自发光，形成技能的最终节拍。"],
-        ],
-      },
-      {
-        title: "交互式能量护盾",
-        subtitle: "Fresnel 外壳与点击涟漪",
-        description:
-          "结合 Fresnel、分层图案、核心脉络与噪声扭曲，并通过射线点击交替驱动两组护盾冲击涟漪。",
-        tags: ["Shader Graph", "C#", "Raycast"],
-        logic: [
-          "使用 Fresnel 外壳、面板图案、核心脉络和噪声扭曲共同构建护盾表面。",
-          "从指针位置向护盾发射射线，把局部命中坐标与开始时间传入材质。",
-          "交替使用两组冲击槽，让第二次涟漪可以在上一轮完全消失前继续触发。",
-        ],
-        nodes: [
-          ["完整节点图", "展示护盾各层材质模块的整体数据流。"],
-          ["Fresnel 外壳", "分离明亮外轮廓和更柔和的内部核心。"],
-          ["涟漪扭曲", "使用动态噪声打散规则圆形冲击波。"],
-        ],
-      },
-      {
-        title: "能量光束",
-        subtitle: "流动、扭曲、裁切与辉光",
-        description:
-          "使用 UV 流动、噪声扭曲、核心辉光、起止位置裁切和命中点高亮构建实时光束效果。",
-        tags: ["Shader Graph", "UV 流动", "VFX"],
-        logic: [
-          "让光束 UV 定向滚动并叠加扭曲，避免能量纹理看起来静止。",
-          "把高亮核心与外层辉光分开计算，使亮度和柔和范围可以独立控制。",
-          "在两端裁切光束，并添加起点与命中点高亮，让它在场景中具有明确连接关系。",
-        ],
-        nodes: [
-          ["完整节点图", "展示从动态 UV 到最终透明度与自发光的完整数据流。"],
-          ["流动与扭曲", "组合平移 UV 与噪声，形成具有方向性的能量运动。"],
-          ["裁切与衰减", "控制光束长度，并柔化垂直方向的轮廓。"],
-        ],
-      },
-      {
-        title: "风格化溶解火焰",
-        subtitle: "程序化边缘自发光",
-        description:
-          "基于 UV 遮罩、动态破碎、分层基础色与边缘自发光制作风格化火焰溶解效果。",
-        tags: ["溶解", "自发光", "材质"],
-        logic: [
-          "先建立稳定的 UV 空间遮罩，再加入动态破碎，让溶解边缘更自然。",
-          "使用溶解阈值划分保留表面、过渡边缘和被裁切区域。",
-          "将基础色与窄范围自发光边缘叠加，使材质更像燃烧，而不是简单消失。",
-        ],
-        nodes: [
-          ["完整节点图", "展示从 UV 准备到材质表面输出的完整溶解流程。"],
-          ["UV 模块", "准备动态破碎遮罩所使用的坐标。"],
-          ["自发光边缘", "提取溶解过渡带并形成明亮的火焰边缘。"],
-        ],
-      },
-    ],
-    approachEyebrow: "03 / 方法",
-    approachTitle: "艺术确定意图，代码让它发生，AI 扩展探索空间。",
-    approachBody:
-      "我仍处于技术积累阶段，因此作品集会诚实呈现过程：尝试了什么、哪里失败了、学到了什么，以及下一次如何做得更好。",
-    pillars: [
-      ["ART", "观察形态、色彩、运动与视觉层级。"],
-      ["CODE", "把想法转化为可重复的实时系统。"],
-      ["AI", "借助新工具加速探索，但不隐藏基本功。"],
-    ],
-    contactEyebrow: "04 / 联系",
-    contactTitle: "一起构建下一帧。",
-    contactBody: "期待技术美术与实时图形相关机会。",
-    github: "github.com/smartrick125",
-    resume: "个人简历 · 即将补充",
-    contact: "ke4773613@gmail.com",
-    footer: "一个持续成长中的作品集",
-    stage: "阶段 02 — 项目案例",
-  },
 } as const;
 
 const statusLabels = {
   en: ["Learning", "Practising", "Exploring"],
-  zh: ["学习中", "实践中", "探索中"],
 } as const;
 
 const projectHighlights = [
@@ -347,6 +208,9 @@ function StarfieldCanvas() {
     let height = 0;
     let frame = 0;
     let animationFrame = 0;
+    let running = false;
+    let onScreen = true;
+    let pageVisible = !document.hidden;
 
     const seedStars = () => {
       const count = Math.max(90, Math.min(260, Math.round((width * height) / 6200)));
@@ -371,16 +235,19 @@ function StarfieldCanvas() {
       canvas.height = Math.max(1, Math.round(height * dpr));
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
       seedStars();
+      if (!running) draw();
     };
 
     const draw = () => {
       context.clearRect(0, 0, width, height);
-      const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 260);
-      glow.addColorStop(0, pointer.active ? "rgba(105, 214, 255, 0.12)" : "rgba(105, 214, 255, 0)");
-      glow.addColorStop(0.45, pointer.active ? "rgba(112, 90, 255, 0.055)" : "rgba(112, 90, 255, 0)");
-      glow.addColorStop(1, "rgba(10, 12, 34, 0)");
-      context.fillStyle = glow;
-      context.fillRect(0, 0, width, height);
+      if (pointer.active) {
+        const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 260);
+        glow.addColorStop(0, "rgba(105, 214, 255, 0.12)");
+        glow.addColorStop(0.45, "rgba(112, 90, 255, 0.055)");
+        glow.addColorStop(1, "rgba(10, 12, 34, 0)");
+        context.fillStyle = glow;
+        context.fillRect(0, 0, width, height);
+      }
 
       for (const star of stars) {
         if (!reduceMotion) {
@@ -430,11 +297,37 @@ function StarfieldCanvas() {
       }
 
       context.shadowBlur = 0;
-      if (!reduceMotion) {
+      if (running) {
         frame += 1;
         animationFrame = window.requestAnimationFrame(draw);
       }
     };
+
+    // The hero canvas is one screen tall on a very long page: stop burning frames
+    // once it scrolls away or the tab goes to the background.
+    const sync = () => {
+      const shouldRun = !reduceMotion && onScreen && pageVisible;
+      if (shouldRun === running) return;
+      running = shouldRun;
+      if (shouldRun) {
+        animationFrame = window.requestAnimationFrame(draw);
+      } else {
+        window.cancelAnimationFrame(animationFrame);
+      }
+    };
+
+    const onVisibilityChange = () => {
+      pageVisible = !document.hidden;
+      sync();
+    };
+
+    const visibility = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        sync();
+      },
+      { threshold: 0 },
+    );
 
     const onPointerMove = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -447,16 +340,21 @@ function StarfieldCanvas() {
     };
 
     resize();
-    draw();
+    visibility.observe(canvas);
+    sync();
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("pointerleave", onPointerLeave);
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
+      running = false;
       window.cancelAnimationFrame(animationFrame);
+      visibility.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerleave", onPointerLeave);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 
@@ -618,6 +516,11 @@ export default function Home() {
             <img
               src="/profile/smartrick-portrait.jpg"
               alt="Portrait of Smartrick"
+              width={800}
+              height={1422}
+              decoding="async"
+              fetchPriority="low"
+              loading="lazy"
             />
             <figcaption>
               <span>SMARTRICK / 2026</span>
@@ -685,6 +588,7 @@ export default function Home() {
                       src={assets.gallery[0]?.src}
                       alt=""
                       loading="lazy"
+                      decoding="async"
                     />
                     <span className="highlight-shade" aria-hidden="true" />
                     <div className="highlight-topline">
@@ -762,11 +666,11 @@ export default function Home() {
                   {study.comparison ? (
                     <figure className="code-comparison" data-reveal>
                       <div className="comparison-frame">
-                        <img src={study.comparison.before.src} alt={study.comparison.before.alt.en} loading="lazy" />
+                        <img src={study.comparison.before.src} alt={study.comparison.before.alt.en} loading="lazy" decoding="async" />
                         <span>{study.comparison.before.label.en}</span>
                       </div>
                       <div className="comparison-frame">
-                        <img src={study.comparison.after.src} alt={study.comparison.after.alt.en} loading="lazy" />
+                        <img src={study.comparison.after.src} alt={study.comparison.after.alt.en} loading="lazy" decoding="async" />
                         <span>{study.comparison.after.label.en}</span>
                       </div>
                       <figcaption>
@@ -775,7 +679,7 @@ export default function Home() {
                     </figure>
                   ) : (
                     <figure className="code-media" data-reveal>
-                      <img src={study.media.src} alt={study.media.alt.en} loading="lazy" />
+                      <img src={study.media.src} alt={study.media.alt.en} loading="lazy" decoding="async" />
                       <figcaption>
                         <p>{study.mediaNote.en}</p>
                       </figcaption>

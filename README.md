@@ -18,6 +18,9 @@
 - 蓝紫天空与实时渲染视觉氛围
 - 鼠标视差、滚动揭示和响应式动效
 - 桌面端、平板和手机端响应式布局
+- Geist / Geist Mono 自托管于 `public/fonts/`，@font-face 写在 `app/globals.css`
+  （`next/font/google` 在 Windows 上会把字体 URL 写成构建机的绝对路径，线上 404）
+- `public/robots.txt`、`public/sitemap.xml` 与 Person 结构化数据（在 `app/layout.tsx`）
 
 ## 后续替换
 
@@ -26,6 +29,9 @@
 `app/globals.css`。渲染代码案例与 GitHub 归档位于 `app/renderingCatalog.ts`，渲染案例图片位于
 `public/rendering-code/`，个人照片位于 `public/profile/`；后续也可继续补充 GIF、MP4 或真正的
 WebGL 3D 场景。
+
+换站点域名时需要同步修改三处：`app/layout.tsx` 的 `siteUrl`、`public/robots.txt` 的 Sitemap
+行、`public/sitemap.xml` 的 `<loc>`。
 
 ## 验收
 

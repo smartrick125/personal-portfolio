@@ -1,5 +1,53 @@
 @import "tailwindcss";
 
+/*
+ * Self-hosted Geist. `next/font/google` emits @font-face URLs that point at the
+ * build machine's absolute filesystem path on Windows (vinext's cache-path
+ * rewrite compares a backslash path against forward-slash CSS), so the fonts
+ * 404 in production. Shipping the latin subsets ourselves keeps the build
+ * offline and the URLs stable.
+ */
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-mono-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-mono-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --font-geist-sans: "Geist";
+  --font-geist-mono: "Geist Mono";
+}
+
 :root {
   --ink: #07101f;
   --night: #050713;
@@ -30,7 +78,31 @@ body {
   overflow-x: hidden;
   background: var(--night);
   color: var(--white);
-  font-family: Arial, "Microsoft YaHei", sans-serif;
+  font-family: var(--font-geist-sans), Arial, "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 200;
+  top: 12px;
+  left: 12px;
+  padding: 12px 18px;
+  color: var(--night);
+  background: var(--sky);
+  border-radius: 999px;
+  font: 700 11px/1 var(--font-geist-mono), monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transform: translateY(-160%);
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+  transform: translateY(0);
 }
 
 button,
@@ -2571,7 +2643,10 @@ body {
   }
 
   .hero h1 {
-    font-size: clamp(57px, 19.5vw, 92px);
+    /* "SMARTRICK" is one unbreakable word: 19.5vw overflowed the shell and
+       clipped the final K on every phone width. 16vw is the largest factor
+       that still fits at 320px. */
+    font-size: clamp(42px, 16vw, 92px);
     letter-spacing: -0.075em;
   }
 

@@ -15,9 +15,69 @@
   border-bottom: 1px solid rgba(151, 177, 255, 0.16);
 }
 
+.header p {
+  margin: 0 0 12px;
+  color: rgba(232, 238, 255, 0.5);
+  font: 700 0.66rem/1 var(--font-geist-mono), monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .header nav {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.header nav button {
+  min-width: 0;
+  padding: 11px 13px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: rgba(232, 238, 255, 0.62);
+  text-align: left;
+  background: transparent;
+  border: 1px solid rgba(151, 177, 255, 0.14);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.header nav button span {
+  flex: none;
+  color: rgba(232, 238, 255, 0.4);
+  font: 700 0.62rem/1.5 var(--font-geist-mono), monospace;
+  letter-spacing: 0.1em;
+}
+
+.header nav button strong {
+  overflow: hidden;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.header nav button:hover {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--lab-accent) 42%, transparent);
+}
+
+.header nav button[aria-pressed="true"] {
+  color: #fff;
+  background: color-mix(in srgb, var(--lab-accent) 20%, transparent);
+  border-color: color-mix(in srgb, var(--lab-accent) 55%, transparent);
+}
+
+.header nav button[aria-pressed="true"] span {
+  color: color-mix(in srgb, var(--lab-accent) 70%, white);
+}
+
+.header nav button:focus-visible {
+  outline: 2px solid var(--lab-accent);
+  outline-offset: 2px;
 }
 
 .shell {
@@ -590,6 +650,10 @@
 @media (max-width: 760px) {
   .transitionTrack {
     min-height: auto;
+  }
+
+  .header nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .experience {

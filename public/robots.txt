@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://personal-portfolio-21265.ke4773613.chatgpt.site/sitemap.xml
