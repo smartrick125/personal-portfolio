@@ -656,19 +656,23 @@ button {
   }
 }
 
+/* No filter here on purpose. Chromium paints the whole background box instead
+   of the glyphs when a filter meets -webkit-background-clip: text, which turned
+   the first letter — whose gradient slice is the white end of the ramp — into a
+   solid white rectangle mid-animation.
+
+   The flash is the gradient itself instead: every letter starts on the white
+   end of the ramp and slides back to its own slice as it lands. */
 @keyframes hero-letter {
   from {
     opacity: 0;
     transform: translate3d(0, 0.44em, 0) rotateX(-58deg) scale(0.94);
-    filter: blur(9px) brightness(2.4);
-  }
-  70% {
-    filter: blur(0) brightness(1.5);
+    background-position: 0 0;
   }
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0) brightness(1);
+    background-position: calc(-1 * var(--letter-offset, 0px)) 0;
   }
 }
 
