@@ -83,6 +83,34 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.pointer-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  width: 26px;
+  height: 26px;
+  border: 1px solid color-mix(in srgb, var(--ring-accent, #69d6ff) 70%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ring-accent, #69d6ff) 10%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition: opacity 220ms ease, border-color 220ms ease, background 220ms ease;
+  will-change: transform;
+}
+
+.pointer-ring[data-visible="true"] {
+  opacity: 0.85;
+}
+
+/* The pull is a variable rather than a transform so a target that already
+   transforms on hover can compose the two instead of overwriting one. */
+[data-magnetic] {
+  transform: translate3d(var(--magnet-x, 0px), var(--magnet-y, 0px), 0);
+  transition: transform 260ms cubic-bezier(.2, .8, .2, 1);
+}
+
 .skip-link {
   position: fixed;
   z-index: 200;
@@ -753,7 +781,7 @@ button {
 .primary-cta:focus-visible {
   border-color: var(--cyan);
   background: rgba(92, 104, 255, 0.6);
-  transform: rotate(-6deg) scale(1.04);
+  transform: translate3d(var(--magnet-x, 0px), var(--magnet-y, 0px), 0) rotate(-6deg) scale(1.04);
 }
 
 .focus-strip {

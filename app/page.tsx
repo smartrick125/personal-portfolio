@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { HeroBackdrop } from "./components/HeroBackdrop";
 import { HeroTitle } from "./components/HeroTitle";
 import { HolographicTiltCard } from "./components/HolographicTiltCard";
+import { PointerFx } from "./components/PointerFx";
 import { ProjectLab } from "./components/project-lab/ProjectLab";
 import { projectCatalog } from "./projectCatalog";
 import { archiveTracks, codeStudies, renderingRepo } from "./renderingCatalog";
@@ -241,6 +242,7 @@ export default function Home() {
 
   return (
     <main className="site">
+      <PointerFx />
       <nav className="topbar" aria-label="Primary navigation">
         <div className="nav-center">
           <a href="#profile">Profile</a>
@@ -305,7 +307,7 @@ export default function Home() {
               <p>{text.intro}</p>
               <small>{text.introNote}</small>
             </div>
-            <a className="primary-cta" href="#work">
+            <a className="primary-cta" href="#work" data-magnetic>
               <span>{text.viewWork}</span>
               <b aria-hidden="true">↘</b>
             </a>
