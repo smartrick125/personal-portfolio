@@ -625,6 +625,65 @@ button {
   filter: drop-shadow(0 16px 45px rgba(70, 78, 180, 0.3));
 }
 
+.hero h1 {
+  position: relative;
+  perspective: 900px;
+}
+
+/* Each letter repaints the title-wide gradient shifted by its own offset
+   (measured in HeroTitle.tsx), so nine boxes still read as one ramp. */
+.hero h1 [data-letter] {
+  display: inline-block;
+  background: inherit;
+  background-size: var(--title-width, 100%) 100%;
+  background-position: calc(-1 * var(--letter-offset, 0px)) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero h1::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(104deg, transparent 38%, rgba(255, 255, 255, 0.92) 50%, transparent 62%);
+  background-size: 260% 100%;
+  background-position: 170% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1 [data-letter] {
+    animation: hero-letter 760ms cubic-bezier(.2, .85, .25, 1) both;
+    animation-delay: calc(var(--letter-index) * 52ms + 140ms);
+  }
+
+  .hero h1::after {
+    animation: hero-shine 7s ease-in-out 1.9s infinite;
+  }
+}
+
+@keyframes hero-letter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.44em, 0) rotateX(-58deg) scale(0.94);
+    filter: blur(9px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-shine {
+  0% { background-position: -70% 0; }
+  34%, 100% { background-position: 170% 0; }
+}
+
 .hero-role-row {
   display: flex;
   align-items: center;
@@ -3476,5 +3535,40 @@ body {
   .holographic-tilt-card:hover > img,
   .holographic-tilt-card:focus-visible > img {
     transform: scale(1.035);
+  }
+}
+
+/* Scroll-driven enhancement, layered on top of the IntersectionObserver
+   reveals rather than replacing them: an engine that parses animation-timeline
+   but never activates it would otherwise leave every section with no entrance
+   at all. The JS path stays the source of truth; this only adds the hero fade.
+
+   The timeline is declared on .hero, not on .hero-content: view() binds to the
+   nearest ancestor scroll container and .hero is overflow:hidden, so a timeline
+   declared inside it measures against a box that never scrolls. .hero itself
+   sits in the document scroller, and a descendant may reference an ancestor's
+   named timeline. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero {
+      view-timeline-name: --hero;
+    }
+
+    .hero-content {
+      animation: hero-exit linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 88%;
+    }
+  }
+}
+
+@keyframes hero-exit {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0.1;
+    transform: translateY(-62px) scale(0.976);
   }
 }

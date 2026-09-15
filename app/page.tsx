@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HeroBackdrop } from "./components/HeroBackdrop";
+import { HeroTitle } from "./components/HeroTitle";
 import { HolographicTiltCard } from "./components/HolographicTiltCard";
 import { ProjectLab } from "./components/project-lab/ProjectLab";
 import { projectCatalog } from "./projectCatalog";
@@ -291,7 +292,7 @@ export default function Home() {
 
           <div className="hero-title-wrap">
             <p className="hero-index">PORTFOLIO / 2026</p>
-            <h1>SMARTRICK</h1>
+            <HeroTitle text="SMARTRICK" />
             <div className="hero-role-row">
               <span>{text.role}</span>
               <span className="role-line" />
