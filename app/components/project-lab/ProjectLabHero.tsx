@@ -16,6 +16,11 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
   const videoRef = useRef<HTMLVideoElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const [playRejected, setPlayRejected] = useState(false);
+  // autoPlay makes the browser fetch and decode the clip the moment the element
+  // has a src, even though the lab sits a long way below the fold — 641KB of a
+  // 1.2MB first load, decoded on loop, for something nobody can see yet. The
+  // src is withheld until the stage is near the viewport.
+  const [videoReady, setVideoReady] = useState(false);
   const [imageParallaxEnabled, setImageParallaxEnabled] = useState(
     () => typeof window !== "undefined"
       && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches,
@@ -54,11 +59,15 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !videoReady) return;
 
     void video.play().then(() => setPlayRejected(false)).catch(onPlayRejected);
     return () => video.pause();
-  }, [hero?.src, onPlayRejected, project.id]);
+  }, [hero?.src, onPlayRejected, project.id, videoReady]);
+
+  useEffect(() => {
+    setVideoReady(false);
+  }, [hero?.src]);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)");
@@ -73,20 +82,29 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
 
   useEffect(() => {
     const root = heroRootRef.current;
-    if (!root || !("IntersectionObserver" in window)) return;
+    if (!root) return;
+    if (!("IntersectionObserver" in window)) {
+      // No observer means no way to tell when the stage arrives, so fall back
+      // to the old behaviour rather than a clip that never loads.
+      setVideoReady(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const video = videoRef.current;
-        if (!video) return;
-
         if (entry?.isIntersecting) {
-          void video.play().catch(onPlayRejected);
+          // First crossing hands the element its src; the effect above starts
+          // playback once React has actually set it.
+          setVideoReady(true);
+          const video = videoRef.current;
+          if (video?.currentSrc) void video.play().catch(onPlayRejected);
         } else {
-          video.pause();
+          videoRef.current?.pause();
         }
       },
-      { threshold: 0.2 },
+      // Start fetching a little before it scrolls in, so it is not blank on
+      // arrival.
+      { threshold: 0.2, rootMargin: "300px 0px" },
     );
 
     observer.observe(root);
@@ -97,6 +115,7 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
     <article
       ref={heroRootRef}
       className={styles.heroMedia}
+      onPointerDown={() => setVideoReady(true)}
       data-hero-mode={compact ? "compact" : "hero"}
     >
       {hero?.kind === "video" && (
@@ -104,12 +123,12 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
           <video
             key={hero.src}
             ref={videoRef}
-            src={hero.src}
+            src={videoReady ? hero.src : undefined}
             autoPlay
             muted
             loop
             playsInline
-            preload="metadata"
+            preload={videoReady ? "metadata" : "none"}
             poster={project.gallery[0]?.src}
             onPlay={() => setPlayRejected(false)}
             onError={() => onMediaError?.(hero.src)}
