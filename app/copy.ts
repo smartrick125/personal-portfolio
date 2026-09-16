@@ -2,8 +2,8 @@ export type Lang = "en" | "zh";
 
 /** Label for the button that switches *to* the other language. */
 export const languageSwitch = {
-  en: { to: "zh", label: "中文", aria: "切换到中文" },
-  zh: { to: "en", label: "EN", aria: "Switch to English" },
+  en: { to: "zh", href: "/zh", label: "中文", aria: "切换到中文" },
+  zh: { to: "en", href: "/", label: "EN", aria: "Switch to English" },
 } as const;
 
 export const copy = {
@@ -109,7 +109,6 @@ export const copy = {
     projects: [
       {
         title: "Full Skill Effect",
-        subtitle: "Charge · Beam · Hit · Explosion",
         description:
           "A complete sci-fi skill sequence driven by C#, coordinating charge-up, beam fade-in, impact pulse, explosion radius, dissolve, and emission timing.",
         tags: ["Unity 6", "Shader Graph", "C# Sequence"],
@@ -118,15 +117,9 @@ export const copy = {
           "Use a C# timeline to trigger each phase and write radius, dissolve, emission, and opacity values into the materials.",
           "Keep the visual hand-off continuous: the charge releases into the beam, the hit pulse marks contact, and the explosion resolves the sequence.",
         ],
-        nodes: [
-          ["Charge shader", "Builds the pre-fire energy with an animated emissive mask."],
-          ["Hit shader", "Creates a short contact pulse at the target point."],
-          ["Explosion shader", "Combines expanding radius, dissolve, and emission for the final beat."],
-        ],
       },
       {
         title: "Interactive Energy Shield",
-        subtitle: "Fresnel shell and click-driven ripples",
         description:
           "An energy shield combining Fresnel edges, layered patterns, core veins, noise distortion, and two alternating impact slots controlled by raycast input.",
         tags: ["Shader Graph", "C#", "Raycast"],
@@ -135,15 +128,9 @@ export const copy = {
           "Raycast from the pointer into the shield and pass the local hit position plus start time to the material.",
           "Alternate between two impact slots so a second ripple can begin before the previous one has fully faded.",
         ],
-        nodes: [
-          ["Graph overview", "The complete shield graph and its layered material flow."],
-          ["Fresnel shell", "Separates the bright outer rim from the softer inner core."],
-          ["Ripple distortion", "Breaks up the circular impact wave with animated noise."],
-        ],
       },
       {
         title: "Energy Beam",
-        subtitle: "Flow, distortion, clipping, and glow",
         description:
           "A real-time beam effect built from animated UV flow, distortion, core and glow layers, start/end clipping, and hit-point highlighting.",
         tags: ["Shader Graph", "UV Flow", "VFX"],
@@ -152,15 +139,9 @@ export const copy = {
           "Separate the concentrated core from the wider glow so brightness and softness can be authored independently.",
           "Clip the beam at both ends, then add start and hit highlights to visually anchor it in the scene.",
         ],
-        nodes: [
-          ["Graph overview", "Shows the complete data flow from animated UVs to final alpha and emission."],
-          ["Flow and distortion", "Combines panning UVs and noise to generate directional motion."],
-          ["Clipping and falloff", "Controls beam length and softens its vertical silhouette."],
-        ],
       },
       {
         title: "Stylized Dissolve Fire",
-        subtitle: "Procedural edge emission",
         description:
           "A stylized fire and dissolve study using UV-based masks, animated breakup, layered base color, and emissive edge treatment.",
         tags: ["Dissolve", "Emission", "Material"],
@@ -168,11 +149,6 @@ export const copy = {
           "Build a stable UV-space mask, then introduce animated breakup so the dissolve edge feels organic.",
           "Use the dissolve threshold to separate visible surface, transition band, and removed pixels.",
           "Layer base color with a narrow emissive edge so the material reads as burning rather than simply disappearing.",
-        ],
-        nodes: [
-          ["Graph overview", "The complete dissolve graph from UV preparation to surface output."],
-          ["UV module", "Prepares the coordinates used by the animated breakup masks."],
-          ["Emission edge", "Extracts the transition band and turns it into the bright fire rim."],
         ],
       },
     ],
@@ -300,7 +276,6 @@ export const copy = {
     projects: [
       {
         title: "完整技能特效",
-        subtitle: "蓄力 · 光束 · 命中 · 爆炸",
         description:
           "通过 C# 统一编排科幻技能序列，控制蓄力、光束渐入、命中脉冲、爆炸半径、溶解与自发光时间。",
         tags: ["Unity 6", "Shader Graph", "C# 时序"],
@@ -309,15 +284,9 @@ export const copy = {
           "使用 C# 时间序列触发各阶段，并持续写入半径、溶解、自发光和透明度参数。",
           "保证视觉衔接连续：蓄力释放为光束，命中脉冲标记接触点，最后由爆炸完成收束。",
         ],
-        nodes: [
-          ["蓄力 Shader", "通过动态自发光遮罩构建发射前的能量积累。"],
-          ["命中 Shader", "在目标点生成短促清晰的接触脉冲。"],
-          ["爆炸 Shader", "组合扩张半径、溶解与自发光，形成技能的最终节拍。"],
-        ],
       },
       {
         title: "交互式能量护盾",
-        subtitle: "Fresnel 外壳与点击涟漪",
         description:
           "结合 Fresnel、分层图案、核心脉络与噪声扭曲，并通过射线点击交替驱动两组护盾冲击涟漪。",
         tags: ["Shader Graph", "C#", "Raycast"],
@@ -326,15 +295,9 @@ export const copy = {
           "从指针位置向护盾发射射线，把局部命中坐标与开始时间传入材质。",
           "交替使用两组冲击槽，让第二次涟漪可以在上一轮完全消失前继续触发。",
         ],
-        nodes: [
-          ["完整节点图", "展示护盾各层材质模块的整体数据流。"],
-          ["Fresnel 外壳", "分离明亮外轮廓和更柔和的内部核心。"],
-          ["涟漪扭曲", "使用动态噪声打散规则圆形冲击波。"],
-        ],
       },
       {
         title: "能量光束",
-        subtitle: "流动、扭曲、裁切与辉光",
         description:
           "使用 UV 流动、噪声扭曲、核心辉光、起止位置裁切和命中点高亮构建实时光束效果。",
         tags: ["Shader Graph", "UV 流动", "VFX"],
@@ -343,15 +306,9 @@ export const copy = {
           "把高亮核心与外层辉光分开计算，使亮度和柔和范围可以独立控制。",
           "在两端裁切光束，并添加起点与命中点高亮，让它在场景中具有明确连接关系。",
         ],
-        nodes: [
-          ["完整节点图", "展示从动态 UV 到最终透明度与自发光的完整数据流。"],
-          ["流动与扭曲", "组合平移 UV 与噪声，形成具有方向性的能量运动。"],
-          ["裁切与衰减", "控制光束长度，并柔化垂直方向的轮廓。"],
-        ],
       },
       {
         title: "风格化溶解火焰",
-        subtitle: "程序化边缘自发光",
         description:
           "基于 UV 遮罩、动态破碎、分层基础色与边缘自发光制作风格化火焰溶解效果。",
         tags: ["溶解", "自发光", "材质"],
@@ -359,11 +316,6 @@ export const copy = {
           "先建立稳定的 UV 空间遮罩，再加入动态破碎，让溶解边缘更自然。",
           "使用溶解阈值划分保留表面、过渡边缘和被裁切区域。",
           "将基础色与窄范围自发光边缘叠加，使材质更像燃烧，而不是简单消失。",
-        ],
-        nodes: [
-          ["完整节点图", "展示从 UV 准备到材质表面输出的完整溶解流程。"],
-          ["UV 模块", "准备动态破碎遮罩所使用的坐标。"],
-          ["自发光边缘", "提取溶解过渡带并形成明亮的火焰边缘。"],
         ],
       },
     ],

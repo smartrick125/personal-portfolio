@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${path}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -99,7 +99,7 @@ test("keeps all comparison media available in the deployment bundle", async () =
     projectFocusViewer,
     projectLabCss,
   ] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/Portfolio.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/renderingCatalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/components/HolographicTiltCard.tsx", import.meta.url), "utf8"),
@@ -291,4 +291,44 @@ test("project switching preserves the sentinel-owned lab phase", async () => {
     /setCompact\(false\)/,
     "project switch completion must not overwrite the phase last synchronized by the sentinel",
   );
+});
+
+test("serves each language as its own crawlable route", async () => {
+  const [en, zh] = await Promise.all([
+    render("/").then((response) => response.text()),
+    render("/zh").then((response) => response.text()),
+  ]);
+
+  // The Chinese copy has to be in the server response, not swapped in on the
+  // client, otherwise search engines only ever index the English half.
+  assert.match(zh, /想弄清楚 AI、艺术和代码放在一起/);
+  assert.doesNotMatch(zh, /Exploring how AI, art, and code/);
+  assert.match(en, /Exploring how AI, art, and code/);
+  assert.doesNotMatch(en, /想弄清楚 AI、艺术和代码放在一起/);
+
+  assert.match(zh, /<title>Smartrick — 技术美术<\/title>/);
+  assert.match(en, /<title>Smartrick — Technical Artist<\/title>/);
+
+  // Each page points at itself and declares both alternates. React serialises
+  // the attribute as `hrefLang`; HTML attribute names are case-insensitive.
+  assert.match(en, /rel="canonical" href="https:\/\/smartrick\.top\/"/);
+  assert.match(zh, /rel="canonical" href="https:\/\/smartrick\.top\/zh"/);
+  for (const html of [en, zh]) {
+    assert.match(html, /rel="alternate" hrefLang="en" href="https:\/\/smartrick\.top\/"/i);
+    assert.match(html, /rel="alternate" hrefLang="zh-CN" href="https:\/\/smartrick\.top\/zh"/i);
+    assert.match(html, /rel="alternate" hrefLang="x-default"/i);
+  }
+
+  assert.match(en, /property="og:locale" content="en_US"/);
+  assert.match(zh, /property="og:locale" content="zh_CN"/);
+
+  // The switch is a link, so a crawler can follow it to the other language.
+  assert.match(en, /class="lang-switch"[^>]*href="\/zh"/);
+  assert.match(zh, /class="lang-switch"[^>]*href="\/"/);
+
+  // Both routes render the full portfolio, not a stub.
+  for (const html of [en, zh]) {
+    assert.equal((html.match(/data-project-lab="true"/g) ?? []).length, 1);
+    assert.equal((html.match(/data-holographic-card="true"/g) ?? []).length, 4);
+  }
 });

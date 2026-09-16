@@ -1,64 +1,53 @@
 "use client";
 
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 import { copy, type Lang } from "./copy";
 
 const STORAGE_KEY = "smartrick-lang";
-const CHANGE_EVENT = "smartrick-lang-change";
 
-/** Cached so `getSnapshot` stays cheap and returns a stable value. */
-let current: Lang | null = null;
-
-function readLang(): Lang {
-  if (current) return current;
+function readStoredLang(): Lang | null {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "zh") {
-      current = stored;
-      return current;
-    }
+    return stored === "en" || stored === "zh" ? stored : null;
   } catch {
-    // Private mode or blocked site data: fall through to browser detection.
+    // Private mode or blocked site data: treat as no preference.
+    return null;
   }
-  current = navigator.language?.toLowerCase().startsWith("zh") ? "zh" : "en";
-  return current;
 }
 
-function subscribe(onChange: () => void) {
-  window.addEventListener(CHANGE_EVENT, onChange);
-  return () => window.removeEventListener(CHANGE_EVENT, onChange);
+/** Called when the reader picks a language, so the choice survives a reload. */
+export function rememberLang(lang: Lang) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, lang);
+  } catch {
+    // The link still navigates; only the memory is lost.
+  }
 }
 
 /**
- * Language state for the whole page.
+ * Language is a route now (`/` and `/zh`), not client state, so a crawler sees
+ * each version as its own page and hreflang can point at both.
  *
- * The server has no way to know the reader's preference, so it always renders
- * English. Reading localStorage during render is what broke the previous
- * switcher: the markup no longer matched what the server sent and hydration
- * threw the client tree away. `useSyncExternalStore` is the supported way to
- * say "server and first paint use this, the real client value follows" — the
- * server snapshot is always "en" and React re-renders once with the stored or
- * browser-detected value.
- *
- * Only an explicit click is written to storage, so a visitor auto-detected as
- * Chinese can still switch back to English and have it stick.
+ * Two things are still the client's job. The root layout renders a single
+ * `<html lang>` and cannot know which route is being served, so the Chinese
+ * page corrects it here. And a first-time Chinese-speaking visitor who lands on
+ * the English URL gets sent across — only from `/`, only when they have not
+ * already chosen English, so it cannot loop and never overrides an explicit
+ * choice.
  */
-export function useLang() {
-  const lang = useSyncExternalStore(subscribe, readLang, () => "en" as Lang);
-
+export function useLanguageRouting(lang: Lang) {
   useEffect(() => {
     document.documentElement.lang = copy[lang].htmlLang;
   }, [lang]);
 
-  const changeLang = useCallback((next: Lang) => {
-    current = next;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // Preference just won't survive a reload; the toggle still works.
-    }
-    window.dispatchEvent(new Event(CHANGE_EVENT));
-  }, []);
+  useEffect(() => {
+    if (lang !== "en" || window.location.pathname !== "/") return;
 
-  return [lang, changeLang] as const;
+    const stored = readStoredLang();
+    if (stored === "en") return;
+
+    const wantsChinese =
+      stored === "zh" || (!stored && navigator.language?.toLowerCase().startsWith("zh"));
+    if (wantsChinese) window.location.replace("/zh");
+  }, [lang]);
 }
