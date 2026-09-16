@@ -3930,3 +3930,35 @@ body {
     top: calc(18px + var(--i, 0) * 9px);
   }
 }
+
+/* ─── Rendering lab on a phone ────────────────────────────────────────
+   The section is 5087px of an 11457px page — 44%, worse than on desktop.
+   Two things carry it: the before/after frames stack into 535px, and the
+   description paragraph repeats the title for another 126px per study. */
+
+@media (max-width: 760px) {
+  /* Two 240px frames plus a caption. The images are `contain`, so a shorter
+     frame scales them down rather than cropping. */
+  .comparison-frame {
+    min-height: 170px;
+  }
+
+  /* Keep the description — it matters for search and for anyone reading
+     closely — but stop it from pushing the image below the fold. The full
+     text is still in the DOM and still selectable. */
+  .code-study-header > p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .code-study {
+    padding: 26px 16px 30px;
+  }
+
+  .code-study-header {
+    margin-bottom: 22px;
+  }
+}
