@@ -118,8 +118,7 @@ export function Portfolio({ lang }: { lang: Lang }) {
               </div>
             </div>
           </details>
-          <a href="#approach">{text.nav[2]}</a>
-          <a href="#contact">{text.nav[3]}</a>
+          <a href="#contact">{text.nav[2]}</a>
           {/* A real link, not a button: the other language now lives at its own
               URL, so this is what lets a crawler reach it. */}
           <a
@@ -371,6 +370,15 @@ export function Portfolio({ lang }: { lang: Lang }) {
                     </figure>
                   )}
 
+                  {/* Four studies at ~1400px each made this section half the
+                      page. The result image and the headline stay visible;
+                      the implementation is one click away and still in the
+                      DOM, so it is scannable and still indexed. */}
+                  <details className="code-study-fold">
+                    <summary>
+                      <span>{text.showImplementation}</span>
+                      <b aria-hidden="true">+</b>
+                    </summary>
                   <div className="code-study-details">
                     <section className="code-flow" data-reveal>
                       <div className="code-block-label">
@@ -412,6 +420,7 @@ export function Portfolio({ lang }: { lang: Lang }) {
                   <div className="project-tags code-tags" data-reveal>
                     {study.tags.map((tag) => <span key={tag}>{tag}</span>)}
                   </div>
+                  </details>
                 </article>
               ))}
             </div>
@@ -450,27 +459,6 @@ export function Portfolio({ lang }: { lang: Lang }) {
               </div>
             </section>
           </section>
-        </div>
-      </section>
-
-      <section className="approach section shell" id="approach">
-        <div className="section-heading" data-reveal>
-          <p>{text.approachEyebrow}</p>
-          <span>{text.sectionLabels.process}</span>
-        </div>
-        <div className="approach-intro" data-reveal>
-          <h2>{text.approachTitle}</h2>
-          <p>{text.approachBody}</p>
-        </div>
-        <div className="pillar-grid">
-          {text.pillars.map(([title, body], index) => (
-            <article className="pillar" key={title} data-reveal>
-              <span>0{index + 1}</span>
-              <div className="pillar-symbol" aria-hidden="true">{["◯", "△", "✦"][index]}</div>
-              <h3>{title}</h3>
-              <p>{body}</p>
-            </article>
-          ))}
         </div>
       </section>
 

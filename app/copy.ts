@@ -14,7 +14,7 @@ export const copy = {
     skipToContent: "Skip to main content",
     heroIndex: "PORTFOLIO / 2026",
     codeTrackLabel: "TRACK 02",
-    nav: ["Profile", "Work", "Approach", "Contact"],
+    nav: ["Profile", "Work", "Contact"],
     archiveMenu: "Archive",
     archive: {
       meta: "2026 — ONGOING",
@@ -44,7 +44,7 @@ export const copy = {
     focusLabel: "Current focus",
     focus: ["Unity", "Shaders", "C# Tooling", "AI × TA"],
     statusLabels: ["Learning", "Practising", "Exploring"],
-    sectionLabels: { about: "ABOUT", work: "WORK", process: "PROCESS", contact: "CONTACT" },
+    sectionLabels: { about: "ABOUT", work: "WORK", contact: "CONTACT" },
     profileEyebrow: "01 / Profile",
     profileTitle: "Building the bridge between visual ideas and real-time systems.",
     profileBody:
@@ -80,6 +80,7 @@ export const copy = {
     flowLabel: "Implementation flow",
     snippetLabel: "Core logic",
     viewCode: "View code",
+    showImplementation: "Show the implementation",
     viewRepo: "View full GitHub repository",
     archiveEyebrow: "Full learning archive",
     archiveTitle: "Beyond the four featured cases.",
@@ -152,16 +153,7 @@ export const copy = {
         ],
       },
     ],
-    approachEyebrow: "03 / Approach",
-    approachTitle: "Art sets the intent. Code makes it real. AI expands the search space.",
-    approachBody:
-      "I’m early in the journey, so the portfolio focuses on process: what I tried, what broke, what I learned, and how I would improve the result.",
-    pillars: [
-      ["ART", "Observe form, color, motion, and visual hierarchy."],
-      ["CODE", "Turn an idea into a repeatable real-time system."],
-      ["AI", "Use new tools to explore faster—without hiding the craft."],
-    ],
-    contactEyebrow: "04 / Contact",
+    contactEyebrow: "03 / Contact",
     contactTitle: "Let’s build the next frame.",
     contactBody: "Open to opportunities in Technical Art and real-time graphics.",
     contactCards: [
@@ -182,7 +174,7 @@ export const copy = {
     skipToContent: "跳到主要内容",
     heroIndex: "作品集 / 2026",
     codeTrackLabel: "方向 02",
-    nav: ["简介", "作品", "方法", "联系"],
+    nav: ["简介", "作品", "联系"],
     archiveMenu: "归档",
     archive: {
       meta: "2026 — 持续更新",
@@ -211,7 +203,7 @@ export const copy = {
     focusLabel: "当前方向",
     focus: ["Unity", "Shader", "C# 工具", "AI × TA"],
     statusLabels: ["学习中", "实践中", "探索中"],
-    sectionLabels: { about: "关于", work: "作品", process: "方法", contact: "联系" },
+    sectionLabels: { about: "关于", work: "作品", contact: "联系" },
     profileEyebrow: "01 / 个人简介",
     profileTitle: "在画面表达和实时系统之间搭一座桥。",
     profileBody:
@@ -247,6 +239,7 @@ export const copy = {
     flowLabel: "实现流程",
     snippetLabel: "核心逻辑",
     viewCode: "查看源码",
+    showImplementation: "展开实现细节",
     viewRepo: "查看完整 GitHub 仓库",
     archiveEyebrow: "完整学习归档",
     archiveTitle: "精选之外，还有这些。",
@@ -319,16 +312,7 @@ export const copy = {
         ],
       },
     ],
-    approachEyebrow: "03 / 方法",
-    approachTitle: "艺术定方向，代码让它跑起来，AI 把路子拓宽。",
-    approachBody:
-      "我还在补基础，所以这个作品集更想讲过程：试了什么、哪里卡住了、学到了什么、下次会怎么改。",
-    pillars: [
-      ["ART", "看形状、看颜色、看动势、看层次。"],
-      ["CODE", "把一个想法做成能反复跑的实时系统。"],
-      ["AI", "用新工具跑得更快，但基本功不拿它替。"],
-    ],
-    contactEyebrow: "04 / 联系",
+    contactEyebrow: "03 / 联系",
     contactTitle: "一起做出下一帧。",
     contactBody: "技术美术和实时图形方向的机会，都欢迎来聊。",
     contactCards: [

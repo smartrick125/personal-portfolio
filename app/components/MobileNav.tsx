@@ -12,15 +12,13 @@ import { copy, type Lang } from "../copy";
  * see where they are.
  */
 
-const SECTIONS = ["profile", "work", "approach", "contact"] as const;
+const SECTIONS = ["profile", "work", "contact"] as const;
 
 const icons: Record<(typeof SECTIONS)[number], string> = {
   // Person
   profile: "M12 11.5a3.6 3.6 0 100-7.2 3.6 3.6 0 000 7.2 M4.8 20a7.2 7.2 0 0114.4 0",
   // 2x2 grid
   work: "M4 4.5h6v6H4z M14 4.5h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z",
-  // Compass
-  approach: "M12 21a9 9 0 100-18 9 9 0 000 18Z M15.6 8.4l-2.2 5-5 2.2 2.2-5z",
   // Envelope
   contact: "M3.5 6.5h17v11h-17z M3.5 7.2l8.5 6.2 8.5-6.2",
 };
