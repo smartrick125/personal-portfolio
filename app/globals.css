@@ -2340,7 +2340,9 @@ body {
 .rendering-lab {
   margin-top: 54px;
   padding: 76px 42px 42px;
-  overflow: hidden;
+  /* clip, not hidden: both crop to the radius, but `hidden` would make this a
+     scroll container and the sticky stack below would never pin. */
+  overflow: clip;
   color: #f4f7ff;
   border: 1px solid rgba(137, 168, 255, 0.2);
   border-radius: 36px;
@@ -3868,4 +3870,41 @@ body {
 
 .code-study > .section-divider {
   margin-bottom: 26px;
+}
+
+/* ─── The four studies stack as you scroll ────────────────────────────
+   Each card pins a little lower than the one before, so the stack edges stay
+   visible and the next slides up over the last — the section plays through
+   rather than scrolling past. Desktop only: at phone height a 750px card that
+   pins has nowhere to go. */
+
+/* A pinned card that is taller than the viewport strands its own bottom edge
+   off-screen with no way to reach it, so the stack is gated on a viewport tall
+   enough to hold one. Below that — most laptops once browser chrome is taken
+   out — the section just scrolls, which is what it did before and is fine.
+   The single-image studies were 933px against a 900px viewport, so the figure
+   is capped; the image is `contain`, so it scales inside the frame rather than
+   being cropped. */
+@media (min-width: 961px) {
+  .code-media {
+    max-height: 400px;
+  }
+}
+
+@media (min-width: 961px) and (min-height: 850px) {
+  .code-study {
+    position: sticky;
+    top: calc(18px + var(--i, 0) * 9px);
+    /* The stack only reads if a card hides the one beneath it. The old 0.72
+       alpha is this colour once blended over the lab's own background. */
+    background: #080e23;
+    box-shadow: 0 -18px 50px rgba(3, 6, 18, 0.5);
+  }
+
+  /* An open card is far taller than the viewport, so pinning it would strand
+     the flow, the snippet and the links. Let it scroll normally instead. */
+  .code-study:has(.code-study-fold[open]) {
+    position: relative;
+    top: auto;
+  }
 }

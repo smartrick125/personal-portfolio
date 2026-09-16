@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Arrow } from "./Arrow";
 import { CodeSnippet } from "./CodeSnippet";
 import { HeroBackdrop } from "./HeroBackdrop";
@@ -336,7 +336,13 @@ export function Portfolio({ lang }: { lang: Lang }) {
 
             <div className="code-study-list">
               {codeStudies.map((study, index) => (
-                <article className="code-study" id={study.id} key={study.id} data-section-reveal>
+                <article
+                  className="code-study"
+                  id={study.id}
+                  key={study.id}
+                  style={{ "--i": index } as CSSProperties}
+                  data-section-reveal
+                >
                   <div className="section-divider" aria-hidden="true" />
                   <header className="code-study-header" data-reveal>
                     <span>0{index + 1}</span>
