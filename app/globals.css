@@ -3702,3 +3702,69 @@ body {
     animation: none !important;
   }
 }
+
+/* Mobile legibility pass.
+   The mono micro-label scale (8-9px) was drawn for desktop; on a phone it is
+   barely readable, and worse in Chinese, where CJK glyphs need more pixels
+   than Latin to stay apart. Raise the whole scale on small screens. Generated
+   from the rules above, so a new small label needs adding here too. */
+@media (max-width: 680px) {
+  .archive-chapters a > span,
+  .archive-mega small,
+  .archive-mega-column span, .archive-mega-column b,
+  .archive-mega-intro > a,
+  .archive-tracks summary > span,
+  .archive-tracks summary small,
+  .availability,
+  .case-proof span,
+  .code-block-label,
+  .code-block-label small,
+  .code-comparison figcaption strong,
+  .code-flow li > span,
+  .code-media figcaption strong,
+  .code-media-placeholder > span, .code-media-placeholder > small,
+  .code-study-header > div > p,
+  .code-study-header > span,
+  .comparison-frame span,
+  .contact-links small,
+  .focus-item b,
+  .focus-label,
+  .footer,
+  .hero-role-row,
+  .highlight-copy p,
+  .highlight-proof span,
+  .highlight-topline,
+  .highlights-heading p,
+  .learning-archive > header > p,
+  .pillar > span,
+  .portrait-photo figcaption,
+  .portrait-photo figcaption small,
+  .primary-cta,
+  .profile-status small,
+  .project-info > p:first-child,
+  .project-tags span,
+  .project-visual > small,
+  .render-label,
+  .rendering-lab-header > div:last-child > span,
+  .skill-row > span, .skill-row > small,
+  .social-placeholder small,
+  .source-links a > span,
+  .track-heading > p, .rendering-lab-header > div:first-child > p,
+  .work-track-nav small,
+  .work-track-nav span {
+    font-size: 11px;
+  }
+
+  .archive-chapters strong,
+  .availability,
+  .code-media-placeholder strong,
+  .hero-index,
+  .lang-switch,
+  .placeholder-portrait > span, .placeholder-portrait > small,
+  .project-number,
+  .rendering-lab-header a,
+  .section-heading,
+  .source-links a strong {
+    font-size: 12px;
+  }
+}

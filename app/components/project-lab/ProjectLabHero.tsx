@@ -129,7 +129,7 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
             loop
             playsInline
             preload={videoReady ? "metadata" : "none"}
-            poster={project.gallery[0]?.src}
+            poster={project.gallery[0]?.previewSrc ?? project.gallery[0]?.src}
             onPlay={() => setPlayRejected(false)}
             onError={() => onMediaError?.(hero.src)}
           />
@@ -149,6 +149,8 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
           className={styles.heroParallaxImage}
           data-parallax={imageParallaxEnabled ? "active" : "disabled"}
           src={hero.src}
+          srcSet={hero.srcSet}
+          sizes="(max-width: 760px) 100vw, 62vw"
           alt={project.title}
           onPointerMove={onImagePointerMove}
           onPointerLeave={resetImageParallax}

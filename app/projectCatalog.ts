@@ -1,7 +1,18 @@
+import { mediaSizes } from "./mediaSizes";
+
 export type MediaItem = {
   name: string;
   src: string;
+  /** Present for catalog images, which ship 640w / 1280w variants. */
+  srcSet?: string;
+  /** Largest generated variant. For `<video poster>`, which takes no srcset. */
+  previewSrc?: string;
+  width?: number;
+  height?: number;
 };
+
+/** Widths generated next to every catalog webp. Keep in sync with the script. */
+const VARIANT_WIDTHS = [640, 1280];
 
 export type LocalizedParagraphs = {
   en: string[];
@@ -26,10 +37,26 @@ export type ProjectCatalogItem = {
 
 const media = (folder: string, category: string, name: string, file: string): MediaItem => {
   const webFile = file.endsWith(".png") ? file.replace(/\.png$/, ".webp") : file;
-  return {
-    name,
-    src: `/projects/catalog/${folder}/${category}/${webFile}`,
-  };
+  const src = `/projects/catalog/${folder}/${category}/${webFile}`;
+  const size = mediaSizes[src];
+
+  // Videos and anything without a recorded size stay as-is.
+  if (!webFile.endsWith(".webp") || !size) return { name, src };
+
+  // The originals are 2560px wide but never displayed above ~900 CSS px, so
+  // offer the smaller renditions and let the browser pick. Descriptors use the
+  // real intrinsic width, otherwise the choice is made against a lie.
+  const [width, height] = size;
+  const stem = src.slice(0, -".webp".length);
+  const smaller = VARIANT_WIDTHS.filter((candidate) => candidate < width);
+  const srcSet = [
+    ...smaller.map((candidate) => `${stem}-${candidate}w.webp ${candidate}w`),
+    `${src} ${width}w`,
+  ].join(", ");
+  const largestVariant = smaller[smaller.length - 1];
+  const previewSrc = largestVariant ? `${stem}-${largestVariant}w.webp` : src;
+
+  return { name, src, srcSet, previewSrc, width, height };
 };
 
 export const projectCatalog: ProjectCatalogItem[] = [

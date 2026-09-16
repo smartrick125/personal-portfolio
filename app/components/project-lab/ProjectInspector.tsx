@@ -116,7 +116,7 @@ export function ProjectInspector({
               >
                 {/* Catalog images are static assets served directly by the Vite runtime. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.src} alt="" />
+                <img src={item.src} srcSet={item.srcSet} sizes="120px" alt="" loading="lazy" decoding="async" />
                 <span>{item.name}</span>
               </button>
             ))}

@@ -139,7 +139,10 @@ export function ProjectStage({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageItem.src}
+              srcSet={imageItem.srcSet}
+              sizes="(max-width: 760px) 100vw, 62vw"
               alt={imageItem.name}
+              decoding="async"
               onError={() => onMediaError(imageItem.src)}
             />
             <figcaption>{imageItem.name}</figcaption>

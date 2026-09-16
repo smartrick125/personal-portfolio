@@ -261,6 +261,8 @@ export default function Home() {
                   >
                     <img
                       src={assets.gallery[0]?.src}
+                      srcSet={assets.gallery[0]?.srcSet}
+                      sizes="(max-width: 680px) 92vw, 340px"
                       alt=""
                       loading="lazy"
                       decoding="async"

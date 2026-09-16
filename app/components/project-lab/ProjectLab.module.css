@@ -778,3 +778,19 @@
     opacity: 1 !important;
   }
 }
+
+/* Mobile legibility pass.
+   The mono micro-label scale (8-9px) was drawn for desktop; on a phone it is
+   barely readable, and worse in Chinese, where CJK glyphs need more pixels
+   than Latin to stay apart. Raise the whole scale on small screens. Generated
+   from the rules above, so a new small label needs adding here too. */
+@media (max-width: 680px) {
+  .header nav button span {
+    font-size: 11px;
+  }
+
+  .header p,
+  .thumbnailGrid span {
+    font-size: 12px;
+  }
+}
