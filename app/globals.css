@@ -3962,3 +3962,93 @@ body {
     margin-bottom: 22px;
   }
 }
+
+/* ─── Code studies as a swipe deck (phones) ───────────────────────────
+   Four stacked studies were 4551px of a 10921px page. Sideways, they cost one
+   card's height instead of four.
+
+   Deliberately not the highlight row above: those are tall image cards with
+   the text burned over the artwork and no position indicator. These stay dark
+   panels with the screenshot inset in its frame and the text underneath, they
+   snap one at a time instead of scrolling freely, and they carry a rail that
+   fills as you move through the deck — driven by the track's own scroll
+   timeline, so it costs no JS. */
+
+.code-deck-rail {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .code-study-list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 86vw;
+    gap: 14px;
+    align-items: start;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-inline: -16px;
+    padding-inline: 16px;
+    scroll-snap-type: inline mandatory;
+    scroll-padding-inline: 16px;
+    scrollbar-width: none;
+    scroll-timeline: --code-deck inline;
+  }
+
+  .code-study-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .code-deck {
+    timeline-scope: --code-deck;
+  }
+
+  .code-study {
+    scroll-snap-align: start;
+    margin-bottom: 0;
+    /* The divider was a horizontal rule between stacked studies; sideways it
+       is just a stray line at the top of every card. */
+    padding-top: 22px;
+  }
+
+  .code-study > .section-divider {
+    display: none;
+  }
+
+  /* One card open would otherwise stretch the whole track. */
+  .code-study-fold[open] > .code-study-details {
+    max-height: 62svh;
+    overflow-y: auto;
+  }
+
+  .code-deck-rail {
+    display: block;
+    height: 2px;
+    margin-top: 18px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(145, 190, 255, 0.16);
+  }
+
+  .code-deck-rail i {
+    display: block;
+    width: 34%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--violet), var(--cyan));
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+    .code-deck-rail i {
+      animation: deck-rail linear both;
+      animation-timeline: --code-deck;
+    }
+  }
+}
+
+@keyframes deck-rail {
+  from { transform: translateX(0); }
+  to { transform: translateX(194%); }
+}

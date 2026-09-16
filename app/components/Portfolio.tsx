@@ -334,6 +334,9 @@ export function Portfolio({ lang }: { lang: Lang }) {
               </div>
             </header>
 
+            {/* A wrapper so the scroll progress bar can read the track's own
+                scroll timeline. Both are plain blocks on desktop. */}
+            <div className="code-deck">
             <div className="code-study-list">
               {codeStudies.map((study, index) => (
                 <article
@@ -429,6 +432,10 @@ export function Portfolio({ lang }: { lang: Lang }) {
                   </details>
                 </article>
               ))}
+            </div>
+            <div className="code-deck-rail" aria-hidden="true">
+              <i />
+            </div>
             </div>
 
             <section className="learning-archive" id="learning-archive" data-reveal data-section-reveal>
