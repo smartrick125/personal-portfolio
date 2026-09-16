@@ -1,9 +1,16 @@
 # Cloudflare Workers static-asset headers.
 #
-# Hashed build output under /assets/ already gets a year from the platform.
 # Everything served straight out of public/ defaulted to `max-age=0,
 # must-revalidate`, so the fonts and every catalog image cost a round trip on
 # each repeat visit. These names are stable, so give them a real lifetime.
+#
+# Note: adding this file turns OFF the platform's automatic year-long caching
+# of hashed build output, so /assets/ has to be restated here or the JS and CSS
+# bundles silently drop to must-revalidate. Their filenames carry a content
+# hash, so immutable is exactly right for them.
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # Self-hosted Geist. Swapping a face means a new filename, so this is safe to
 # pin: see the @font-face note in app/globals.css.
