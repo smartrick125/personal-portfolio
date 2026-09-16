@@ -4052,3 +4052,76 @@ body {
   from { transform: translateX(0); }
   to { transform: translateX(194%); }
 }
+
+/* ─── Contact panel goes light ────────────────────────────────────────
+   The section already sat on the same #f3f6fb as the profile, but the panel
+   inside it was a dark slab, so the page ended on a heavy block. Same paper
+   treatment as the profile instead.
+
+   Most of it rides on the --surface-* custom properties that the shell already
+   declares; the cards carry their own hardcoded colours and need flipping by
+   hand. */
+
+.contact > .shell {
+  --surface-heading: var(--ink);
+  --surface-copy: #566077;
+  --surface-muted: #737d96;
+  color: var(--ink);
+  border-color: rgba(11, 23, 49, 0.12);
+  background:
+    radial-gradient(circle at 88% 16%, rgba(111, 95, 255, 0.07), transparent 30%),
+    linear-gradient(rgba(11, 23, 49, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 23, 49, 0.03) 1px, transparent 1px),
+    #fbfcff;
+  background-size: auto, 58px 58px, 58px 58px, auto;
+  box-shadow: 0 26px 70px rgba(24, 36, 84, 0.08);
+}
+
+/* Same flip the work section already does for its own light background. */
+.contact .section-heading-light {
+  color: #69738c;
+  border-color: rgba(11, 23, 49, 0.14);
+}
+
+.contact-links > span,
+.contact-links > a {
+  border-color: rgba(11, 23, 49, 0.12);
+  background: #fff;
+}
+
+/* The two placeholders — Douyin and the résumé — should read as waiting, not
+   as live links. */
+.contact-links > span {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.contact-links strong {
+  color: var(--ink);
+}
+
+.contact-links small {
+  /* #7b8499 measured 3.75:1 on white; these are 8px mono labels, which count
+     as normal text, so they need 4.5. */
+  color: #646d82;
+}
+
+.contact-links > span > span,
+.contact-links > a > span {
+  color: #5d6780;
+}
+
+.contact-links b {
+  color: var(--violet);
+}
+
+.contact-links > a:hover,
+.contact-links > a:focus-visible {
+  border-color: rgba(121, 92, 255, 0.42);
+  background: rgba(121, 92, 255, 0.05);
+  box-shadow: 0 14px 34px rgba(29, 41, 92, 0.08);
+}
+
+/* The aurora blob behind the panel was tuned to glow through a dark slab. */
+.contact-glow {
+  opacity: 0.2;
+}
