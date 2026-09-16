@@ -107,9 +107,6 @@ export default function RootLayout({
         ))}
       </head>
       <body>
-        <a className="skip-link" href="#profile">
-          Skip to main content
-        </a>
         {children}
         <script
           type="application/ld+json"

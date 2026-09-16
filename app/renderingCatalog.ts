@@ -221,17 +221,17 @@ export const archiveTracks = [
     subtitle: { en: "Chapters 06–08 · 16 shaders", zh: "第 06–08 章 · 16 个 Shader" },
     chapters: [
       {
-        name: "Chapter 06 · Lighting Models",
+        name: { en: "Chapter 06 · Lighting Models", zh: "第 06 章 · 光照模型" },
         topics: { en: "Diffuse, Half-Lambert, Phong, Blinn–Phong", zh: "漫反射、Half-Lambert、Phong、Blinn–Phong" },
         url: `${repoRoot}/tree/main/Chapter6`,
       },
       {
-        name: "Chapter 07 · Textures & Normals",
+        name: { en: "Chapter 07 · Textures & Normals", zh: "第 07 章 · 贴图与法线" },
         topics: { en: "Normal maps, ramp textures, mask textures", zh: "法线贴图、渐变纹理、遮罩纹理" },
         url: `${repoRoot}/tree/main/Chapter7`,
       },
       {
-        name: "Chapter 08 · Transparency",
+        name: { en: "Chapter 08 · Transparency", zh: "第 08 章 · 透明处理" },
         topics: { en: "Alpha test, alpha blend, depth writing", zh: "透明度测试、透明混合、深度写入" },
         url: `${repoRoot}/tree/main/Chapter8`,
       },
@@ -242,17 +242,17 @@ export const archiveTracks = [
     subtitle: { en: "Chapters 09–11 · 22 code files", zh: "第 09–11 章 · 22 个代码文件" },
     chapters: [
       {
-        name: "Chapter 09 · Shadows",
+        name: { en: "Chapter 09 · Shadows", zh: "第 09 章 · 阴影" },
         topics: { en: "Casting, receiving, screen-space and cascade shadows", zh: "阴影投射、接收、屏幕空间与级联阴影" },
         url: `${repoRoot}/tree/main/Chapter9`,
       },
       {
-        name: "Chapter 10 · Environment",
+        name: { en: "Chapter 10 · Environment", zh: "第 10 章 · 环境" },
         topics: { en: "Reflection, refraction, glass, mirrors, Fresnel", zh: "反射、折射、玻璃、镜面、菲涅尔" },
         url: `${repoRoot}/tree/main/Chapter10`,
       },
       {
-        name: "Chapter 11 · Animated Surfaces",
+        name: { en: "Chapter 11 · Animated Surfaces", zh: "第 11 章 · 动态表面" },
         topics: { en: "Billboards, scrolling, sequences, water", zh: "广告牌、滚动背景、序列帧、水面" },
         url: `${repoRoot}/tree/main/Chapter11`,
       },
@@ -263,7 +263,7 @@ export const archiveTracks = [
     subtitle: { en: "Chapter 12 · 20 shader and C# files", zh: "第 12 章 · 20 个 Shader 与 C# 文件" },
     chapters: [
       {
-        name: "Chapter 12 · Custom Rendering",
+        name: { en: "Chapter 12 · Custom Rendering", zh: "第 12 章 · 自定义渲染" },
         topics: {
           en: "Blur, Gaussian blur, edge detection, color adjustment, Renderer Features, Render Passes, Volume",
           zh: "模糊、高斯模糊、边缘检测、颜色调整、Renderer Feature、Render Pass、Volume",

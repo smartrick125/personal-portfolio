@@ -93,7 +93,9 @@ export function ProjectInspector({
             <a href={project.technicalSummary.src} target="_blank" rel="noreferrer">
               {project.technicalSummary.name}
             </a>
-            {project.technicalSummary.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            {project.technicalSummary.paragraphs[lang].map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
           </details>
         </div>
       )}

@@ -83,6 +83,7 @@ export default function Home() {
 
   return (
     <main className="site">
+      <a className="skip-link" href="#profile">{text.skipToContent}</a>
       <PointerFx />
       <nav className="topbar" aria-label={text.navAria}>
         <div className="nav-center">
@@ -144,7 +145,7 @@ export default function Home() {
           </div>
 
           <div className="hero-title-wrap">
-            <p className="hero-index">PORTFOLIO / 2026</p>
+            <p className="hero-index">{text.heroIndex}</p>
             <HeroTitle text="SMARTRICK" />
             <div className="hero-role-row">
               <span>{text.role}</span>
@@ -313,7 +314,7 @@ export default function Home() {
             <div className="section-divider" aria-hidden="true" />
             <header className="rendering-lab-header" data-reveal>
               <div>
-                <p>TRACK 02 / {text.codeEyebrow}</p>
+                <p>{text.codeTrackLabel} / {text.codeEyebrow}</p>
                 <h2>{text.codeTitle}</h2>
               </div>
               <div>
@@ -426,9 +427,9 @@ export default function Home() {
                     </summary>
                     <div className="archive-chapters">
                       {track.chapters.map((chapter) => (
-                        <a href={chapter.url} target="_blank" rel="noreferrer" key={chapter.name}>
+                        <a href={chapter.url} target="_blank" rel="noreferrer" key={chapter.url}>
                           <div>
-                            <strong>{chapter.name}</strong>
+                            <strong>{chapter.name[lang]}</strong>
                             <p>{chapter.topics[lang]}</p>
                           </div>
                           <span>{text.openChapter} <Arrow direction="up-right" /></span>

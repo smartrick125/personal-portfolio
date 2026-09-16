@@ -2853,18 +2853,31 @@ body {
     font-size: 9px;
   }
 
+  /* The base track is `width: max-content` inside an `overflow: hidden` strip,
+     so on a phone the last two items were simply clipped off with no way to
+     reach them. Lay them out 2x2 instead — everything visible, no swiping. */
   .focus-track {
-    min-height: 66px;
-    justify-content: flex-start;
-    gap: 22px;
+    width: auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 17px 20px 19px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, auto));
+    justify-content: center;
+    gap: 13px 26px;
   }
 
   .focus-label {
     display: none;
   }
 
+  .focus-item {
+    justify-self: start;
+    gap: 10px;
+  }
+
   .focus-item span {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .focus-item i {
