@@ -104,6 +104,7 @@ export const copy = {
       resultVideosAria: "Result videos",
       expandNode: "Expand node graph",
       expandCode: "Expand code",
+      playVideo: "Play project video",
     },
     projects: [
       {
@@ -294,6 +295,7 @@ export const copy = {
       resultVideosAria: "效果录屏",
       expandNode: "放大节点图",
       expandCode: "放大代码",
+      playVideo: "播放项目视频",
     },
     projects: [
       {

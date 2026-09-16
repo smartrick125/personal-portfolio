@@ -125,6 +125,7 @@ export function ProjectStage({
         {(activeView === "result" || activeView === "logic") && (
           <div className={styles.resultMedia}>
             <ProjectLabHero
+              lang={lang}
               project={project}
               compact={compact}
               media={resultMedia}

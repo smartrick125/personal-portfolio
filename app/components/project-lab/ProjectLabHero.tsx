@@ -1,17 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
+import { copy, type Lang } from "../../copy";
 import styles from "./ProjectLab.module.css";
 import { getHeroMedia, type ProjectLabMedia, type ProjectLabProject } from "./projectLabModel";
 
 type ProjectLabHeroProps = {
+  lang: Lang;
   project: ProjectLabProject;
   compact: boolean;
   media?: ProjectLabMedia | null;
   onMediaError?: (src: string) => void;
 };
 
-export function ProjectLabHero({ project, compact, media, onMediaError }: ProjectLabHeroProps) {
+export function ProjectLabHero({ lang, project, compact, media, onMediaError }: ProjectLabHeroProps) {
+  const labels = copy[lang].lab;
   const heroRootRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -20,12 +23,20 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
   // has a src, even though the lab sits a long way below the fold — 641KB of a
   // 1.2MB first load, decoded on loop, for something nobody can see yet. The
   // src is withheld until the stage is near the viewport.
-  const [videoReady, setVideoReady] = useState(false);
+  // Derived rather than stored: when the hero source changes this goes false on
+  // its own. Holding it in state meant an effect had to reset it on every
+  // project switch, which cost an extra render pass each time.
+  const [readySrc, setReadySrc] = useState<string | null>(null);
   const [imageParallaxEnabled, setImageParallaxEnabled] = useState(
     () => typeof window !== "undefined"
       && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches,
   );
   const hero = media === undefined ? getHeroMedia(project) : media;
+  const heroSrc = hero?.src;
+  const videoReady = readySrc !== null && readySrc === heroSrc;
+  const markVideoReady = useCallback(() => {
+    if (heroSrc) setReadySrc(heroSrc);
+  }, [heroSrc]);
 
   const onPlayRejected = useCallback(() => {
     setPlayRejected(true);
@@ -63,11 +74,7 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
 
     void video.play().then(() => setPlayRejected(false)).catch(onPlayRejected);
     return () => video.pause();
-  }, [hero?.src, onPlayRejected, project.id, videoReady]);
-
-  useEffect(() => {
-    setVideoReady(false);
-  }, [hero?.src]);
+  }, [heroSrc, onPlayRejected, project.id, videoReady]);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)");
@@ -78,15 +85,19 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
 
   useEffect(() => {
     if (!imageParallaxEnabled) resetImageParallax();
-  }, [hero?.src, imageParallaxEnabled, resetImageParallax]);
+  }, [heroSrc, imageParallaxEnabled, resetImageParallax]);
 
   useEffect(() => {
     const root = heroRootRef.current;
     if (!root) return;
     if (!("IntersectionObserver" in window)) {
       // No observer means no way to tell when the stage arrives, so fall back
-      // to the old behaviour rather than a clip that never loads.
-      setVideoReady(true);
+      // to the old behaviour rather than a clip that never loads. This runs at
+      // most once, in a browser that cannot reach this page in a usable state
+      // anyway (the reveal animations in page.tsx require the same API), so the
+      // cascading render the rule guards against is not a concern here.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      markVideoReady();
       return;
     }
 
@@ -95,7 +106,7 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
         if (entry?.isIntersecting) {
           // First crossing hands the element its src; the effect above starts
           // playback once React has actually set it.
-          setVideoReady(true);
+          markVideoReady();
           const video = videoRef.current;
           if (video?.currentSrc) void video.play().catch(onPlayRejected);
         } else {
@@ -109,13 +120,13 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
 
     observer.observe(root);
     return () => observer.disconnect();
-  }, [hero?.src, onPlayRejected, project.id]);
+  }, [heroSrc, markVideoReady, onPlayRejected, project.id]);
 
   return (
     <article
       ref={heroRootRef}
       className={styles.heroMedia}
-      onPointerDown={() => setVideoReady(true)}
+      onPointerDown={markVideoReady}
       data-hero-mode={compact ? "compact" : "hero"}
     >
       {hero?.kind === "video" && (
@@ -135,7 +146,7 @@ export function ProjectLabHero({ project, compact, media, onMediaError }: Projec
           />
           {playRejected && (
             <button className={styles.playButton} type="button" onClick={playVideo}>
-              Play project video
+              {labels.playVideo}
             </button>
           )}
         </>
