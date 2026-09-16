@@ -3878,33 +3878,55 @@ body {
    rather than scrolling past. Desktop only: at phone height a 750px card that
    pins has nowhere to go. */
 
-/* A pinned card that is taller than the viewport strands its own bottom edge
-   off-screen with no way to reach it, so the stack is gated on a viewport tall
-   enough to hold one. Below that — most laptops once browser chrome is taken
-   out — the section just scrolls, which is what it did before and is fine.
-   The single-image studies were 933px against a 900px viewport, so the figure
-   is capped; the image is `contain`, so it scales inside the frame rather than
-   being cropped. */
-@media (min-width: 961px) {
-  .code-media {
-    max-height: 400px;
-  }
-}
+/* A pinned card taller than the viewport strands its own bottom edge with no
+   way to scroll to it, so the stack is gated on height. The first attempt
+   gated at 850px of *content* height, which sounds modest and is not: a
+   1440x900 laptop leaves about 760 once the tab strip, address bar and
+   taskbar are gone, and 1536x864 leaves about 730. Most laptops never saw it.
 
-@media (min-width: 961px) and (min-height: 850px) {
+   So the card has to be short enough for a ~700px viewport, which means the
+   figure carries the cost. Two tiers: short viewports get a smaller image but
+   do get the stack; tall ones get the image back. The image is `contain`, so
+   it scales inside the frame rather than being cropped. */
+@media (min-width: 961px) and (min-height: 700px) {
+  .code-media {
+    max-height: 280px;
+  }
+
+  /* The comparison studies are the tall ones once the single-image figure is
+     capped — their frames carry a 330px floor each. */
+  .comparison-frame {
+    min-height: 240px;
+  }
+
   .code-study {
     position: sticky;
-    top: calc(18px + var(--i, 0) * 9px);
+    top: calc(10px + var(--i, 0) * 6px);
     /* The stack only reads if a card hides the one beneath it. The old 0.72
        alpha is this colour once blended over the lab's own background. */
     background: #080e23;
     box-shadow: 0 -18px 50px rgba(3, 6, 18, 0.5);
   }
 
-  /* An open card is far taller than the viewport, so pinning it would strand
+  /* An open card is far taller than any viewport, so pinning it would strand
      the flow, the snippet and the links. Let it scroll normally instead. */
   .code-study:has(.code-study-fold[open]) {
     position: relative;
     top: auto;
+  }
+}
+
+/* Room to breathe: give the screenshot back its size and widen the stagger. */
+@media (min-width: 961px) and (min-height: 880px) {
+  .code-media {
+    max-height: 420px;
+  }
+
+  .comparison-frame {
+    min-height: 330px;
+  }
+
+  .code-study {
+    top: calc(18px + var(--i, 0) * 9px);
   }
 }
