@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Arrow } from "./Arrow";
+import { CodeSnippet } from "./CodeSnippet";
 import { HeroBackdrop } from "./HeroBackdrop";
 import { HeroTitle } from "./HeroTitle";
 import { HolographicTiltCard } from "./HolographicTiltCard";
@@ -389,7 +390,7 @@ export function Portfolio({ lang }: { lang: Lang }) {
                       <div className="code-block-label">
                         <span>{text.snippetLabel}</span>
                       </div>
-                      <pre><code>{study.snippet}</code></pre>
+                      <pre><CodeSnippet source={study.snippet} /></pre>
                     </section>
 
                     <section className="code-sources" data-reveal>

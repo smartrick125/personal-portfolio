@@ -3853,3 +3853,72 @@ body {
     }
   }
 }
+
+
+/* ─── Rendering-lab code, profile weight ──────────────────────────────
+   The snippets rendered as one flat colour of 11px mono, which made the whole
+   second half of the work section read as grey filler — on a portfolio whose
+   subject is shader and pipeline code. Tokens come from components/CodeSnippet
+   and borrow the palette the rest of the page already uses. */
+
+.code-snippet code {
+  font-size: 12.5px;
+}
+
+.tok-keyword { color: #ff8fb0; }
+.tok-type { color: var(--cyan); }
+.tok-call { color: var(--sky); }
+.tok-number { color: #ffc98c; }
+.tok-string { color: #9fe6b4; }
+.tok-comment { color: rgba(201, 215, 255, 0.4); font-style: italic; }
+
+/* The skill rows were 2px hairlines — the only data-ish element in the profile
+   and almost invisible. No numbers are shown: the widths are an editorial
+   emphasis, not a measurement, and labelling them would imply otherwise. */
+.skill-row {
+  transition: color 200ms ease;
+}
+
+.skill-line {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(104, 79, 255, 0.14);
+}
+
+.skill-line i {
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6754ff, #9f6bff 62%, var(--cyan));
+  box-shadow: 0 0 14px rgba(124, 108, 255, 0.5);
+}
+
+.skill-row:hover strong {
+  color: var(--violet);
+}
+
+/* The portrait sat in a plain 1px frame. Give it the same accent language as
+   the work cards, and let it catch the pointer through the --mx the hero
+   already tracks, so it costs no extra listener. */
+.portrait-photo {
+  box-shadow:
+    0 0 0 1px rgba(119, 243, 255, 0.16),
+    0 34px 90px rgba(18, 27, 64, 0.22);
+}
+
+.portrait-photo figcaption {
+  z-index: 2;
+}
+
+.portrait-photo::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    calc(116deg + var(--mx, 0) * 24deg),
+    rgba(119, 243, 255, 0.14),
+    transparent 38%,
+    transparent 66%,
+    rgba(124, 108, 255, 0.22)
+  );
+}
