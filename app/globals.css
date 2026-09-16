@@ -3768,3 +3768,88 @@ body {
     font-size: 12px;
   }
 }
+
+
+/* ─── Scroll-driven motion, desktop only ───────────────────────────────
+   Native scroll timelines: the compositor drives these, so there is no JS,
+   no rAF loop and no IntersectionObserver behind them. Everything sits
+   behind @supports, so a browser without scroll timelines (Safari before 26)
+   just gets the static layout the reveal observer already produces.
+
+   These only ever target elements *inside* a [data-reveal] container, never
+   the container itself — that already animates opacity and transform on the
+   observer, and two owners for one property means the last one wins at
+   random. */
+
+@keyframes scroll-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* The band under the hero, which had no motion of any kind. */
+@keyframes strip-drift {
+  from { transform: translate3d(-1.6%, 0, 0); }
+  to { transform: translate3d(1.6%, 0, 0); }
+}
+
+/* Contain-fit art: scale only. Translating it would slide the picture off its
+   own letterbox and show the frame's backing colour. */
+@keyframes media-settle {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}
+
+@keyframes symbol-drift {
+  from { transform: translateY(18px) rotate(-14deg); opacity: 0.35; }
+  to { transform: translateY(-10px) rotate(6deg); opacity: 1; }
+}
+
+.scroll-progress {
+  display: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (min-width: 961px) and (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      position: fixed;
+      z-index: 120;
+      top: 0;
+      right: 0;
+      left: 0;
+      display: block;
+      height: 2px;
+      transform-origin: 0 50%;
+      background: linear-gradient(90deg, var(--violet), var(--cyan));
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    /* The bars already grew with `line-grow`, but on page load — they sit far
+       below the fold, so the animation was always over before anyone arrived.
+       Same keyframes, retimed to the reader's scroll. */
+    .skill-line i {
+      animation-timeline: view();
+      animation-range: entry 15% cover 38%;
+    }
+
+    .focus-track {
+      animation: strip-drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    .code-media img,
+    .comparison-frame img,
+    .portrait-photo img {
+      animation: media-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+
+    .pillar-symbol {
+      animation: symbol-drift linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 50%;
+    }
+  }
+}

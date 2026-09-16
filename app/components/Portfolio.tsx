@@ -84,6 +84,9 @@ export function Portfolio({ lang }: { lang: Lang }) {
   return (
     <main className="site">
       <a className="skip-link" href="#profile">{text.skipToContent}</a>
+      {/* Driven entirely by `animation-timeline: scroll()`; hidden where that
+          is unsupported, so it needs no JS and no fallback. */}
+      <div className="scroll-progress" aria-hidden="true" />
       <PointerFx />
       <nav className="topbar" aria-label={text.navAria}>
         <div className="nav-center">
@@ -273,7 +276,7 @@ export function Portfolio({ lang }: { lang: Lang }) {
                     <span className="highlight-shade" aria-hidden="true" />
                     <div className="highlight-topline">
                       <span>0{index + 1}</span>
-                      <span>{project.tags[0]}</span>
+                      <span>{highlight.cardTag}</span>
                     </div>
                     <div className="highlight-copy">
                       <p>{project.title}</p>
